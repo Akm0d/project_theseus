@@ -1,0 +1,55 @@
+/*
+  MySerial.h - MySerial library for Wiring - implementation
+  Copyright (c) 2006 John Doe.  All right reserved.
+*/
+
+#define NO_MESSAGE -1
+
+// include this library's description file
+#include "MySerial.h"
+
+// include description files for other libraries used (if any)
+#include "HardwareSerial.h"
+
+// Constructor /////////////////////////////////////////////////////////////////
+// Function that handles the creation and setup of instances
+
+MySerial::MySerial(int id)
+{
+  // do whatever is required to initialize the library
+  ARDUINO_NUMBER = id;
+  t_receive = 0;
+  Serial.begin(115200);
+}
+
+// Public Methods //////////////////////////////////////////////////////////////
+// Functions available in Wiring sketches, this library, and other libraries
+void MySerial::receive_message(void(*handler)(char code, char message))
+{
+  //listen for incoming command data
+  // Receive the message code if none has been given
+  if(Serial.available() && mesg_code == NO_MESSAGE){
+    mesg_code = Serial.read();
+    t_receive = RECEIVE_MAX;
+  } else if(Serial.available() && !t_receive && datas == NO_MESSAGE){
+    datas = Serial.read();
+  } else if (!t_receive && !(datas == NO_MESSAGE) && !(mesg_code == NO_MESSAGE)){
+    handler(mesg_code, datas);
+  }
+
+  // After handling data, reset the message code
+  mesg_code = NO_MESSAGE;// Reset message code
+  datas = NO_MESSAGE;
+}
+
+void MySerial::send_message(char code, char message){
+  Serial.print(ARDUINO_NUMBER);
+  Serial.print(" ");
+  Serial.print(code);
+  Serial.print(" ");
+  Serial.println(message);
+}
+
+void MySerial::dec_timers(){
+  if(t_receive) t_receive--;
+}
