@@ -1,0 +1,4 @@
+functions == 0.7.0
+pyserial == 3.0.1
+qt-backport == 0.1.3
+static == 1.1.1
