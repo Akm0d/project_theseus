@@ -18,8 +18,10 @@ def create_app(config='WebApp.config.Config'):
     from WebApp.register import register
     from WebApp.scoreboard import scoreboard
     from WebApp.timer import timer
+    from WebApp.api import blueprint as api
 
     app.register_blueprint(admin)
+    app.register_blueprint(api)
     app.register_blueprint(base)
     app.register_blueprint(register)
     app.register_blueprint(scoreboard)
