@@ -8,6 +8,9 @@ base = Blueprint('base', __name__)
 def base_view():
     return render_template("index.html")
 
+
 # TODO 404 not found and other error pages
 
-# TODO favicon
+@base.route('/favicon.ico', methods=['GET'])
+def favicon():
+    return url_for('static', filename='favicon.ico')

@@ -6,4 +6,4 @@ admin = Blueprint('admin', __name__)
 
 @admin.route('/admin', methods=['GET'])
 def admin_view():
-    return "TODO Admin Console"
+    return render_template("admin.html")
