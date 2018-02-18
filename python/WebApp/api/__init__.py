@@ -22,4 +22,3 @@ class Ultrasonic(Resource):
         enabled = choice([True, False])
 
         return {"status": "Enabled" if enabled else "Disabled"}
-
