@@ -33,7 +33,7 @@ document.getElementById("tripwire-all").onclick = function() {
 };
 
 document.getElementById("tripwire-randomize").onclick = function() {
-    tripwire_randomize()
+    tripwire_randomize();
 };
 
 document.getElementById("timer-start-reset").onclick = function() {
@@ -131,10 +131,7 @@ function tripwire_randomize(toggle) {
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
-                var data = JSON.parse(x.response);
-                Array.prototype.forEach.call(document.getElementsByClassName("tripwire"), function(tripwire) {
-                    document.getElementById("tripwire-" + tripwire.name.toString()).style.backgroundColor=data[tripwire.name];
-                });
+                tripwire_all(toggle=false);
             }
         }
     };

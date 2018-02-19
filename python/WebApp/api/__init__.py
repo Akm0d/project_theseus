@@ -86,7 +86,7 @@ class TripwireAll(Resource):
 class Randomize(Resource):
     def get(self):
         # TODO send a request to randomize the order of the lasers then return the status of all of them
-        return TripwireAll().get(action="status")
+        return dict()
 
 
 @api.resource('/ultrasonic/<action>')
