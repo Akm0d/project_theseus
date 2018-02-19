@@ -11,6 +11,22 @@ blueprint = Blueprint('api', __name__, url_prefix='/api')
 api = Api(blueprint)
 
 
+@api.resource('/rgb_select/<color>')
+class RGB(Resource):
+    options = ["black", "red", "green", "blue"]
+
+    def get(self, color: str):
+        if not color == "status":
+            # TODO Send a request to the Listener that changes the color of the RGB
+            logger.debug("selecting '{}'".format(color))
+        # TODO Get the actual color of the rgb from the listener
+        if color == "status":
+            color = choice(self.options)
+
+        # The javascript needs the index in the selection wheel that matches the given color
+        return {"status": self.options.index(color), "color": "" if color == "black" else color}
+
+
 @api.resource('/solenoid/<action>')
 class Solenoid(Resource):
     def __init__(self):

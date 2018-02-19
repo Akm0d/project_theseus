@@ -1,9 +1,6 @@
 // When the page is loaded, query the state of all the sensors
 $(document).ready(function(){
-    solenoid_status(toggle=false);
-    timer_status(toggle=false);
-    tripwire_all(toggle=false);
-    ultrasonic_status(toggle=false);
+    refresh_all()
 });
 
 document.getElementById("solenoid-toggle").onclick = function() {
@@ -27,6 +24,10 @@ document.getElementById("keypad-code").onchange = function(e){
     // TODO update the keycode with the new value
 };
 
+document.getElementById("rgb-select").onchange = function(e) {
+    rgb_select(e.srcElement.value)
+};
+
 document.getElementById("tripwire-all").onclick = function() {
     tripwire_all(toggle=true)
 };
@@ -42,6 +43,29 @@ document.getElementById("timer-start-reset").onclick = function() {
 document.getElementById("ultrasonic-enable").onclick = function() {
     ultrasonic_status(toggle=true)
 };
+
+function refresh_all(){
+    solenoid_status(toggle=false);
+    timer_status(toggle=false);
+    tripwire_all(toggle=false);
+    ultrasonic_status(toggle=false);
+    rgb_select("status")
+}
+
+function rgb_select(color){
+    var x = new XMLHttpRequest();
+    x.open('GET', 'http://' + document.location.host + '/api/rgb_select/' + color, true);
+    x.onload = function () {
+        if (x.readyState === 4) {
+            if (x.status === 200) {
+                var data = JSON.parse(x.response);
+                document.getElementById("rgb-select").selectedIndex = data["status"];
+                document.getElementById("rgb-select").style.backgroundColor=data["color"];
+            }
+        }
+    };
+    x.send();
+}
 
 function solenoid_status(toggle){
     var x = new XMLHttpRequest();
