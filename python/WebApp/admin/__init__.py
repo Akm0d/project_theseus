@@ -1,7 +1,9 @@
+from exrex import getone as regex2str
 from flask import current_app as app, render_template, request, redirect, jsonify, url_for, Blueprint, \
     abort, render_template_string, send_file
 from flask_restful import Api, Resource
 from random import choice
+from threading import Lock
 
 import logging
 
@@ -15,6 +17,17 @@ restful = Api(admin)
 @admin.route('/', methods=['GET'])
 def admin_view():
     return render_template("admin.html")
+
+
+@restful.resource('/keycode/<code>')
+class Keypad(Resource):
+    def get(self, code: str):
+        if not code == "status":
+            # TODO Tell the listener to expect the given code on the keypad
+            logger.debug("Setting new keypad code: {}".format(code))
+
+        # TODO get the keycode from the Listner
+        return {"status": regex2str("[a-f0-9]{3}" if code == "status" else code)}
 
 
 @restful.resource('/rgb_select/<color>')

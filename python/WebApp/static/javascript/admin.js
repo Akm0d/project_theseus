@@ -21,7 +21,7 @@ document.getElementById("keypad-code").addEventListener("keypress", function(e) 
 });
 
 document.getElementById("keypad-code").onchange = function(e){
-    // TODO update the keycode with the new value
+    keycode_status(e.srcElement.value);
 };
 
 document.getElementById("rgb-select").onchange = function(e) {
@@ -44,7 +44,22 @@ document.getElementById("ultrasonic-enable").onclick = function() {
     ultrasonic_status(toggle=true)
 };
 
+function keycode_status(code){
+    var x = new XMLHttpRequest();
+    x.open('GET', 'http://' + document.location.host + '/admin/keycode/' + code, true);
+    x.onload = function () {
+        if (x.readyState === 4) {
+            if (x.status === 200) {
+                var data = JSON.parse(x.response);
+                document.getElementById("keypad-code").value = data["status"];
+            }
+        }
+    };
+    x.send();
+}
+
 function refresh_all(){
+    keycode_status("status");
     solenoid_status(toggle=false);
     timer_status(toggle=false);
     tripwire_all(toggle=false);
