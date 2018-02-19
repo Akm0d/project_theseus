@@ -1,12 +1,15 @@
 from flask import Blueprint, current_app as app, request
 from flask_restful import Api, Resource
 
-blueprint = Blueprint('api', __name__, url_prefix='/api')
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+blueprint = Blueprint('api', __name__, url_prefix='/api')
 api = Api(blueprint)
 
 
-# TODO make 'ultrasonic' a <device> or <sensor> variable that can enable/disable any device
 @api.resource('/ultrasonic/<action>')
 class Ultrasonic(Resource):
     def __init__(self):
@@ -14,6 +17,7 @@ class Ultrasonic(Resource):
 
     def get(self, action=None):
         if action == "toggle":
+            logger.debug("Toggling the ultrasonic sensor")
             # TODO make a request to the listener.  Ask to change the enabled state of ultrasonic
             pass
 
