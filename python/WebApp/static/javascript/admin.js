@@ -1,4 +1,3 @@
-
 // When the page is loaded, query the state of all the sensors
 $(document).ready(function(){
     solenoid_status(toggle=false);
@@ -7,11 +6,26 @@ $(document).ready(function(){
     ultrasonic_status(toggle=false);
 });
 
+document.getElementById("solenoid-toggle").onclick = function() {
+    solenoid_status(toggle=true)
+};
+
 Array.prototype.forEach.call(document.getElementsByClassName("tripwire"), function(tripwire) {
     tripwire.onclick = function() {
         tripwire_status(number = tripwire.name, toggle = true)
     }
 });
+
+document.getElementById("keypad-code").addEventListener("keypress", function(e) {
+    // prevent non-hex input
+    if(! /[a-f0-9]/.test(e.key.toString())){
+        e.preventDefault();
+    }
+});
+
+document.getElementById("keypad-code").onchange = function(e){
+    // TODO update the keycode with the new value
+};
 
 document.getElementById("tripwire-all").onclick = function() {
     tripwire_all(toggle=true)
@@ -21,10 +35,6 @@ document.getElementById("tripwire-randomize").onclick = function() {
     tripwire_randomize()
 };
 
-document.getElementById("solenoid-toggle").onclick = function() {
-    solenoid_status(toggle=true)
-};
-
 document.getElementById("timer-start-reset").onclick = function() {
     timer_status(toggle=true)
 };
@@ -32,7 +42,6 @@ document.getElementById("timer-start-reset").onclick = function() {
 document.getElementById("ultrasonic-enable").onclick = function() {
     ultrasonic_status(toggle=true)
 };
-
 
 function solenoid_status(toggle){
     var x = new XMLHttpRequest();
