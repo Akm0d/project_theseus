@@ -19,9 +19,9 @@ def admin_view():
     return render_template("admin.html")
 
 
-@restful.resource('/keycode/<code>')
+@restful.resource('/keycode/', '/keycode/<code>')
 class Keypad(Resource):
-    def get(self, code: str):
+    def get(self, code: str = "status"):
         if not code == "status":
             # TODO Tell the listener to expect the given code on the keypad
             logger.debug("Setting new keypad code: {}".format(code))
