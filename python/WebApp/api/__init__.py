@@ -13,7 +13,7 @@ blueprint = Blueprint('api', __name__, url_prefix='/api')
 api = Api(blueprint)
 app.register_blueprint(blueprint)
 
-api.add_resource(Keypad, '/keycode', '/keycode/<code>')
+api.add_resource(Keypad, '/keycode/', '/keycode/<code>')
 api.add_resource(RGB, '/rgb_select/<color>')
 api.add_resource(Solenoid, '/solenoid/<action>')
 api.add_resource(Timer, '/timer/<action>')
