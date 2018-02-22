@@ -1,5 +1,4 @@
 from flask import Flask
-
 from WebApp.admin import admin
 from WebApp.api import resource
 from WebApp.base import base

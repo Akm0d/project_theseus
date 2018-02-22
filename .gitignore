@@ -2,6 +2,7 @@ __pycache__
 .idea
 a.out
 *.bin
+*.log*
 *.o
 *.pyc
 *.swp

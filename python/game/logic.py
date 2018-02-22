@@ -1,11 +1,15 @@
+from logging.handlers import RotatingFileHandler
 from time import sleep
 from multiprocessing import Lock
 
 import logging
 import random
 
-logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
+handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=10000, backupCount=1)
+handler.setFormatter(logging.Formatter("[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s"))
+handler.setLevel(logging.DEBUG)
+log.addHandler(handler)
 
 try:
     import RPI.GPIO as GPIO
@@ -35,7 +39,7 @@ class Logic:
 
     @keypad_code.setter
     def keypad_code(self, value):
-        log.debug("Setting new keypad code: {}".format(value))
+        log.debug("Setting new keypad code: 0x{}".format(value))
         # TODO put this value in the database
         self._temp_code = value
 

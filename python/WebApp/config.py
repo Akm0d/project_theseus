@@ -4,10 +4,10 @@ import os
 
 
 class Config(object):
-    '''
+    """
     TEMPLATES_AUTO_RELOAD specifies whether Flask should check for modifications to templates and
     reload them automatically
-    '''
+    """
     TEMPLATES_AUTO_RELOAD = True
 
     '''
