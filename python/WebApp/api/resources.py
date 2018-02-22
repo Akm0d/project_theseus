@@ -6,11 +6,6 @@ from flask_restful import Resource
 log = logging.getLogger(__name__)
 
 
-class Test(Resource):
-    def get(self, var: str):
-        return {"status": var}
-
-
 class Keypad(Resource):
     def get(self, code: str = "status"):
         if not code == "status":
@@ -34,9 +29,9 @@ class RGB(Resource):
 
         # The javascript needs the index in the selection wheel that matches the given color
         return {"status": self.options.index(color), "color": ""
-        if color == "black" else "lawngreen"
-        if color == "green" else "deepskyblue"
-        if color == "blue" else color
+                if color == "black" else "lawngreen"
+                if color == "green" else "deepskyblue"
+                if color == "blue" else color
                 }
 
 
