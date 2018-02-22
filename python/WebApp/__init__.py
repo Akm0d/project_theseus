@@ -1,30 +1,21 @@
 from flask import Flask
 
+config = 'WebApp.config.Config'
 
-class WebAppFlask(Flask):
-    def __init__(self, *args, **kwargs):
-        Flask.__init__(self, *args, **kwargs)
+app = Flask(__name__)
+app.config.from_object(config)
 
+# TODO init database
 
-def create_app(config='WebApp.config.Config'):
-    app = WebAppFlask(__name__)
-    with app.app_context():
-        app.config.from_object(config)
+from WebApp.admin import admin
+from WebApp.base import base
+from WebApp.register import register
+from WebApp.scoreboard import scoreboard
+from WebApp.timer import timer
+from . import api
 
-    # TODO init database
-
-    from WebApp.admin import admin
-    from WebApp.base import base
-    from WebApp.register import register
-    from WebApp.scoreboard import scoreboard
-    from WebApp.timer import timer
-    from WebApp.api import blueprint as api
-
-    app.register_blueprint(admin)
-    app.register_blueprint(api)
-    app.register_blueprint(base)
-    app.register_blueprint(register)
-    app.register_blueprint(scoreboard)
-    app.register_blueprint(timer)
-
-    return app
+app.register_blueprint(admin)
+app.register_blueprint(base)
+app.register_blueprint(register)
+app.register_blueprint(scoreboard)
+app.register_blueprint(timer)

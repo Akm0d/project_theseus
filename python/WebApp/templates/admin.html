@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Admin</title>
+  </head>
+  <body>
+
+    <h1> Admin </h1>
+
+    <h2>Code</h2>
+    <p> 0x <input type="text" maxlength="3" size="3" id="keypad-code"></p>
+
+    <h2>Laser Tripwires</h2>
+    <p>
+      <button name="tripwire-all" id="tripwire-all">all</button>
+      <button name="1" id="tripwire-1" class="tripwire">1</button>
+      <button name="2" id="tripwire-2" class="tripwire">2</button>
+      <button name="3" id="tripwire-3" class="tripwire">3</button>
+      <button name="4" id="tripwire-4" class="tripwire">4</button>
+      <button name="5" id="tripwire-5" class="tripwire">5</button>
+      <button name="6" id="tripwire-6" class="tripwire">6</button> </p>
+    <p>
+    <button id="tripwire-randomize">randomize</button> </p>
+
+    <h2>RGB</h2>
+    <select class="rgb-select" title="RGB" id="rgb-select">
+      <option style="background-color:lightgray" value="black">Blank</option>
+      <option style="background-color:lightgray" value="red"  >Red  </option>
+      <option style="background-color:lightgray" value="green">Green</option>
+      <option style="background-color:lightgray" value="blue" >Blue </option>
+    </select>
+
+    <h2>Solenoid</h2>
+    <p> <button id="solenoid-toggle">Closed</button></p>
+
+    <h2>Timer</h2>
+    <p> <button id="timer-start-reset">Start</button></p>
+
+    <h2> Ultrasonic Sensor </h2>
+    <p> <button id="ultrasonic-enable">Enabled</button></p>
+
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src='/static/javascript/admin.js'></script>
+</html>

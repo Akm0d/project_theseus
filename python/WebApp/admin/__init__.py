@@ -1,9 +1,11 @@
-from flask import current_app as app, render_template, request, redirect, jsonify, url_for, Blueprint, \
-    abort, render_template_string, send_file
+from flask import render_template, Blueprint
 
-admin = Blueprint('admin', __name__)
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
 
-@admin.route('/admin', methods=['GET'])
+admin = Blueprint('admin', __name__, url_prefix='/admin')
+
+@admin.route('/', methods=['GET'])
 def admin_view():
-    return "TODO Admin Console"
+    return render_template("admin.html")
