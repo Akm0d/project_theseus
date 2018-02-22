@@ -1,12 +1,12 @@
-from apscheduler.schedulers.background import BackgroundScheduler
+from time import sleep
 
 
-class Logic(BackgroundScheduler):
+class Logic:
     def __init__(self):
-        super().__init__(timezone="MST")
-        # TODO trigger immediately after previous instance ends
-        self.add_job(self.loop, max_instances=1, id="hash_crack_king", trigger='interval', seconds=1)
-
-    def loop(self):
-        # TODO this is the game loop that polls I2C and tracks the state of the game
+        # TODO have a bunch of properties that change the game state and read the game state from the database
         pass
+
+    def run(self):
+        while True:
+            # TODO this is the game loop that polls I2C and tracks the state of the game
+            sleep(1)
