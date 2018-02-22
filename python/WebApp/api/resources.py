@@ -5,9 +5,11 @@ from flask_restful import Resource
 
 log = logging.getLogger(__name__)
 
+
 class Test(Resource):
     def get(self, var: str):
         return {"status": var}
+
 
 class Keypad(Resource):
     def get(self, code: str = "status"):
@@ -17,6 +19,7 @@ class Keypad(Resource):
 
         # TODO get the keycode from the Listner
         return {"status": '{:03x}'.format(random.randint(0, 0xfff) if code == "status" else code)}
+
 
 class RGB(Resource):
     options = ["black", "red", "green", "blue"]
@@ -31,10 +34,11 @@ class RGB(Resource):
 
         # The javascript needs the index in the selection wheel that matches the given color
         return {"status": self.options.index(color), "color": ""
-                if color == "black" else "lawngreen"
-                if color == "green" else "deepskyblue"
-                if color == "blue" else color
+        if color == "black" else "lawngreen"
+        if color == "green" else "deepskyblue"
+        if color == "blue" else color
                 }
+
 
 class Solenoid(Resource):
     def __init__(self):
@@ -49,6 +53,7 @@ class Solenoid(Resource):
         # TODO get the state of the solenoid from the listener instead of a random choice
         return {"status": random.choice(["Open", "Closed"])}
 
+
 class Timer(Resource):
     def __init__(self):
         self.enabled = True
@@ -61,6 +66,7 @@ class Timer(Resource):
         # TODO get the state of the timer from the listener instead of a random choice
         return {"status": random.choice(["Reset", "Start"])}
 
+
 class Tripwire(Resource):
     def get(self, name: str, action: str):
         toggle = action == "toggle"
@@ -72,6 +78,7 @@ class Tripwire(Resource):
         # TODO get the status of the tripwire.  Return green if enabled, else white
         return {"color": random.choice(["red", ""])}
 
+
 class TripwireAll(Resource):
     def get(self, action):
         toggle = action == "toggle"
@@ -81,6 +88,7 @@ class TripwireAll(Resource):
             # TODO get the status of each tripwire.  Is it on or off?
             status[i] = random.choice(["red", ""])
         return status
+
 
 class Randomize(Resource):
     def get(self):
