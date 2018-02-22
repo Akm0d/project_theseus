@@ -43,7 +43,11 @@ class RGB(Resource):
             color = choice(self.options)
 
         # The javascript needs the index in the selection wheel that matches the given color
-        return {"status": self.options.index(color), "color": "" if color == "black" else color}
+        return {"status": self.options.index(color), "color": ""
+                if color == "black" else "lawngreen"
+                if color == "green" else "deepskyblue"
+                if color == "blue" else color
+                }
 
 
 @restful.resource('/solenoid/<action>')

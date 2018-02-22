@@ -22,10 +22,12 @@ document.getElementById("keypad-code").addEventListener("keypress", function(e) 
 
 document.getElementById("keypad-code").onchange = function(e){
     keycode_status(e.srcElement.value);
+    e.srcElement.blur()
 };
 
 document.getElementById("rgb-select").onchange = function(e) {
-    rgb_select(e.srcElement.value)
+    rgb_select(e.srcElement.value);
+    e.srcElement.blur()
 };
 
 document.getElementById("tripwire-all").onclick = function() {
@@ -45,17 +47,20 @@ document.getElementById("ultrasonic-enable").onclick = function() {
 };
 
 function keycode_status(code){
-    var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/keycode/' + code, true);
-    x.onload = function () {
-        if (x.readyState === 4) {
-            if (x.status === 200) {
-                var data = JSON.parse(x.response);
-                document.getElementById("keypad-code").value = data["status"];
+    // Don't refresh this part of the page if it is in focus
+    if (!$(document.getElementById("keypad-code")).is(':focus')) {
+        var x = new XMLHttpRequest();
+        x.open('GET', 'http://' + document.location.host + '/admin/keycode/' + code, true);
+        x.onload = function () {
+            if (x.readyState === 4) {
+                if (x.status === 200) {
+                    var data = JSON.parse(x.response);
+                    document.getElementById("keypad-code").value = data["status"];
+                }
             }
-        }
-    };
-    x.send();
+        };
+        x.send();
+    }
 }
 
 function refresh_all(){
@@ -68,18 +73,21 @@ function refresh_all(){
 }
 
 function rgb_select(color){
-    var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/rgb_select/' + color, true);
-    x.onload = function () {
-        if (x.readyState === 4) {
-            if (x.status === 200) {
-                var data = JSON.parse(x.response);
-                document.getElementById("rgb-select").selectedIndex = data["status"];
-                document.getElementById("rgb-select").style.backgroundColor=data["color"];
+    // Don't refresh this part of the page if it is in focus
+    if (!$(document.getElementById("rgb-select")).is(':focus')) {
+        var x = new XMLHttpRequest();
+        x.open('GET', 'http://' + document.location.host + '/admin/rgb_select/' + color, true);
+        x.onload = function () {
+            if (x.readyState === 4) {
+                if (x.status === 200) {
+                    var data = JSON.parse(x.response);
+                    document.getElementById("rgb-select").selectedIndex = data["status"];
+                    document.getElementById("rgb-select").style.backgroundColor = data["color"];
+                }
             }
-        }
-    };
-    x.send();
+        };
+        x.send();
+    }
 }
 
 function solenoid_status(toggle){
@@ -167,3 +175,7 @@ function ultrasonic_status(toggle){
     x.send();
 }
 
+setInterval(function(){
+    // TODO after the project is complete the refresh time can be set based on how long it takes python code to run
+    refresh_all()
+}, 1600);
