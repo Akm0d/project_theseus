@@ -6,12 +6,6 @@ from flask import logging
 logger = logging.getLogger()
 
 if __name__ == '__main__':
-    from glob import glob
-    for log in glob("*.log*"):
-        print("Clearing '{}'".format(log))
-        # TODO? Instead of deleting logs, compress them
-        os.remove(log)
-
     if not os.fork():
         from game.logic import Logic
 
