@@ -6,8 +6,8 @@ from flask_restful import Resource
 from game.logic import Logic
 
 log = logging.getLogger(__name__)
-handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=10000, backupCount=1)
-handler.setFormatter(logging.Formatter("[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s"))
+handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
+handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
 handler.setLevel(logging.DEBUG)
 log.addHandler(handler)
 
