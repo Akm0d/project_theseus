@@ -6,8 +6,12 @@ parser = argparse.ArgumentParser(description='Defusal Station web server')
 parser.add_argument('--debug', action="store_true", help="Debug Level")
 args = parser.parse_args()
 
+# From each inherited model, import the logger and set it's level to the value given
+# app debug will always be off
+
+
 if __name__ == '__main__':
-    if os.fork() == 0:
+    if not os.fork():
         from game.logic import Logic
         Logic().run()
     else:
