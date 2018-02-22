@@ -33,8 +33,9 @@ class Logic:
 
     def loop(self):
         """TODO this is the game loop that polls I2C and tracks the state of the game"""
+        # Loop updates values in the database.  It is the only thing that talks to arduinos directly
 
-    def send(self, device, cmd, message):
+    def _send(self, device, cmd, message):
         """
         Send a command to a device over I2c
         :param device:
