@@ -8,7 +8,6 @@ logger = logging.getLogger()
 if __name__ == '__main__':
     if not os.fork():
         from game.logic import Logic
-
         Logic().run()
     else:
         from WebApp import app
