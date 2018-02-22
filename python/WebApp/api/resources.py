@@ -2,18 +2,21 @@ import logging
 import random
 
 from flask_restful import Resource
+from game.logic import Logic
 
+logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
+
+state = Logic()
 
 
 class Keypad(Resource):
-    def get(self, code: str = "status"):
-        if not code == "status":
-            # TODO Tell the listener to expect the given code on the keypad
-            log.debug("Setting new keypad code: {}".format(code))
+    def get(self):
+        return {"status": state.keypad_code}
 
-        # TODO get the keycode from the Listner
-        return {"status": '{:03x}'.format(random.randint(0, 0xfff) if code == "status" else code)}
+    def put(self, code):
+        state.keypad_code = code
+        return {"status": state.keypad_code}
 
 
 class RGB(Resource):

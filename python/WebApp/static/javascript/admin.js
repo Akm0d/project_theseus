@@ -48,19 +48,23 @@ document.getElementById("ultrasonic-enable").onclick = function() {
 
 function keycode_status(code){
     // Don't refresh this part of the page if it is in focus
-    if (!$(document.getElementById("keypad-code")).is(':focus')) {
-        var x = new XMLHttpRequest();
-        x.open('GET', 'http://' + document.location.host + '/api/keycode/' + code, true);
-        x.onload = function () {
-            if (x.readyState === 4) {
-                if (x.status === 200) {
-                    var data = JSON.parse(x.response);
-                    document.getElementById("keypad-code").value = data["status"];
-                }
-            }
-        };
-        x.send();
+    var x = new XMLHttpRequest();
+    if (code === "status") {
+        if (!$(document.getElementById("keypad-code")).is(':focus')) {
+            x.open('GET', 'http://' + document.location.host + '/api/keycode/', true);
+        }
+    } else{
+        x.open('PUT', 'http://' + document.location.host + '/api/keycode/' + code, true);
     }
+    x.onload = function () {
+        if (x.readyState === 4) {
+            if (x.status === 200) {
+                var data = JSON.parse(x.response);
+                document.getElementById("keypad-code").value = data["status"];
+            }
+        }
+    };
+    x.send();
 }
 
 function refresh_all(){
