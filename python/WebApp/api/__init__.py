@@ -1,8 +1,9 @@
 import logging
 
-from api.resources import Timer, Solenoid, RGB, Keypad, Tripwire, TripwireAll, Randomize, Ultrasonic
 from flask import Blueprint
 from flask_restful import Api
+
+from WebApp.api.resources import Keypad, RGB, Solenoid, Timer, Tripwire, TripwireAll, Randomize, Ultrasonic
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
