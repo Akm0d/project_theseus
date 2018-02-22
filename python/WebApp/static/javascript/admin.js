@@ -50,7 +50,7 @@ function keycode_status(code){
     // Don't refresh this part of the page if it is in focus
     if (!$(document.getElementById("keypad-code")).is(':focus')) {
         var x = new XMLHttpRequest();
-        x.open('GET', 'http://' + document.location.host + '/admin/keycode/' + code, true);
+        x.open('GET', 'http://' + document.location.host + '/api/keycode/' + code, true);
         x.onload = function () {
             if (x.readyState === 4) {
                 if (x.status === 200) {
@@ -76,7 +76,7 @@ function rgb_select(color){
     // Don't refresh this part of the page if it is in focus
     if (!$(document.getElementById("rgb-select")).is(':focus')) {
         var x = new XMLHttpRequest();
-        x.open('GET', 'http://' + document.location.host + '/admin/rgb_select/' + color, true);
+        x.open('GET', 'http://' + document.location.host + '/api/rgb_select/' + color, true);
         x.onload = function () {
             if (x.readyState === 4) {
                 if (x.status === 200) {
@@ -92,7 +92,7 @@ function rgb_select(color){
 
 function solenoid_status(toggle){
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/solenoid' + (toggle? "/toggle": "/status"), true);
+    x.open('GET', 'http://' + document.location.host + '/api/solenoid' + (toggle? "/toggle": "/status"), true);
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
@@ -106,7 +106,7 @@ function solenoid_status(toggle){
 
 function timer_status(toggle){
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/timer' + (toggle? "/toggle": "/status"), true);
+    x.open('GET', 'http://' + document.location.host + '/api/timer' + (toggle? "/toggle": "/status"), true);
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
@@ -120,7 +120,7 @@ function timer_status(toggle){
 
 function tripwire_status(number, toggle) {
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/tripwire/' + number + (toggle? "/toggle": "/status"), true);
+    x.open('GET', 'http://' + document.location.host + '/api/tripwire/' + number + (toggle? "/toggle": "/status"), true);
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
@@ -134,7 +134,7 @@ function tripwire_status(number, toggle) {
 
 function tripwire_all(toggle) {
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/tripwire/all' + (toggle? "/toggle": "/status"), true);
+    x.open('GET', 'http://' + document.location.host + '/api/tripwire/all' + (toggle? "/toggle": "/status"), true);
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
@@ -150,7 +150,7 @@ function tripwire_all(toggle) {
 
 function tripwire_randomize(toggle) {
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/tripwire/randomize' + (toggle? "/toggle": "/status"), true);
+    x.open('GET', 'http://' + document.location.host + '/api/tripwire/randomize' + (toggle? "/toggle": "/status"), true);
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
@@ -163,7 +163,7 @@ function tripwire_randomize(toggle) {
 
 function ultrasonic_status(toggle){
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/admin/ultrasonic' + (toggle? "/toggle": "/status"), true);
+    x.open('GET', 'http://' + document.location.host + '/api/ultrasonic' + (toggle? "/toggle": "/status"), true);
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
