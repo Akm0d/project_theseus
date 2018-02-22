@@ -8,10 +8,13 @@ logger = logging.getLogger(__name__)
 
 try:
     import RPI.GPIO as GPIO
-    import smbus
+    from smbus import SMBus
 except ImportError:
     logger.warn("Not running on a Raspberry pi, importing Mock libraries")
-    from MockPi import MockGPIO as GPIO, MockSmbus as smbus
+    from MockPi import MockGPIO as GPIO
+    from MockPi.MockSmbus import safe_import_i2c
+    safe_import_i2c()
+    from MockPi.MockSmbus import MockSMBus as SMBus
 
 
 class Logic:
@@ -19,7 +22,7 @@ class Logic:
 
     def __init__(self):
         # Initialize I2C server
-        #self.bus = smbus.SMBus(1)
+        self.bus = SMBus()
         # TODO have a bunch of properties that change the game state and read the game state from the database
         pass
 
@@ -29,11 +32,8 @@ class Logic:
         This is the setup function, when it is done, it will start the game loop
         """
         with self.process:
-            i = 1
             while True:
                 self._loop()
-                print(i)
-                i += 1
                 sleep(1)
 
     def _loop(self):
