@@ -2,7 +2,14 @@ __pycache__
 .idea
 a.out
 *.bin
+*.ini
 *.log*
 *.o
 *.pyc
 *.swp
+CMakeLists.txt
+cmake-build-debug
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json
