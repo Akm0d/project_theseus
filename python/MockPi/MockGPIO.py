@@ -28,7 +28,7 @@ class MockGPIO(GPIO.BaseGPIO):
         self.pin_written = {}
         self.pin_read = {}
 
-    def setup(self, pin, mode):
+    def setup(self, pin, mode, pull_up_down=0):
         self.pin_mode[pin] = mode
 
     def output(self, pin, bit):

@@ -19,64 +19,75 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from mock import Mock, patch
+import logging
+import struct
+
+from logging.handlers import RotatingFileHandler
+from queue import Queue, Empty
+from ctypes import c_int, c_uint8, POINTER, Structure
+
+# Enable debug logging to stdout during tests.
+log = logging.getLogger(__name__)
+handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
+handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
+handler.setLevel(logging.DEBUG)
+log.addHandler(handler)
+
+I2C_SLAVE = 0x0703
+I2C_SMBUS = 0x0720
+I2C_SMBUS_WRITE = 0
+I2C_SMBUS_READ = 1
+I2C_SMBUS_BYTE_DATA = 2
+
+LP_c_uint8 = POINTER(c_uint8)
 
 
-class MockSMBus(object):
+class i2c_smbus_msg(Structure):
+    _fields_ = [
+        ('read_write', c_uint8),  # Should be c_char, but c_uint8 is the
+        # same size is makes it easier to
+        # support both Python 2.7 and 3.x.
+        ('command', c_uint8),
+        ('size', c_int),
+        ('data', LP_c_uint8)]
+
+    __slots__ = [name for name, type in _fields_]
+
+
+class SMBus(object):
     # Mock the smbus.SMBus class to record all data written to specific
     # addresses and registers in the _written member.
-    def __init__(self):
-        # _written will store a dictionary of address to register dictionary.
-        # Each register dictionary will store a mapping of register value to
-        # an array of all written values (in sequential write order).
-        self._written = {}
-        self._read = {}
+    def __init__(self, bus):
+        log.debug("Initializing mock SMBus")
+        self.fd = dict()
+        self.addr = 0
+        self.messages = {self.addr: Queue()}
 
-    def _write_register(self, address, register, value):
-        self._written.setdefault(address, {}).setdefault(register, []).append(value)
+    def _set_addr(self, addr):
+        if self.addr != addr:
+            self.addr = addr
 
-    def _read_register(self, address, register):
-        return self._read.get(address).get(register).pop(0)
+    def write_byte_data(self, i2c_addr, register, value):
+        """Write a single byte to a designated register."""
+        print("Address: {}  Register: {}  Value: {}".format(i2c_addr, register, value))
+        byte_value = c_uint8(value)
+        data_pointer = LP_c_uint8(byte_value)
+        msg = i2c_smbus_msg(
+            read_write=I2C_SMBUS_WRITE, command=register,
+            size=I2C_SMBUS_BYTE_DATA, data=data_pointer)
 
-    def write_byte_data(self, address, register, value):
-        self._write_register(address, register, value)
+        if self.messages.get(i2c_addr, None) is None:
+            self.messages[i2c_addr] = Queue()
 
-    def write_word_data(self, address, register, value):
-        self._write_register(address, register, value >> 8 & 0xFF)
-        self._write_register(address, register + 1, value & 0xFF)
+        # TODO Read the mesages put in the queue in a thread and generate responses
+        self.messages[i2c_addr].put(msg)
 
-    def write_i2c_block_data(self, address, register, values):
-        for i, value in enumerate(values):
-            self._write_register(address, register + i, value & 0xFF)
+    def read_byte_data(self, i2c_addr, register):
+        """Read a single byte from a designated register."""
+        try:
+            msg = self.messages[self.addr].get_nowait()
+            [result] = struct.unpack("@b", msg)
+        except Empty:
+            return
 
-    def read_byte_data(self, address, register):
-        return self._read_register(address, register)
-
-    def read_word_data(self, address, register):
-        high = self._read_register(address, register)
-        low = self._read_register(address, register + 1)
-        return (high << 8) | low
-
-    def read_i2c_block_data(self, address, length):
-        return [self._read_register(address + i) for i in range(length)]
-
-
-def create_device(address, busnum):
-    # Mock the smbus module and inject it into the global namespace so the
-    # Adafruit_GPIO.I2C module can be imported.  Also inject a mock SMBus
-    # instance to be returned by smbus.SMBus function calls.
-    smbus = Mock()
-    mockbus = MockSMBus()
-    smbus.SMBus.return_value = mockbus
-    with patch.dict('sys.modules', {'smbus': smbus}):
-        import Adafruit_GPIO.I2C as I2C
-        return (I2C.Device(address, busnum), smbus, mockbus)
-
-
-def safe_import_i2c():
-    # Mock the smbus module and inject it into the global namespace so the
-    # Adafruit_GPIO.I2C module can be imported.  The imported I2C module is
-    # returned so global functions can be called on it.
-    with patch.dict('sys.modules', {'smbus': Mock()}):
-        import Adafruit_GPIO.I2C as I2C
-        return I2C
+        return result

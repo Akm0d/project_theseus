@@ -15,5 +15,5 @@ if __name__ == '__main__':
         handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
-        app.run(debug=False, host="127.0.0.1", port=5000)
+        app.run(debug=False, host="0.0.0.0", port=5000)
 
