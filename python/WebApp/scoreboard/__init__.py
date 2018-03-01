@@ -6,4 +6,4 @@ scoreboard = Blueprint('scoreboard', __name__)
 
 @scoreboard.route('/scoreboard', methods=['GET'])
 def admin_view():
-    return "TODO Scoreboard"
+    return render_template("scoreboard.html")
