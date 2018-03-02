@@ -12,15 +12,13 @@ handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(le
 handler.setLevel(logging.DEBUG)
 log.addHandler(handler)
 
-"""
 try:
-    import RPI.GPIO as GPIO
+    import RPi.GPIO as GPIO
     from smbus import SMBus
 except ImportError:
-    log.warn("Not running on a Raspberry pi, importing Mock libraries")
-    from MockPi import MockGPIO as GPIO
+    import MockPi.MockGPIO
+    GPIO = MockPi.MockGPIO
     from MockPi.MockSmbus import SMBus
-"""
 
 
 class I2C(Enum):
@@ -77,8 +75,7 @@ class Logic:
         self._bus.write_byte_data(I2C.KNOCK_KIT.value, 0, 9)
         for i2c in I2C:
             # log.debug("Reading from I2C on {}".format(i2c.name))
-            foo = self._bus.read_byte_data(i2c_addr=i2c.value, register=0)
-            print(foo)
+            foo = self._bus.read_word_data(i2c_addr=i2c.value, register=0)
 
     def _send(self, device, cmd, message):
         """
@@ -89,4 +86,4 @@ class Logic:
         :return:
         """
         log.debug("Message: " + cmd + message + " send to device " + str(device))
-        self._bus.write_byte_data(i2c_addr=device, register=ord(cmd), value=bytes(message))
+        self._bus.write_word_data(i2c_addr=device, register=ord(cmd), value=bytes(message))

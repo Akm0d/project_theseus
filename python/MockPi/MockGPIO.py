@@ -19,10 +19,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import Adafruit_GPIO as GPIO
 
+class MockGPIO:
+    BCM = 11
+    BOARD = 10
+    BOTH = 33
+    FALLING = 32
+    HARD_PWM = 43
+    HIGH = 1
+    I2C = 42
+    IN = 1
+    LOW = 0
+    OUT = 0
+    PUD_DOWN = 21
+    PUD_OFF = 20
+    PUD_UP = 22
+    RISING = 31
+    RPI_INFO = {
+        'P1_REVISION': 3,
+        'REVISION': 'a01041',
+        'TYPE': 'Pi 2 Model B',
+        'MANUFACTURER': 'Sony',
+        'PROCESSOR': 'BCM2836',
+        'RAM': '1024M'
+    }
+    RPI_REVISION = 3
+    SERIAL = 40
+    SPI = 41
+    UNKNOWN = -1
+    VERSION = '0.6.3'
 
-class MockGPIO(GPIO.BaseGPIO):
     def __init__(self):
         self.pin_mode = {}
         self.pin_written = {}
@@ -38,3 +64,9 @@ class MockGPIO(GPIO.BaseGPIO):
         if pin not in self.pin_read:
             raise RuntimeError('No mock GPIO data to read for pin {0}'.format(pin))
         return self.pin_read[pin].pop(0) == 1
+
+    def wait_for_edge(self, pin, edge):
+        pass
+
+    def cleanup(self, pin=None):
+        pass
