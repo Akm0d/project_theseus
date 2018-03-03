@@ -61,7 +61,7 @@ class Logic:
         """
         with self._process:
             # Initialize I2C server
-            self._bus = SMBus(0)
+            self._bus = SMBus(1)
             # TODO Initialize all the random data, such as laser patterns and codes
             self._temp_code = '{:03x}'.format(random.randint(0, 0xfff))
 
