@@ -1,7 +1,7 @@
 from enum import Enum
 from logging.handlers import RotatingFileHandler
-from time import sleep
 from multiprocessing import Lock
+from time import sleep
 
 import logging
 import random
@@ -13,11 +13,8 @@ handler.setLevel(logging.DEBUG)
 log.addHandler(handler)
 
 try:
-    import RPi.GPIO as GPIO
     from smbus import SMBus
 except ImportError:
-    import MockPi.MockGPIO
-    GPIO = MockPi.MockGPIO
     from MockPi.MockSmbus import SMBus
 
 
@@ -25,11 +22,11 @@ class I2C(Enum):
     """
     I2C addresses of each slave device
     """
-    KNOCK_KIT = 0x01
-    LED_KIT = 0x02
-    LID_KIT = 0x03
-    PUZZLE = 0x04
-    POTENTIOMETER = 0x05
+    KNOCK_KIT = 0x03
+    LED_KIT = 0x04
+    LID_KIT = 0x05
+    PUZZLE = 0x06
+    POTENTIOMETER = 0x07
 
 
 class Logic:
@@ -65,9 +62,12 @@ class Logic:
             # TODO Initialize all the random data, such as laser patterns and codes
             self._temp_code = '{:03x}'.format(random.randint(0, 0xfff))
 
-            while True:
-                self._loop()
-                sleep(1)
+            try:
+                while True:
+                    self._loop()
+                    sleep(1)
+            except KeyboardInterrupt:
+                return
 
     def _loop(self):
         """TODO this is the game loop that polls I2C and tracks the state of the game"""
@@ -75,15 +75,19 @@ class Logic:
         self._bus.write_byte_data(I2C.KNOCK_KIT.value, 0, 9)
         for i2c in I2C:
             # log.debug("Reading from I2C on {}".format(i2c.name))
-            foo = self._bus.read_word_data(i2c_addr=i2c.value, register=0)
+            foo = self._bus.read_word_data(i2c.value, 0)
+            self._send(I2C.KNOCK_KIT, "Hello!")
 
-    def _send(self, device, cmd, message):
+    def _send(self, device: I2C, message: str):
         """
         Send a command to a device over I2c.  Nothing external should call this, only "loop"
         :param device:
-        :param cmd:
         :param message:
         :return:
         """
-        log.debug("Message: " + cmd + message + " send to device " + str(device))
-        self._bus.write_word_data(i2c_addr=device, register=ord(cmd), value=bytes(message))
+        assert len(message) < 32
+        log.critical("Address: 0x{:02x}  Message: '{}'".format(device.value, message))
+        try:
+            self._bus.write_i2c_block_data(device.value, 0x00, [ord(c) for c in message])
+        except IOError:
+            pass
