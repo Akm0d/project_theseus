@@ -82,8 +82,8 @@ class SMBus(object):
         # TODO Read the mesages put in the queue in a thread and generate responses
         self.messages[i2c_addr].put(msg)
 
-    def read_byte_data(self, i2c_addr, register):
-        """Read a single byte from a designated register."""
+    def read_word_data(self, i2c_addr, register):
+        """Read a single word from a designated register."""
         try:
             msg = self.messages[self.addr].get_nowait()
             [result] = struct.unpack("@b", msg)
