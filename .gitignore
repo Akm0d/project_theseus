@@ -2,9 +2,11 @@ __pycache__
 .idea
 a.out
 *.bin
+*.db
 *.ini
 *.log*
 *.o
+*.pkl
 *.pyc
 *.swp
 CMakeLists.txt
@@ -13,3 +15,5 @@ cmake-build-debug
 .piolibdeps
 .clang_complete
 .gcc-flags.json
+*.sqlite
+*.sqlite3

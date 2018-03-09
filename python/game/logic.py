@@ -1,21 +1,20 @@
 from enum import Enum
 from logging.handlers import RotatingFileHandler
 from multiprocessing import Lock
+from MockPi.MockSmbus import MockBus
+from smbus import SMBus
 from time import sleep
 
 import logging
 import random
+
+from game.database import Database
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
 handler.setLevel(logging.DEBUG)
 log.addHandler(handler)
-
-try:
-    from smbus import SMBus
-except ImportError:
-    from MockPi.MockSmbus import SMBus
 
 
 class I2C(Enum):
@@ -33,6 +32,7 @@ class Logic:
     _process = Lock()
 
     def __init__(self):
+        self.db = Database()
         self._bus = None
         self._i2c_master = None
         self._i2c_slave = None
@@ -58,7 +58,10 @@ class Logic:
         """
         with self._process:
             # Initialize I2C server
-            self._bus = SMBus(1)
+            try:
+                self._bus = SMBus(1)
+            except FileNotFoundError:
+                self._bus = MockBus(1)
             # TODO Initialize all the random data, such as laser patterns and codes
             self._temp_code = '{:03x}'.format(random.randint(0, 0xfff))
 
@@ -86,7 +89,7 @@ class Logic:
         :return:
         """
         assert len(message) < 32
-        log.critical("Address: 0x{:02x}  Message: '{}'".format(device.value, message))
+        log.debug("Address: 0x{:02x}  Message: '{}'".format(device.value, message))
         try:
             self._bus.write_i2c_block_data(device.value, 0x00, [ord(c) for c in message])
         except IOError:

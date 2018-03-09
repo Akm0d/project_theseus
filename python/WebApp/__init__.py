@@ -4,14 +4,14 @@ from WebApp.api import resource
 from WebApp.base import base
 from WebApp.scoreboard import scoreboard
 from WebApp.timer import timer
+from game.database import Database
 
 config = 'WebApp.config.Config'
 
 app = Flask(__name__)
 app.config.from_object(config)
 
-# TODO init database
-
+app.db = Database()
 app.register_blueprint(admin)
 app.register_blueprint(base)
 app.register_blueprint(resource)

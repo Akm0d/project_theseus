@@ -27,6 +27,8 @@ from queue import Queue, Empty
 from ctypes import c_int, c_uint8, POINTER, Structure
 
 # Enable debug logging to stdout during tests.
+from typing import List
+
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
@@ -54,7 +56,7 @@ class i2c_smbus_msg(Structure):
     __slots__ = [name for name, type in _fields_]
 
 
-class SMBus(object):
+class MockBus(object):
     # Mock the smbus.SMBus class to record all data written to specific
     # addresses and registers in the _written member.
     def __init__(self, bus):
@@ -69,7 +71,7 @@ class SMBus(object):
 
     def write_byte_data(self, i2c_addr, register, value):
         """Write a single byte to a designated register."""
-        print("Address: {}  Register: {}  Value: {}".format(i2c_addr, register, value))
+        # print("Address: {}  Register: {}  Value: {}".format(i2c_addr, register, value))
         byte_value = c_uint8(value)
         data_pointer = LP_c_uint8(byte_value)
         msg = i2c_smbus_msg(
@@ -91,3 +93,6 @@ class SMBus(object):
             return
 
         return result
+
+    def write_i2c_block_data(self, address: hex, start_register: hex, data: List[ord]):
+        pass
