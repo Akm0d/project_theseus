@@ -23,7 +23,7 @@ class Database(Connection):
         # TODO KEEP track of the entire game configuration of each attempt
         # TODO have functions to change and get the current configuration
 
-        self.execute(
+        self._execute(
             """
             CREATE TABLE IF NOT EXISTS SUCCESSES (
                  ID INTEGER PRIMARY KEY AUTOINCREMENT ,
@@ -32,7 +32,7 @@ class Database(Connection):
             )
             """
         )
-        self.execute(
+        self._execute(
             """
             CREATE TABLE IF NOT EXISTS FAILURES (
                  COUNT INTEGER PRIMARY KEY AUTOINCREMENT ,
@@ -53,7 +53,7 @@ class Database(Connection):
             len(self.get_attempts())
         )
 
-    def execute(self, *args, **kwargs):
+    def _execute(self, *args, **kwargs):
         log.debug("SQLITE:{}".format(" ".join([str(x) for x in args])))
         return self.cur.execute(*args, **kwargs)
 
@@ -63,13 +63,13 @@ class Database(Connection):
         :param duration: The duration of the failed attempt
         :return:
         """
-        self.execute("INSERT INTO FAILURES (DURATION) VALUES (?)", (duration,))
+        self._execute("INSERT INTO FAILURES (DURATION) VALUES (?)", (duration,))
 
     def get_attempts(self) -> List[int]:
         """
         :return: A list of all the failed attempt durations
         """
-        self.execute(
+        self._execute(
             "SELECT  * FROM FAILURES"
         )
         return [x[1] for x in self.cur.fetchall()]
@@ -78,7 +78,7 @@ class Database(Connection):
         """
         :return: Scores from the database sorted from fastest to slowest
         """
-        self.execute(
+        self._execute(
             "SELECT  * FROM SUCCESSES"
         )
         return [(x[1], x[2]) for x in sorted(self.cur.fetchall(), key=lambda x: x[1])]
@@ -91,5 +91,5 @@ class Database(Connection):
         :return:
         """
         log.debug("Name: {}  Time: {}".format(name, time))
-        self.execute("INSERT INTO SUCCESSES (NAME,TIME) VALUES (?,?);", (name, time))
+        self._execute("INSERT INTO SUCCESSES (NAME,TIME) VALUES (?,?);", (name, time))
         self.commit()
