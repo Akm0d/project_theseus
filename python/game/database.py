@@ -10,21 +10,27 @@ handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(le
 handler.setLevel(logging.DEBUG)
 log.addHandler(handler)
 
+max_time = 9999999
 
-class Row:
+
+class Row(dict):
     """
     An object representing a single row from the database
     """
-    def __init__(self, key: int = None, name=None, lasers: bin = None, code: hex = None, color: str = None, time: int = 9999, success: bool = False):
-        # TODO When a value is modified here, make the change in the database
-        self.id = key
-        self.name = name
-        self.lasers = lasers
-        self.code = code
-        self.color = color
+
+    def __init__(self, key: int = None, name=None, lasers: bin = None, code: hex = None, color: str = None,
+                 time: int = None, success: bool = None):
+        dict.__init__(self)
+        self["id"] = key
+        self["name"] = name
+        self["lasers"] = lasers
+        self["code"] = code
+        self["color"] = color
         # TODO Convert timestamp
-        self.time = time
-        self.success = success
+        self["time"] = time
+        self["success"] = success
+        # Add dict values to namespace
+        self.__dict__.update(self)
 
     def __str__(self):
         return "{id}, {name}, {lasers}, {code}, {color}, {time}, {success}".format(
@@ -48,7 +54,7 @@ class Database(Connection):
                  ID INTEGER PRIMARY KEY AUTOINCREMENT ,
                  NAME VARCHAR,
                  LASERS INT NOT NULL,
-                 HEX_CODE INT NOT NULL,
+                 CODE INT NOT NULL,
                  COLOR VARCHAR NOT NULL,
                  TIME INT NOT NULL,
                  SUCCESS BOOL NOT NULL
@@ -77,23 +83,36 @@ class Database(Connection):
         Append a row to the database
         :param item: a Row object
         """
-        self._execute("INSERT INTO DATA (NAME, LASERS, HEX_CODE, COLOR, TIME, SUCCESS) VALUES (?, ?, ?, ?, ?, ?)", (
+        # Brief Error checking for columns that cannot be null
+        if item.time is None:
+            item.time = max_time
+        if item.success is None:
+            item.success = False
+
+        self._execute("INSERT INTO DATA (NAME, LASERS, CODE, COLOR, TIME, SUCCESS) VALUES (?, ?, ?, ?, ?, ?)", (
             item.name, item.lasers, item.code, item.color, item.time, item.success,))
         self.commit()
 
     @property
     def last(self) -> Row:
         """
-        TODO Select the last row from the database and return it
-        :return: A row object
+        :return: A row object representing the last row in the database
         """
-        return None
+        self._execute("SELECT * FROM DATA WHERE ID = (SELECT max(ID) FROM DATA)")
+        return Row(*self.cur.fetchone())
 
     @last.setter
     def last(self, item: Row):
         """
         # TODO Modify the last row of the database to contain the values that aren't None
         """
+        for column, value in item.items():
+            if value is not None:
+                print("Setting last row's {} to '{}'".format(column, value))
+                self._execute("UPDATE DATA SET {col} = {q}{val}{q} WHERE ID = (SELECT MAX(ID) FROM DATA)".format(
+                    col=column.upper(), val=value, q="'" if isinstance(value, str) else ""
+                ))
+            self.commit()
 
     def get_rows(self, lasers: int = None, code: hex = None, color: str = None, name: str = None, time: int = None,
                  success: bool = None) -> List[Row]:
