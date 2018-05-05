@@ -43,3 +43,7 @@ body{
     color: lime;
     font-size: 2rem;
 }
+
+.navbar-text{
+    color: yellow !important;
+}
