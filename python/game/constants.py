@@ -1,4 +1,5 @@
-from enum import Enum
+from enum import Enum, IntEnum
+
 
 # What are the logical states for the state machine
 class STATES(Enum):
@@ -12,6 +13,7 @@ class STATES(Enum):
     EXPLODE = "explode"
     # EXPLODE and WIN go to WAIT on RESET
 
+
 # What are the events that trigger transitions between each state
 class EVENTS(Enum):
     INIT = "init"
@@ -19,3 +21,23 @@ class EVENTS(Enum):
     SUCCESS = "success"
     FAILURE = "failure"
     RESET = "reset"
+
+
+class I2C(IntEnum):
+    """
+    I2C addresses of each slave device
+    """
+    # Sensors
+    FLEX = 0x03
+    IMU = 0x04
+    ULTRASONIC = 0x05
+    # Laser tripwires
+    LASERS = 0x06
+    PHOTO_RESISTORS = 0x07
+    # Inner box lid puzzle
+    ROTARY = 0x08
+    SWITCHES = 0x09
+    LEDS = 0x0a
+    # TOP Lid
+    KEYPAD = 0x0b
+    SEVEN_SEG = 0x0c
