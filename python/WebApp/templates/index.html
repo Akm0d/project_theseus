@@ -1,11 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--Bootstrap Libraries-->
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-reboot.css">
+    <!--Stylesheet-->
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
     <!--TODO: Have a navbar that switches between all the pages and a nice front page, and use the timer as the index-->
     <meta charset="UTF-8">
     <title>Project Theseus</title>
 </head>
 <body>
-    It works!
+<script src="../static/javascript/bootstrap.bundle.js"></script>
+<script src="../static/javascript/bootstrap.js"></script>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <span><img src="../static/Theseus2.png"></span>
+    <a class="navbar-brand" href="#">Project Theseus</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Admin<span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <span class="navbar-text">
+      We scare because we care
+    </span>
+    </div>
+</nav>
+<div class="timer">
+    <p>
+        00:00
+    </p>
+</div>
+<div class="stats">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <p class="info">Attempts: <span class="info-num">0</span></p>
+            </div>
+            <div class="col-sm">
+                <p class="percentage">100%</p>
+            </div>
+            <div class="col-sm">
+                <p class="info">Successes: <span class="info-succ">0</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="scoreboard">
+    <table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 </body>
 </html>
