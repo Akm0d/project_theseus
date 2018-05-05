@@ -7,6 +7,7 @@ from time import sleep
 import logging
 import random
 
+from game.constants import I2C
 from game.database import Database, Row
 
 log = logging.getLogger(__name__)
