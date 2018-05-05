@@ -1,7 +1,7 @@
 import random
 from logging.handlers import RotatingFileHandler
 
-from flask import logging
+import logging
 from flask_restful import Resource
 from game.logic import Logic
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 from logging.handlers import RotatingFileHandler
-from flask import logging
+import logging
 
 logger = logging.getLogger()
 
@@ -16,4 +16,3 @@ if __name__ == '__main__':
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
         app.run(debug=False, host="0.0.0.0", port=5000)
-
