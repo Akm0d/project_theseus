@@ -2,7 +2,7 @@ from enum import Enum, IntEnum
 
 
 # What are the logical states for the state machine
-class STATES(Enum):
+class STATE(Enum):
     # INIT event goes to WAIT
     WAIT = "wait"
     # WAIT goes to RUNNING on PLAY
