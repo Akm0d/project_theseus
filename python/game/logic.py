@@ -39,6 +39,7 @@ class I2C(IntEnum):
     KEYPAD = 0x0b
     SEVEN_SEG = 0x0c
 
+
 class Logic:
     _process = Lock()
 
@@ -88,17 +89,17 @@ class Logic:
         self.db.last = Row(color=value)
         self._rgb_color = value
 
-    def run(self):
+    def run(self, mock: bool=False):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop
         """
         with self._process:
             # Initialize I2C server
-            try:
-                self._bus = SMBus(1)
-            except FileNotFoundError:
+            if mock:
                 self._bus = MockBus(1)
+            else:
+                self._bus = SMBus(1)
             # Initialize all the random data, such as laser patterns and codes
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
