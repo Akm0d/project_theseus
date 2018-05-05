@@ -51,6 +51,11 @@ document.getElementById("submitEntry").onclick = function(e) {
   add_team(teamName=document.getElementById("addTeam").value);
 };
 
+document.getElementById("startGame").onclick = function(e) {
+  e.preventDefault();
+
+};
+
 function keycode_status(code){
     // Don't refresh this part of the page if it is in focus
     var x = new XMLHttpRequest();
@@ -189,6 +194,12 @@ function add_team(teamName) {
   x.open('POST', 'http://' + document.location.host + '/api/submit-entry/' + teamName + '/');
   x.send();
   document.getElementById("addTeam").value = "";
+}
+
+function start_game() {
+  var x = new XMLHttpRequest();
+  x.open('GET', 'http://' + document.location.host + '/api/play-game/');
+  x.send();
 }
 
 /*

@@ -121,3 +121,31 @@ class Entry(Resource):
         else:
             pass # Do nothing, they didn't put a team.
         return dict()
+
+
+class PlayGame(Resource):
+    def get(self):
+        return dict()
+
+
+class Attempts(Resource):
+    def get(self):
+        return {"attempts": 100}
+
+
+class Successes(Resource):
+    def get(self):
+        return {"successes": 5}
+
+
+class HighScores(Resource):
+    def get(self):
+        return {"team1": "person",
+                "team2": "person2",
+                "team3": "person3"
+                }
+
+
+class TimerText(Resource):
+    def get(self):
+        return {"timer": "04:55"}
