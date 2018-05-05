@@ -28,6 +28,7 @@ class Logic:
 
     @state.setter
     def state(self, value: STATE):
+        log.debug("State changed from {} to {}".format(self._state.value, value.value))
         self._state = value
 
     def __init__(self):
@@ -102,11 +103,21 @@ class Logic:
     def _loop(self):
         """TODO this is the game loop that polls I2C and tracks the state of the game"""
         # Loop updates values in the database.  It is the only thing that talks to arduinos directly
-        self._bus.write_byte_data(I2C.LASERS.value, 0, 9)
-        for i2c in I2C:
-            # log.debug("Reading from I2C on {}".format(i2c.name))
-            foo = self._bus.read_word_data(i2c.value, 0)
-            self._send(I2C.SEVEN_SEG, "Hello!")
+        # self._bus.write_byte_data(I2C.LASERS.value, 0, 9)
+        # for i2c in I2C:
+        #     log.debug("Reading from I2C on {}".format(i2c.name))
+        #     foo = self._bus.read_word_data(i2c.value, 0)
+        #     self._send(I2C.SEVEN_SEG, "Hello!")
+        if self.state is STATE.WAIT:
+            pass
+        elif self.state is STATE.RUNNING:
+            pass
+        elif self.state is STATE.EXPLODE:
+            pass
+        elif self.state is STATE.WIN:
+            pass
+        else:
+            log.error("Reached an unknown state: {}".format(self.state))
 
     def _send(self, device: I2C, message: str):
         """
