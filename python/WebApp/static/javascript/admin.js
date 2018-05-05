@@ -46,6 +46,11 @@ document.getElementById("ultrasonic-enable").onclick = function() {
     ultrasonic_status(toggle=true)
 };
 
+document.getElementById("submitEntry").onclick = function(e) {
+  e.preventDefault();
+  add_team(teamName=document.getElementById("addTeam").value);
+};
+
 function keycode_status(code){
     // Don't refresh this part of the page if it is in focus
     var x = new XMLHttpRequest();
@@ -177,6 +182,13 @@ function ultrasonic_status(toggle){
         }
     };
     x.send();
+}
+
+function add_team(teamName) {
+  var x = new XMLHttpRequest();
+  x.open('POST', 'http://' + document.location.host + '/api/submit-entry/' + teamName + '/');
+  x.send();
+  document.getElementById("addTeam").value = "";
 }
 
 /*

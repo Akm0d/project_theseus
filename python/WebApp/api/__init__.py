@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api
-from WebApp.api.resources import Keypad, RGB, Solenoid, Timer, Tripwire, TripwireAll, Randomize, Ultrasonic
+from WebApp.api.resources import Keypad, RGB, Solenoid, Timer, Tripwire, TripwireAll, Randomize, Ultrasonic, Entry
 
 resource = Blueprint('api', __name__, url_prefix='/api')
 api = Api(resource)
@@ -13,3 +13,4 @@ api.add_resource(Tripwire, '/tripwire/<name>/<action>')
 api.add_resource(TripwireAll, '/tripwire/all/<action>')
 api.add_resource(Randomize, '/tripwire/randomize')
 api.add_resource(Ultrasonic, '/ultrasonic/<action>')
+api.add_resource(Entry, '/submit-entry/<action>')

@@ -110,3 +110,14 @@ class Ultrasonic(Resource):
 
         # TODO get the state of the ultrasonic sensor instead of a random choice
         return {"status": random.choice(["Enabled", "Disabled"])}
+
+
+class Entry(Resource):
+    def post(self, action: str):
+        if action is not "":
+            # Make a new entry for this team
+            # TODO: Create a new row in the database with the current timer and with action team name
+            pass
+        else:
+            pass # Do nothing, they didn't put a team.
+        return dict()
