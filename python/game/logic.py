@@ -7,7 +7,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C
+from game.constants import I2C, STATES
 from game.database import Database, Row
 
 log = logging.getLogger(__name__)
@@ -19,6 +19,16 @@ log.addHandler(handler)
 
 class Logic:
     _process = Lock()
+
+    _state = STATES.WAIT
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, value: STATES):
+        self._state = value
 
     def __init__(self):
         self.db = Database()
