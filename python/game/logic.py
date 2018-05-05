@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 from logging.handlers import RotatingFileHandler
 from multiprocessing import Lock
 from MockPi.MockSmbus import MockBus
@@ -20,7 +20,7 @@ log.addHandler(handler)
 # TODO Add game states, such as waiting_for_start, start, success, failure, reset
 # We will discuss the best way to do this in the next meeting
 
-class I2C(Enum):
+class I2C(IntEnum):
     """
     I2C addresses of each slave device
     """
@@ -38,7 +38,6 @@ class I2C(Enum):
     # TOP Lid
     KEYPAD = 0x0b
     SEVEN_SEG = 0x0c
-
 
 class Logic:
     _process = Lock()

@@ -104,7 +104,7 @@ class Database(Connection):
     @last.setter
     def last(self, item: Row):
         """
-        # TODO Modify the last row of the database to contain the values that aren't None
+        # Modify the last row of the database to contain the values that aren't None
         """
         for column, value in item.items():
             if value is not None:
