@@ -1,0 +1,45 @@
+body{
+    background-color: black;
+}
+
+@font-face {
+    font-family: "My Custom Font";
+    src: url("../Share-TechMono.ttf") format("truetype");
+}
+
+.timer{
+    padding-top: 2rem;
+}
+
+.timer p{
+    color: white;
+    text-align: center;
+    font-family: "Share TechMono", monospace ;
+    font-size: 15rem;
+}
+
+.info{
+    padding-top: 1rem;
+    text-align: center;
+    color: white;
+    font-family: "Share TechMono", monospace;
+    font-size: 1.5rem;
+}
+
+.percentage{
+    text-align: center;
+    color: white;
+    font-family: "Share TechMono", monospace;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.info-num{
+    color: #4146ff;
+    font-size: 2rem;
+}
+
+.info-succ{
+    color: lime;
+    font-size: 2rem;
+}
