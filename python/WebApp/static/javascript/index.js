@@ -65,10 +65,40 @@ function updateTableText() {
     x.send();
 }
 
+function updatePercentage() {
+    var y = new XMLHttpRequest();
+    var z = new XMLHttpRequest();
+    y.open('GET', 'http://' + document.location.host + '/api/successes/');
+    z.open('GET', 'http://' + document.location.host + '/api/attempts/');
+    y.onload = function () {
+        if(y.readyState === 4)
+        {
+            if(y.status === 200)
+            {
+                z.onload = function () {
+                    if(z.readyState === 4)
+                    {
+                        if(z.status === 200)
+                        {
+                            var dividend = JSON.parse(y.response);
+                            var divisor = JSON.parse(z.response);
+                            document.getElementById("percentID").innerHTML = (dividend['successes'] / divisor['attempts'])*100 + '%';
+                        }
+                    }
+                }
+            }
+        }
+    };
+    y.send();
+    z.send();
+}
+
+
 setInterval(function(){
     // TODO after the project is complete the refresh time can be set based on how long it takes python code to run
     updateTimerText();
     updateAttemptText();
     updateSuccessText();
     updateTableText();
+    updatePercentage();
 }, 1000);
