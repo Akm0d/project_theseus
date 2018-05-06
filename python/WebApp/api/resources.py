@@ -78,7 +78,7 @@ class Tripwire(Resource):
             pass
 
         # TODO get the status of the tripwire.  Return green if enabled, else white
-        return {"color": random.choice(["red", ""])}
+        return {"color": random.choice(["blue", ""])}
 
 
 class TripwireAll(Resource):
@@ -88,7 +88,7 @@ class TripwireAll(Resource):
         status = dict()
         for i in range(1, 7):
             # TODO get the status of each tripwire.  Is it on or off?
-            status[i] = random.choice(["red", ""])
+            status[i] = random.choice(["blue", ""])
         return status
 
 

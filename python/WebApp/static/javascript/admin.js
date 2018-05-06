@@ -152,10 +152,7 @@ function tripwire_status(number, toggle) {
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                // document.getElementById("tripwire-" + number.toString()).style.backgroundColor=data["color"];
-                if(data["color"] === 'red'){
-                    document.getElementById("tripwire-" + number.toString()).innerHTML = '<button class="tripwire btn btn-danger">1</button>';
-                }
+                document.getElementById("tripwire-" + number.toString()).style.backgroundColor=data["color"];
             }
         }
     };
