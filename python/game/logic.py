@@ -41,6 +41,7 @@ class Logic:
         self._code = None
         self._lasers = None
         self._rgb_color = None
+        self._team = None
 
     @property
     def lasers(self) -> bin:
@@ -64,6 +65,16 @@ class Logic:
         log.debug("Setting new keypad code: 0x{}".format(value))
         self.db.last = Row(code=value)
         self._code = value
+
+    @property
+    def team(self) -> str:
+        return self._team
+
+    @team.setter
+    def team(self, value: str):
+        log.debug("Setting current team name to: {}".format(value))
+        self.db.last = Row(name=value)
+        self._team = value
 
     @property
     def rgb_color(self) -> str:

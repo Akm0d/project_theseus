@@ -25,6 +25,11 @@ document.getElementById("keypad-code").onchange = function(e){
     e.srcElement.blur()
 };
 
+document.getElementById("addTeam").onchange = function(e){
+    team_status(e.srcElement.value);
+    e.srcElement.blur()
+};
+
 document.getElementById("rgb-select").onchange = function(e) {
     rgb_select(e.srcElement.value);
     e.srcElement.blur()
@@ -44,16 +49,6 @@ document.getElementById("timer-start-reset").onclick = function() {
 
 document.getElementById("ultrasonic-enable").onclick = function() {
     ultrasonic_status(toggle=true)
-};
-
-document.getElementById("submitEntry").onclick = function(e) {
-    e.preventDefault();
-    add_team(teamName=document.getElementById("addTeam").value);
-};
-
-document.getElementById("startGame").onclick = function(e) {
-    e.preventDefault();
-
 };
 
 function keycode_status(code){
@@ -77,8 +72,30 @@ function keycode_status(code){
     x.send();
 }
 
+function team_status(name){
+    // Don't refresh this part of the page if it is in focus
+    var x = new XMLHttpRequest();
+    if (name === "status") {
+        if (!$(document.getElementById("addTeam")).is(':focus')) {
+            x.open('GET', 'http://' + document.location.host + '/api/team/', true);
+        }
+    } else{
+        x.open('PUT', 'http://' + document.location.host + '/api/team/' + name, true);
+    }
+    x.onload = function () {
+        if (x.readyState === 4) {
+            if (x.status === 200) {
+                var data = JSON.parse(x.response);
+                document.getElementById("addTeam").value = data["status"];
+            }
+        }
+    };
+    x.send();
+}
+
 function refresh_all(){
     keycode_status("status");
+    team_status("status");
     solenoid_status(toggle=false);
     timer_status(toggle=false);
     tripwire_all(toggle=false);
@@ -132,7 +149,7 @@ function timer_status(toggle){
                 var data = JSON.parse(x.response);
                 if(data["status"] === 'Start')
                 {
-                    document.getElementById("timer-start-reset").innerHTML = '<button class="btn btn-outline-primary" >Start</button>';
+                    document.getElementById("timer-start-reset").innerHTML= '<button class="btn btn-outline-primary" >Start Game</button>';
                 }
                 else if(data["status"] === 'Reset')
                 {
@@ -204,19 +221,6 @@ function ultrasonic_status(toggle){
             }
         }
     };
-    x.send();
-}
-
-function add_team(teamName) {
-    var x = new XMLHttpRequest();
-    x.open('POST', 'http://' + document.location.host + '/api/submit-entry/' + teamName + '/');
-    x.send();
-    document.getElementById("addTeam").value = "";
-}
-
-function start_game() {
-    var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/api/play-game/');
     x.send();
 }
 

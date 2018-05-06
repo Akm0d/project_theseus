@@ -112,20 +112,13 @@ class Ultrasonic(Resource):
         return {"status": random.choice(["Enabled", "Disabled"])}
 
 
-class Entry(Resource):
-    def post(self, action: str):
-        if action is not "":
-            # Make a new entry for this team
-            # TODO: Create a new row in the database with the current timer and with action team name
-            pass
-        else:
-            pass # Do nothing, they didn't put a team.
-        return dict()
-
-
-class PlayGame(Resource):
+class Team(Resource):
     def get(self):
-        return dict()
+        return {"status": state.team}
+
+    def put(self, name):
+        state.team = name
+        return {"status": state.team}
 
 
 class Attempts(Resource):
@@ -140,6 +133,7 @@ class Successes(Resource):
 
 class HighScores(Resource):
     def get(self):
+        # TODO return top 5 unique scores from database
         return {"team1": {"name": "person", "time": "00:59"},
                 "team2": {"name": "person2","time": "01:25"},
                 "team3": {"name": "person3","time": "02:25"},
