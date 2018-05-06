@@ -56,7 +56,8 @@ function updateTableText() {
             {
                 var data = JSON.parse(x.response);
                 for(var i = 1; i <=5; i++){
-                    document.getElementById("name" + i).innerHTML = '<td id="name' + i + '">' + data['team' + i] + '</td>';
+                    document.getElementById("name" + i).innerHTML = '<td id="name' + i + '">' + data['team' + i]['name'] + '</td>';
+                    document.getElementById("teamTime" + i).innerHTML = '<td id="teamTime' + i + '">' + data['team' + i]['time'] + '</td>';
                     // console.log(i);
                 }
             }

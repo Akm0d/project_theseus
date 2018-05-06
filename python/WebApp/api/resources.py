@@ -140,11 +140,11 @@ class Successes(Resource):
 
 class HighScores(Resource):
     def get(self):
-        return {"team1": "person",
-                "team2": "person2",
-                "team3": "person3",
-                "team4": "person4",
-                "team5": "person5"
+        return {"team1": {"name": "person", "time": "00:59"},
+                "team2": {"name": "person2","time": "01:25"},
+                "team3": {"name": "person3","time": "02:25"},
+                "team4": {"name": "person4","time": "03:25"},
+                "team5": {"name": "person5","time": "04:25"}
                 }
 
 
