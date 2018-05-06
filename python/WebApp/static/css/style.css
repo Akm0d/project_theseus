@@ -47,3 +47,19 @@ body{
 .navbar-text{
     color: yellow !important;
 }
+
+.navbar{
+    padding-left: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.nav-link{
+    padding-top: .8rem;
+    padding-bottom: .8rem;
+}
+
+.homeButton{background-color: #181c1d;}
+.homeButton:hover, .adminButton:hover, .homeButtonAdmin:hover, .adminButtonAdmin:hover{background-color: #7d9293;}
+.homeButtonAdmin{background-color: transparent;}
+.adminButtonAdmin{background-color: #181c1d;}

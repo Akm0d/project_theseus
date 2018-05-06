@@ -1,54 +1,91 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>Admin</title>
-  </head>
-  <body>
+<head>
 
-    <h1> Admin </h1>
+  <!--Bootstrap Libraries-->
+  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-grid.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-reboot.css">
+  <!--Stylesheet-->
+  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
 
-    <input id="startGame" type="submit" value="Start Game">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Admin</title>
+</head>
 
-    <h2>Code</h2>
-    <p> 0x <input type="text" maxlength="3" size="3" id="keypad-code"></p>
+<body>
 
-    <h2>Laser Tripwires</h2>
-    <p>
-      <button name="tripwire-all" id="tripwire-all">all</button>
-      <button name="1" id="tripwire-1" class="tripwire">1</button>
-      <button name="2" id="tripwire-2" class="tripwire">2</button>
-      <button name="3" id="tripwire-3" class="tripwire">3</button>
-      <button name="4" id="tripwire-4" class="tripwire">4</button>
-      <button name="5" id="tripwire-5" class="tripwire">5</button>
-      <button name="6" id="tripwire-6" class="tripwire">6</button> </p>
-    <p>
-    <button id="tripwire-randomize">randomize</button> </p>
+<!--JavaScript local libraries-->
+<script src="../static/javascript/jquery.min.js"></script>
+<script src="../static/javascript/bootstrap.bundle.js"></script>
+<script src="../static/javascript/bootstrap.js"></script>
+<script src="../static/javascript/index.js"></script>
 
-    <h2>RGB</h2>
-    <select class="rgb-select" title="RGB" id="rgb-select">
-      <option style="background-color:lightgray" value="black">Blank</option>
-      <option style="background-color:lightgray" value="red"  >Red  </option>
-      <option style="background-color:lightgray" value="green">Green</option>
-      <option style="background-color:lightgray" value="blue" >Blue </option>
-    </select>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <span class="homeButtonAdmin">
+        <span>
+            <img src="../static/Theseus2.png">
+        </span>
+    <a class="navbar-brand" href="/">Project Theseus</a>
+    </span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <span class="navbar-nav mr-auto ">
+            <span class="nav-item active adminButtonAdmin">
+                <a class="nav-link" href="/admin/">Admin<span class="sr-only">(current)</span></a>
+            </span>
+        </span>
+        <span class="navbar-text">
+            Solve or die
+    </span>
+    </div>
+</nav>
 
-    <h2>Solenoid</h2>
-    <p> <button id="solenoid-toggle">Closed</button></p>
+<h1> Admin </h1>
 
-    <h2>Timer</h2>
-    <p> <button id="timer-start-reset">Start</button></p>
+<input id="startGame" type="submit" value="Start Game">
 
-    <h2> Ultrasonic Sensor </h2>
-    <p> <button id="ultrasonic-enable">Enabled</button></p>
+<h2>Code</h2>
+<p> 0x <input type="text" maxlength="3" size="3" id="keypad-code"></p>
 
-    <h4>Add new entry to scoreboard</h4>
-    <form method="POST">
-      <strong>Team Name: </strong>
-      <input type="text" id="addTeam">
-      <input id="submitEntry" type="submit" value="Submit">
-    </form>
-  </body>
-  <script src="/static/javascript/jquery.min.js"></script>
-  <script src='/static/javascript/admin.js'></script>
+<h2>Laser Tripwires</h2>
+<p>
+  <button name="tripwire-all" id="tripwire-all">all</button>
+  <button name="1" id="tripwire-1" class="tripwire">1</button>
+  <button name="2" id="tripwire-2" class="tripwire">2</button>
+  <button name="3" id="tripwire-3" class="tripwire">3</button>
+  <button name="4" id="tripwire-4" class="tripwire">4</button>
+  <button name="5" id="tripwire-5" class="tripwire">5</button>
+  <button name="6" id="tripwire-6" class="tripwire">6</button> </p>
+<p>
+  <button id="tripwire-randomize">randomize</button> </p>
+
+<h2>RGB</h2>
+<select class="rgb-select" title="RGB" id="rgb-select">
+  <option style="background-color:lightgray" value="black">Blank</option>
+  <option style="background-color:lightgray" value="red"  >Red  </option>
+  <option style="background-color:lightgray" value="green">Green</option>
+  <option style="background-color:lightgray" value="blue" >Blue </option>
+</select>
+
+<h2>Solenoid</h2>
+<p> <button id="solenoid-toggle">Closed</button></p>
+
+<h2>Timer</h2>
+<p> <button id="timer-start-reset">Start</button></p>
+
+<h2> Ultrasonic Sensor </h2>
+<p> <button id="ultrasonic-enable">Enabled</button></p>
+
+<h4>Add new entry to scoreboard</h4>
+<form method="POST">
+  <strong>Team Name: </strong>
+  <input type="text" id="addTeam">
+  <input id="submitEntry" type="submit" value="Submit">
+</form>
+</body>
+<script src="/static/javascript/jquery.min.js"></script>
+<script src='/static/javascript/admin.js'></script>
 </html>
