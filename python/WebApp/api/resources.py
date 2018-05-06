@@ -4,6 +4,8 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask_restful import Resource
 from game.logic import Logic
+from game.constants import STATE
+import datetime
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
@@ -117,7 +119,7 @@ class Entry(Resource):
         if action is not "":
             # Make a new entry for this team
             # TODO: Create a new row in the database with the current timer and with action team name
-            pass
+            log.info("Added team {} to the database as a team to successfully complete the box.".format(action))
         else:
             pass # Do nothing, they didn't put a team.
         return dict()
@@ -125,6 +127,7 @@ class Entry(Resource):
 
 class PlayGame(Resource):
     def get(self):
+        state.state = STATE.RUNNING
         return dict()
 
 
@@ -150,4 +153,4 @@ class HighScores(Resource):
 
 class TimerText(Resource):
     def get(self):
-        return {"timer": "04:55"}
+        return {"timer": datetime.datetime.strftime(state.timer, "%M:%S")}

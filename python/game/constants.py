@@ -1,5 +1,5 @@
 from enum import Enum, IntEnum
-
+import datetime
 
 # What are the logical states for the state machine
 class STATE(Enum):
@@ -41,3 +41,6 @@ class I2C(IntEnum):
     # TOP Lid
     KEYPAD = 0x0b
     SEVEN_SEG = 0x0c
+
+
+TIME_GIVEN = datetime.datetime.strptime("05:00","%M:%S")

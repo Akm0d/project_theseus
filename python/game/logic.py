@@ -7,8 +7,10 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE
+from game.constants import I2C, STATE, TIME_GIVEN
 from game.database import Database, Row
+
+import datetime
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
@@ -22,6 +24,10 @@ class Logic:
 
     _state = STATE.WAIT
 
+    _timer = TIME_GIVEN
+
+    _mock = False
+
     @property
     def state(self):
         return self._state
@@ -30,6 +36,24 @@ class Logic:
     def state(self, value: STATE):
         log.debug("State changed from {} to {}".format(self._state.value, value.value))
         self._state = value
+
+    @property
+    def timer(self):
+        return self._timer
+
+    @timer.setter
+    def timer(self, value):
+        log.debug("Timer set to {}".format(value))
+        self._timer = value
+
+    @property
+    def mock(self):
+        return self._mock
+
+    @mock.setter
+    def mock(self, value):
+        log.debug("mock was set to {}".format(value))
+        self._mock = value
 
     def __init__(self):
         self.db = Database()
@@ -86,12 +110,18 @@ class Logic:
             # Initialize I2C server
             if mock:
                 self._bus = MockBus(1)
+                self.timer = TIME_GIVEN
+                self.mock = True
             else:
                 self._bus = SMBus(1)
+                self.mock = False
             # Initialize all the random data, such as laser patterns and codes
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
             self.rgb_color = random.choice(["red", "blue"])
+            self.state = STATE.RUNNING      # Change state of game to RUNNING
+
+
 
             try:
                 while True:
@@ -111,7 +141,12 @@ class Logic:
         if self.state is STATE.WAIT:
             pass
         elif self.state is STATE.RUNNING:
-            pass
+            if (self.mock):
+                # We are not running on the pi. We are simulating
+                self.time = self.time - datetime.timedelta(seconds=1)
+            else:
+                # We are running on the pi
+                pass
         elif self.state is STATE.EXPLODE:
             pass
         elif self.state is STATE.WIN:
