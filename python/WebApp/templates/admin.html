@@ -15,12 +15,6 @@
 
 <body>
 
-<!--JavaScript local libraries-->
-<script src="../static/javascript/jquery.min.js"></script>
-<script src="../static/javascript/bootstrap.bundle.js"></script>
-<script src="../static/javascript/bootstrap.js"></script>
-<script src="../static/javascript/index.js"></script>
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <span class="homeButtonAdmin">
         <span>
@@ -52,49 +46,166 @@
     </div>
 </nav>
 
-<h1> Admin </h1>
+<!--<h1> Admin </h1>-->
 
-<input id="startGame" type="submit" value="Start Game">
+<!--<input id="startGame" type="submit" value="Start Game">-->
 
-<h2>Code</h2>
-<p> 0x <input type="text" maxlength="3" size="3" id="keypad-code"></p>
+<!--<h2>Code</h2>-->
+<!--<p> 0x <input type="text" maxlength="3" size="3" id="keypad-code"></p>-->
 
-<h2>Laser Tripwires</h2>
-<p>
-    <button name="tripwire-all" id="tripwire-all">all</button>
-    <button name="1" id="tripwire-1" class="tripwire">1</button>
-    <button name="2" id="tripwire-2" class="tripwire">2</button>
-    <button name="3" id="tripwire-3" class="tripwire">3</button>
-    <button name="4" id="tripwire-4" class="tripwire">4</button>
-    <button name="5" id="tripwire-5" class="tripwire">5</button>
-    <button name="6" id="tripwire-6" class="tripwire">6</button> </p>
-<p>
-    <button id="tripwire-randomize">randomize</button> </p>
+<!--<h2>Laser Tripwires</h2>-->
+<!--<p>-->
+<!--<button name="tripwire-all" id="tripwire-all">all</button>-->
+<!--<button name="1" id="tripwire-1" class="tripwire">1</button>-->
+<!--<button name="2" id="tripwire-2" class="tripwire">2</button>-->
+<!--<button name="3" id="tripwire-3" class="tripwire">3</button>-->
+<!--<button name="4" id="tripwire-4" class="tripwire">4</button>-->
+<!--<button name="5" id="tripwire-5" class="tripwire">5</button>-->
+<!--<button name="6" id="tripwire-6" class="tripwire">6</button> </p>-->
+<!--<p>-->
+<!--<button id="tripwire-randomize">randomize</button> </p>-->
 
-<h2>RGB</h2>
-<select class="rgb-select" title="RGB" id="rgb-select">
-    <option style="background-color:lightgray" value="black">Blank</option>
-    <option style="background-color:lightgray" value="red"  >Red  </option>
-    <option style="background-color:lightgray" value="green">Green</option>
-    <option style="background-color:lightgray" value="blue" >Blue </option>
-</select>
+<!--<h2>RGB</h2>-->
+<!--<select class="rgb-select" title="RGB" id="rgb-select">-->
+<!--<option style="background-color:lightgray" value="black">Blank</option>-->
+<!--<option style="background-color:lightgray" value="red"  >Red  </option>-->
+<!--<option style="background-color:lightgray" value="green">Green</option>-->
+<!--<option style="background-color:lightgray" value="blue" >Blue </option>-->
+<!--</select>-->
 
-<h2>Solenoid</h2>
-<p> <button id="solenoid-toggle">Closed</button></p>
+<!--<h2>Solenoid</h2>-->
+<!--<p> <button id="solenoid-toggle">Closed</button></p>-->
 
-<h2>Timer</h2>
-<p> <button id="timer-start-reset">Start</button></p>
+<!--<h2>Timer</h2>-->
+<!--<p> <button id="timer-start-reset">Start</button></p>-->
 
-<h2> Ultrasonic Sensor </h2>
-<p> <button id="ultrasonic-enable">Enabled</button></p>
+<!--<h2> Ultrasonic Sensor </h2>-->
+<!--<p> <button id="ultrasonic-enable">Enabled</button></p>-->
 
-<h4>Add new entry to scoreboard</h4>
-<form method="POST">
-    <strong>Team Name: </strong>
-    <input type="text" id="addTeam">
-    <input id="submitEntry" type="submit" value="Submit">
-</form>
+
+<!--<h4>Add new entry to scoreboard</h4>-->
+<!--<form method="POST">-->
+<!--<strong>Team Name: </strong>-->
+<!--<input type="text" id="addTeam">-->
+<!--<input id="submitEntry" type="submit" value="Submit">-->
+<!--</form>-->
+
+<div class="card text-center bg-dark border-danger text-danger cardAdmin">
+    <div class="card-body">
+        <h5 class="card-title">Admin</h5>
+        <p>This control panel is for Project Theseus developers and moderators. If you are not part of this group then buzz off!
+            Below are the controls for each facet of the puzzle this year. Each trap's controls can be modified here in the control panel.
+            To arm the box and start the challenge click on the button below:</p>
+        <button class="btn btn-outline-success" id="startGame" type="submit">Start Game</button>
+    </div>
+</div>
+
+<div class="cardContainer">
+    <div class="card-group">
+        <div class="card text-primary bg-dark border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Code</h5>
+                <p>To solve the puzzle, a 3-digit hexcode must be entered into the keypad. To set the code, use the input below:</p>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text border-primary bg-dark text-primary">0x</span>
+                    </div>
+                    <input type="text" class="form-control bg-dark text-primary border-primary" maxlength="3" size="3" id="keypad-code">
+                </div>
+            </div>
+        </div>
+        <div class="card text-white bg-dark border-primary">
+            <div class="card-body text-primary">
+                <h5 class="card-title">Laser Tripwires</h5>
+                <p>Below are some controls to monitor which lasers are in use and to randomize their pattern.</p>
+                <span id="tripwire-all"><button class="btn btn-outline-warning" name="tripwire-all">All</button></span>
+                <span id="tripwire-1"><button class="tripwire btn btn-outline-info">1</button></span>
+                <span id="tripwire-2"><button class="tripwire btn btn-outline-info">2</button></span>
+                <span id="tripwire-3"><button class="tripwire btn btn-outline-info">3</button></span>
+                <span id="tripwire-4"><button class="tripwire btn btn-outline-info">4</button></span>
+                <span id="tripwire-5"><button class="tripwire btn btn-outline-info">5</button></span>
+                <span id="tripwire-6"><button class="tripwire btn btn-outline-info">6</button></span>
+
+                <button class="btn btn-outline-warning" id="tripwire-randomize">Random</button>
+            </div>
+        </div>
+        <div class="card text-primary bg-dark border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">RGB</h5>
+                <p>This light indicates which wire will need to be pulled once the user gains access to the last compartment.</p>
+                <div class="input-group mb-3">
+                    <select class="custom-select" title="RGB" id="inputGroupSelect01">
+                        <!--<option selected>Choose...</option>-->
+                        <option value="black">Blank</option>
+                        <option value="red">Red</option>
+                        <option value="green">Green</option>
+                        <option value="blue">Blue</option>
+                    </select>
+                </div>
+                <select class="rgb-select" title="RGB" id="rgb-select">
+                    <option style="background-color:lightgray" value="black">Blank</option>
+                    <option style="background-color:lightgray" value="red"  >Red  </option>
+                    <option style="background-color:lightgray" value="green">Green</option>
+                    <option style="background-color:lightgray" value="blue" >Blue </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-group" style="margin-top: -1px">
+        <div class="card text-primary bg-dark border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Solenoid</h5>
+                <p>This locks or unlocks the last section of the box:</p>
+                <p> <span id="solenoid-toggle"><button class="btn btn-outline-success" >Closed</button></span></p>
+            </div>
+        </div>
+        <div class="card text-primary bg-dark border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Timer</h5>
+                <p>This controls the timer on the box and the home page:</p>
+                <p> <span id="timer-start-reset"><button class="btn btn-outline-primary" >Start</button></span></p>
+            </div>
+        </div>
+        <div class="card text-primary bg-dark border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Utrasonic Sensor</h5>
+                <p>This detects whether the lid of the box is open or not:</p>
+                <p> <span id="ultrasonic-enable"><button class="btn btn-outline-success" >Enabled</button></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card text-center text-success bg-dark border-success cardSuccess" >
+    <div class="card-body">
+        <h5 class="card-title">Add New Entry to Scoreboard</h5>
+        <p>You're a champ. You're a winner. Go ahead, you deserve it.</p>
+        <form method="POST">
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text border-success bg-dark text-success" id="">Team Name:</span>
+                </div>
+                <input type="text" class="form-control border-success bg-dark text-success highScoreInput" id="addTeam" placeholder="" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-success" id="submitEntry" type="button">Submit</button>
+                </div>
+            </div>
+            <!--<p>Team Name: </p>-->
+            <!--<input type="text" id="addTeam">-->
+            <!--<input class="btn btn-outline-success" id="submitEntry" type="submit" value="Submit">-->
+        </form>
+    </div>
+</div>
+
+<!--JavaScript local libraries-->
+<script src="../static/javascript/jquery.min.js"></script>
+<script src="../static/javascript/bootstrap.bundle.js"></script>
+<script src="../static/javascript/bootstrap.js"></script>
+<script src="../static/javascript/admin.js"></script>
+
 </body>
-<script src="/static/javascript/jquery.min.js"></script>
-<script src='/static/javascript/admin.js'></script>
+
+
 </html>
