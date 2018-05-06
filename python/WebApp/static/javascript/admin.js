@@ -47,12 +47,12 @@ document.getElementById("ultrasonic-enable").onclick = function() {
 };
 
 document.getElementById("submitEntry").onclick = function(e) {
-  e.preventDefault();
-  add_team(teamName=document.getElementById("addTeam").value);
+    e.preventDefault();
+    add_team(teamName=document.getElementById("addTeam").value);
 };
 
 document.getElementById("startGame").onclick = function(e) {
-  e.preventDefault();
+    e.preventDefault();
 
 };
 
@@ -111,7 +111,12 @@ function solenoid_status(toggle){
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                document.getElementById("solenoid-toggle").innerHTML = data["status"];
+                if(data["status"] === 'Open'){
+                    document.getElementById("solenoid-toggle").innerHTML = '<button class="btn btn-outline-success" >Open</button>';
+                }
+                else if(data["status"] === 'Closed'){
+                    document.getElementById("solenoid-toggle").innerHTML = '<button class="btn btn-outline-danger" >Closed</button>'
+                }
             }
         }
     };
@@ -125,7 +130,15 @@ function timer_status(toggle){
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                document.getElementById("timer-start-reset").innerHTML = data["status"];
+                if(data["status"] === 'Start')
+                {
+                    document.getElementById("timer-start-reset").innerHTML = '<button class="btn btn-outline-primary" >Start</button>';
+                }
+                else if(data["status"] === 'Reset')
+                {
+                    document.getElementById("timer-start-reset").innerHTML = '<button class="btn btn-outline-danger" >Reset</button>';
+                }
+
             }
         }
     };
@@ -139,7 +152,10 @@ function tripwire_status(number, toggle) {
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                document.getElementById("tripwire-" + number.toString()).style.backgroundColor=data["color"];
+                // document.getElementById("tripwire-" + number.toString()).style.backgroundColor=data["color"];
+                if(data["color"] === 'red'){
+                    document.getElementById("tripwire-" + number.toString()).innerHTML = '<button class="tripwire btn btn-danger">1</button>';
+                }
             }
         }
     };
@@ -182,7 +198,12 @@ function ultrasonic_status(toggle){
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                document.getElementById("ultrasonic-enable").innerHTML = data["status"];
+                if(data["status"] === 'Enabled') {
+                    document.getElementById("ultrasonic-enable").innerHTML = '<button class="btn btn-outline-success" >Enabled</button>';
+                }
+                else if(data["status"] === 'Disabled'){
+                    document.getElementById("ultrasonic-enable").innerHTML = '<button class="btn btn-outline-danger" >Disabled</button>';
+                }
             }
         }
     };
@@ -190,16 +211,16 @@ function ultrasonic_status(toggle){
 }
 
 function add_team(teamName) {
-  var x = new XMLHttpRequest();
-  x.open('POST', 'http://' + document.location.host + '/api/submit-entry/' + teamName + '/');
-  x.send();
-  document.getElementById("addTeam").value = "";
+    var x = new XMLHttpRequest();
+    x.open('POST', 'http://' + document.location.host + '/api/submit-entry/' + teamName + '/');
+    x.send();
+    document.getElementById("addTeam").value = "";
 }
 
 function start_game() {
-  var x = new XMLHttpRequest();
-  x.open('GET', 'http://' + document.location.host + '/api/play-game/');
-  x.send();
+    var x = new XMLHttpRequest();
+    x.open('GET', 'http://' + document.location.host + '/api/play-game/');
+    x.send();
 }
 
 /*

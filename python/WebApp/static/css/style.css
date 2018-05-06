@@ -7,8 +7,20 @@ body {
     src: url("../Share-TechMono.ttf") format("truetype");
 }
 
+
+#name1{color: #49b5ff;}
+#name2{color: #ff674f;}
+#name3{color: white;}
+#name4{color: #f6ff66;}
+#name5{color: #5bff82;}
+
 a{outline: none;}
 a:active{outline: none;}
+.homeButton{background-color: #181c1d;}
+.homeButton:hover, .adminButton:hover, .homeButtonAdmin:hover, .adminButtonAdmin:hover{background-color: #7d9293;}
+.homeButtonAdmin{background-color: transparent;}
+.adminButtonAdmin{background-color: #181c1d;}
+.sponsor {margin-bottom: -.75rem;}
 
 .timer{
     padding-top: 2rem;
@@ -62,15 +74,36 @@ a:active{outline: none;}
     padding-bottom: .8rem;
 }
 
-.homeButton{background-color: #181c1d;}
-.homeButton:hover, .adminButton:hover, .homeButtonAdmin:hover, .adminButtonAdmin:hover{background-color: #7d9293;}
-.homeButtonAdmin{background-color: transparent;}
-.adminButtonAdmin{background-color: #181c1d;}
+
 
 .scoreboard{
     position: absolute;
     bottom: 1px;
     width: 100%;
+    color: white;
 }
 
-.sponsor{margin-bottom: -.75rem;}
+.scoreboard h3{
+    font-family: "Share TechMono", monospace;
+    text-align: center;
+}
+
+.cardContainer{
+    padding-left: 20rem;
+    padding-right: 20rem;
+    padding-bottom: 3rem;
+
+}
+
+.cardSuccess{
+    margin-left: 20rem;
+    margin-right: 20rem;
+    margin-bottom: 5rem;
+}
+
+.cardAdmin{
+    margin-left: 20rem;
+    margin-right: 20rem;
+    margin-bottom: 3rem;
+    margin-top: 5rem;
+}
