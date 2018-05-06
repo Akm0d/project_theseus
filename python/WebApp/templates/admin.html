@@ -2,15 +2,15 @@
 <html>
 <head>
 
-  <!--Bootstrap Libraries-->
-  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css">
-  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-grid.css">
-  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-reboot.css">
-  <!--Stylesheet-->
-  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <!--Bootstrap Libraries-->
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-grid.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap-reboot.css">
+    <!--Stylesheet-->
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
 
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Admin</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Admin</title>
 </head>
 
 <body>
@@ -37,9 +37,18 @@
                 <a class="nav-link" href="/admin/">Admin<span class="sr-only">(current)</span></a>
             </span>
         </span>
-        <span class="navbar-text">
-            Solve or die
-    </span>
+        <span class="sponsor">
+            <span>
+                <img src="../static/OpenWest.png">
+            </span>
+            <p class="navbar-brand">OpenWest</p>
+        </span>
+        <span class="sponsor">
+            <span>
+                <img src="../static/LinuxClub.png">
+            </span>
+            <p class="navbar-brand">BYU Linux Club</p>
+        </span>
     </div>
 </nav>
 
@@ -52,22 +61,22 @@
 
 <h2>Laser Tripwires</h2>
 <p>
-  <button name="tripwire-all" id="tripwire-all">all</button>
-  <button name="1" id="tripwire-1" class="tripwire">1</button>
-  <button name="2" id="tripwire-2" class="tripwire">2</button>
-  <button name="3" id="tripwire-3" class="tripwire">3</button>
-  <button name="4" id="tripwire-4" class="tripwire">4</button>
-  <button name="5" id="tripwire-5" class="tripwire">5</button>
-  <button name="6" id="tripwire-6" class="tripwire">6</button> </p>
+    <button name="tripwire-all" id="tripwire-all">all</button>
+    <button name="1" id="tripwire-1" class="tripwire">1</button>
+    <button name="2" id="tripwire-2" class="tripwire">2</button>
+    <button name="3" id="tripwire-3" class="tripwire">3</button>
+    <button name="4" id="tripwire-4" class="tripwire">4</button>
+    <button name="5" id="tripwire-5" class="tripwire">5</button>
+    <button name="6" id="tripwire-6" class="tripwire">6</button> </p>
 <p>
-  <button id="tripwire-randomize">randomize</button> </p>
+    <button id="tripwire-randomize">randomize</button> </p>
 
 <h2>RGB</h2>
 <select class="rgb-select" title="RGB" id="rgb-select">
-  <option style="background-color:lightgray" value="black">Blank</option>
-  <option style="background-color:lightgray" value="red"  >Red  </option>
-  <option style="background-color:lightgray" value="green">Green</option>
-  <option style="background-color:lightgray" value="blue" >Blue </option>
+    <option style="background-color:lightgray" value="black">Blank</option>
+    <option style="background-color:lightgray" value="red"  >Red  </option>
+    <option style="background-color:lightgray" value="green">Green</option>
+    <option style="background-color:lightgray" value="blue" >Blue </option>
 </select>
 
 <h2>Solenoid</h2>
@@ -81,9 +90,9 @@
 
 <h4>Add new entry to scoreboard</h4>
 <form method="POST">
-  <strong>Team Name: </strong>
-  <input type="text" id="addTeam">
-  <input id="submitEntry" type="submit" value="Submit">
+    <strong>Team Name: </strong>
+    <input type="text" id="addTeam">
+    <input id="submitEntry" type="submit" value="Submit">
 </form>
 </body>
 <script src="/static/javascript/jquery.min.js"></script>

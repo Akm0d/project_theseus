@@ -48,15 +48,17 @@ function updateSuccessText() {
 
 function updateTableText() {
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/api/timer-text/');
+    x.open('GET', 'http://' + document.location.host + '/api/high-scores/');
     x.onload = function () {
         if(x.readyState === 4)
         {
             if(x.status === 200)
             {
                 var data = JSON.parse(x.response);
-                document.getElementById("timerText").innerHTML = '<p>' + data['timer'] + '</p>';
-                console.log(data['timer']);
+                for(var i = 1; i <=5; i++){
+                    document.getElementById("name" + i).innerHTML = '<td id="name' + i + '">' + data['team' + i] + '</td>';
+                    // console.log(i);
+                }
             }
         }
     };

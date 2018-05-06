@@ -1,4 +1,4 @@
-body{
+body {
     background-color: black;
 }
 
@@ -6,6 +6,9 @@ body{
     font-family: "My Custom Font";
     src: url("../Share-TechMono.ttf") format("truetype");
 }
+
+a{outline: none;}
+a:active{outline: none;}
 
 .timer{
     padding-top: 2rem;
@@ -63,3 +66,11 @@ body{
 .homeButton:hover, .adminButton:hover, .homeButtonAdmin:hover, .adminButtonAdmin:hover{background-color: #7d9293;}
 .homeButtonAdmin{background-color: transparent;}
 .adminButtonAdmin{background-color: #181c1d;}
+
+.scoreboard{
+    position: absolute;
+    bottom: 1px;
+    width: 100%;
+}
+
+.sponsor{margin-bottom: -.75rem;}

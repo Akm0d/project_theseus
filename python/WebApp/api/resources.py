@@ -142,7 +142,9 @@ class HighScores(Resource):
     def get(self):
         return {"team1": "person",
                 "team2": "person2",
-                "team3": "person3"
+                "team3": "person3",
+                "team4": "person4",
+                "team5": "person5"
                 }
 
 
