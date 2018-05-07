@@ -1,3 +1,4 @@
+from datetime import time
 from logging.handlers import RotatingFileHandler
 from multiprocessing import Lock
 from MockPi.MockSmbus import MockBus
@@ -18,17 +19,8 @@ log.addHandler(handler)
 
 
 class Logic:
+    STATE_FILE = ".state"
     _process = Lock()
-    _state = STATE.WAIT
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value: STATE):
-        log.debug("State changed from {} to {}".format(self._state.value, value.value))
-        self._state = value
 
     def __init__(self):
         self.db = Database()
@@ -44,6 +36,22 @@ class Logic:
         self._team = "--"
         self._code = 0x123
         self._time = MAX_TIME
+
+        self._start_time = time()
+
+    @property
+    def state(self) -> STATE:
+        try:
+            with open(self.STATE_FILE, 'r+') as f:
+                return STATE(f.readline())
+        except FileNotFoundError:
+            return STATE.WAIT
+
+    @state.setter
+    def state(self, value: STATE):
+        log.debug("State changed from {} to {}".format(self.state.value, value.value))
+        with open(self.STATE_FILE, 'w+') as f:
+            f.write(value.value)
 
     @property
     def time(self) -> str:
@@ -133,24 +141,50 @@ class Logic:
             except KeyboardInterrupt:
                 return
 
-    def _loop(self):
-        """TODO this is the game loop that polls I2C and tracks the state of the game"""
-        # Loop updates values in the database.  It is the only thing that talks to arduinos directly
-        # self._bus.write_byte_data(I2C.LASERS.value, 0, 9)
-        # for i2c in I2C:
+    def poll_sensors(self):
+        """
+        Poll all of the sensors and rais a flag if one of them has tripped
+        """
+        # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
+
+    def _loop(self):
+        """TODO this is the game loop that polls I2C and tracks the state of the game"""
+        # State Actions
+        log.debug("Current state: {}".format(self.state.name))
         if self.state is STATE.WAIT:
             self.time = MAX_TIME
         elif self.state is STATE.RUNNING:
-            pass
+            self.poll_sensors()
         elif self.state is STATE.EXPLODE:
+            # TODO randomize laser pattern so that they flash
             pass
         elif self.state is STATE.WIN:
             pass
         else:
             log.error("Reached an unknown state: {}".format(self.state))
+
+        # State Transitions
+        if self.state is STATE.WAIT:
+            if "TODO Start game event is set":
+                self.state = STATE.RUNNING
+        elif self.state is STATE.RUNNING:
+            if "TODO FAILED event is set":
+                self.state = STATE.EXPLODE
+            elif "TODO WIN event is set":
+                self.state = STATE.WIN
+        elif self.state is STATE.EXPLODE:
+            if "RESET event is set":
+                self.state = STATE.WAIT
+        elif self.state is STATE.WIN:
+            if "RESET event is set":
+                self.state = STATE.WAIT
+        else:
+            log.error("Reached an unknown state: {}".format(self.state))
+            self.state = STATE.WAIT
+        log.debug("Next State: {}".format(self.state.name))
 
     def _send(self, device: I2C, message: str):
         """
