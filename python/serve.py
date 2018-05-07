@@ -22,7 +22,7 @@ if __name__ == '__main__':
     logger.setLevel(opts.log_level)
     handler = RotatingFileHandler("webapp.log", maxBytes=1280000, backupCount=1)
     handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-    handler.setLevel(LOGGING_LEVEL)
+    handler.setLevel(opts.log_level)
     logger.addHandler(handler)
 
     # Access ComQueue singleton
