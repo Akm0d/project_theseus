@@ -51,10 +51,10 @@ document.getElementById("ultrasonic-enable").onclick = function() {
     ultrasonic_status(toggle=true)
 };
 
-document.getElementById("submitEntry").onclick = function(e) {
-    e.preventDefault();
-    add_team(teamName=document.getElementById("addTeam").value);
-};
+// document.getElementById("submitEntry").onclick = function(e) {
+//     e.preventDefault();
+//     add_team(teamName=document.getElementById("addTeam").value);
+// };
 
 // document.getElementById("startGame").onclick = function(e) {
 //     e.preventDefault();
@@ -138,11 +138,11 @@ function solenoid_status(toggle){
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                if(data["status"] === 'Open'){
-                    document.getElementById("solenoid-toggle").innerHTML = '<button class="btn btn-outline-success" >Open</button>';
+                if(data["status"] === "unlocked"){
+                    document.getElementById("solenoid-toggle").innerHTML = '<button class="btn btn-outline-success" >Unlocked</button>';
                 }
-                else if(data["status"] === 'Closed'){
-                    document.getElementById("solenoid-toggle").innerHTML = '<button class="btn btn-outline-danger" >Closed</button>'
+                else if(data["status"] === "locked"){
+                    document.getElementById("solenoid-toggle").innerHTML = '<button class="btn btn-outline-danger" >Locked</button>'
                 }
             }
         }

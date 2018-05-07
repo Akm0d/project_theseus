@@ -8,7 +8,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE
 from game.database import Database, Row
 
 import datetime
@@ -36,6 +36,8 @@ class Logic:
 
     _debug = False
 
+    _solenoid = SOLENOID_STATE.UNLOCKED
+
     @property
     def comQueue(self):
         return self._comQueue
@@ -61,6 +63,14 @@ class Logic:
     @debug.setter
     def debug(self, value: bool):
         self._debug = value
+
+    @property
+    def solenoid(self):
+        return self._solenoid
+
+    @solenoid.setter
+    def solenoid(self, value: SOLENOID_STATE):
+        self._solenoid = value
 
     @property
     def state(self):
@@ -218,7 +228,7 @@ class Logic:
             self.lasers = random.randint(1, 0x3f)
             self.state = STATE.WAIT      # Change state of game to WAIT
             self.timer = TIME_GIVEN
-
+            self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue = queue
 
             try:
@@ -264,6 +274,14 @@ class Logic:
                     self.state = STATE.RUNNING  # Set state to running
                     self.timer = TIME_GIVEN     # Reset time
                 self.comQueue.put([COMMUNICATION.TIMER_TOGGLED, self.state])
+            elif command[0] == COMMUNICATION.SOLENOID_STATUS:
+                self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
+            elif command[0] == COMMUNICATION.TOGGLE_SOLENOID:
+                if self.solenoid == SOLENOID_STATE.UNLOCKED:
+                    self.solenoid = SOLENOID_STATE.LOCKED
+                else:
+                    self.solenoid = SOLENOID_STATE.UNLOCKED
+                self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
             else:
                 # It is for the other process
                 self.comQueue.put(command)      # Put it back

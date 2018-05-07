@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask_restful import Resource
 from game.logic import Logic
-from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL
+from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE
 import datetime
 from time import sleep
 
@@ -63,17 +63,48 @@ class RGB(Resource):
 
 
 class Solenoid(Resource):
-    def __init__(self):
-        self.enabled = True
+    # REMOVED BECAUSE WE NOW GET THIS FROM LOGIC
+    # def __init__(self):
+    #     self.enabled = True
 
     def get(self, action: str):
+        status = "unlocked"
         if action == "toggle":
             log.debug("Toggling the solenoid")
-            # TODO make a request to the listener.  Ask to change the enabled state of the solenoid
-            pass
+            ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_SOLENOID])
+            toggleComplete = False
+            while(not toggleComplete):
+                if not ComQueue().getComQueue().empty():
+                    object = ComQueue().getComQueue().get()
+                    if (object[0] == COMMUNICATION.SENT_SOLENOID_STATUS):
+                        status = object[1]
+                        toggleComplete = True   # Leave while
+                    else:
+                        # Not what we are looking for, put it back
+                        ComQueue().getComQueue().put(object)
+                else:
+                    # queue is empty
+                    pass
+        else:
+            # Get solenoid status
+            ComQueue().getComQueue().put([COMMUNICATION.SOLENOID_STATUS])
+            statusComplete = False
+            while (not statusComplete):
+                if not ComQueue().getComQueue().empty():
+                    object = ComQueue().getComQueue().get()
+                    if (object[0] == COMMUNICATION.SENT_SOLENOID_STATUS):
+                        status = object[1]
+                        statusComplete = True
+                    else:
+                        ComQueue().getComQueue().put(object)
+                else:
+                    # queue is empty
+                    pass
 
-        # TODO get the state of the solenoid from the listener instead of a random choice
-        return {"status": random.choice(["Open", "Closed"])}
+        if status is SOLENOID_STATE.LOCKED:
+            return {"status": "locked"}
+        elif status is SOLENOID_STATE.UNLOCKED:
+            return {"status": "unlocked"}
 
 
 class Timer(Resource):
