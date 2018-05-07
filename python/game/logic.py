@@ -48,11 +48,17 @@ class Logic:
     @property
     def time(self) -> str:
         """
+        Return the string value that should be displayed on the timer
         :return: The number of minutes and seconds remaining in this attempt I.E '03:12'
         """
         minutes = int(self._time/60)
         seconds = self._time - (minutes * 60)
-        return "{:02}:{:02}".format(minutes, seconds)
+        if self.state is STATE.EXPLODE:
+            return "BOOM!"
+        elif self.state is STATE.WIN:
+            return "SUCCESS!"
+        else:
+            return "{:02}:{:02}".format(minutes, seconds)
 
     @time.setter
     def time(self, value: int):
