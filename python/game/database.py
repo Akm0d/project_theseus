@@ -109,7 +109,7 @@ class Database(Connection):
         """
         for column, value in item.items():
             if value is not None:
-                print("Setting last row's {} to '{}'".format(column, value))
+                log.info("Setting last row's {} to '{}'".format(column, value))
                 self._execute("UPDATE DATA SET {col} = {q}{val}{q} WHERE ID = (SELECT MAX(ID) FROM DATA)".format(
                     col=column.upper(), val=value, q="'" if isinstance(value, str) else ""
                 ))

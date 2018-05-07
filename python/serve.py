@@ -14,7 +14,12 @@ if __name__ == '__main__':
     args = ArgumentParser()
     args.add_argument("--mock", action="store_true")
     args.add_argument("--debug", action="store_true")
+    args.add_argument("--log-level", type=int, default=logging.INFO)
     opts = args.parse_args()
+
+    # Setup logger
+    print("Setting log level to {}".format(opts.log_level))
+    logger.setLevel(opts.log_level)
     handler = RotatingFileHandler("webapp.log", maxBytes=1280000, backupCount=1)
     handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
     handler.setLevel(LOGGING_LEVEL)
