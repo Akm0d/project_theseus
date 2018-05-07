@@ -1,3 +1,9 @@
+# The following two classes handle allowing any Resource from the Flask app
+# to be able to communicate with the Logic Process. In setup.py, the Logic
+# process is forked to another process, and communication is handled via a
+# process and thread proof shared queue. The Borg class that ComQueue inherits
+# from ensures that all instances of ComQueue have the same state.
+
 # Singleton/BorgSingleton.py
 # Alex Martelli's 'Borg'
 class Borg:

@@ -221,6 +221,7 @@ class Logic:
             # There is a message!
             command = self.comQueue.get()
             if command[0] == COMMUNICATION.GET_TIMER:
+                # TODO: Discuss what to display if player is dead
                 self.comQueue.put([COMMUNICATION.TIMER_TEXT, datetime.datetime.strftime(self.timer, "%M:%S")])
             elif command[0] == COMMUNICATION.START_GAME:
                 self.state = STATE.RUNNING  # Set state to running
@@ -262,24 +263,19 @@ class Logic:
 
         # State Transitions
         if self.state is STATE.WAIT:
-            # if "TODO Start game event is set":
-            #     self.state = STATE.RUNNING
-            pass    # Set above in process communication
+            pass    # Leaving WAIT STATE is handled by communication
         elif self.state is STATE.RUNNING:
             # if "TODO FAILED event is set":
             #     self.state = STATE.EXPLODE
             # elif "TODO WIN event is set":
             #     self.state = STATE.WIN
             # By default stay running
-            self.state = STATE.RUNNING
             if (self.timer <= TIME_OVER):
                 self.state = STATE.EXPLODE  # You ran out of time
         elif self.state is STATE.EXPLODE:
-            if "RESET event is set":
-                self.state = STATE.WAIT
+            pass    # Reset event handled as part of communication
         elif self.state is STATE.WIN:
-            if "RESET event is set":
-                self.state = STATE.WAIT
+            pass    # Reset event handled above as part of communication
         else:
             log.error("Reached an unknown state: {}".format(self.state))
             self.state = STATE.WAIT

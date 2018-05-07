@@ -19,13 +19,21 @@ if __name__ == '__main__':
     handler.setLevel(logging.DEBUG)
     logger.addHandler(handler)
 
+    # Access ComQueue singleton
     q = globals.ComQueue()
 
     # Set up communications queue
     procComQueue = mp.Queue()
-    q.setComQueue(procComQueue)
+    q.setComQueue(procComQueue) # Set the ComQueue
 
+    # Create the gameLogic Process
     gameLogic = mp.Process(target=Logic().run, args=(procComQueue, opts.mock))
-    gameLogic.start()   # Start the logic using os.fork
+
+    # Start the Logic Process by forking (default start() behavior for unix)
+    gameLogic.start()
+
+    # Run the Flask server here in the parent
     app.run(debug=False, host="0.0.0.0", port=5000)
-    # gameLogic.join()    # Wait unitl game finish
+
+    # Wait for the gameLogic process to finish. Prevents Zombie processes
+    gameLogic.join()
