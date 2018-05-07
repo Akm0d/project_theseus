@@ -34,13 +34,16 @@ class Logic:
 
     _comQueue = None
 
+    _debug = False
+
     @property
     def comQueue(self):
         return self._comQueue
 
     @comQueue.setter
     def comQueue(self, value):
-        log.debug("Queue was created")
+        if self.debug:
+            log.debug("Queue was created")
         self._comQueue = value
 
     @property
@@ -52,12 +55,21 @@ class Logic:
         self._counter = value
 
     @property
+    def debug(self):
+        return self._debug
+
+    @debug.setter
+    def debug(self, value: bool):
+        self._debug = value
+
+    @property
     def state(self):
         return self._state
 
     @state.setter
     def state(self, value: STATE):
-        log.debug("State changed from {} to {}".format(self._state.value, value.value))
+        if self.debug:
+            log.debug("State changed from {} to {}".format(self._state.value, value.value))
         self._state = value
 
     @property
@@ -66,7 +78,8 @@ class Logic:
 
     @timer.setter
     def timer(self, value):
-        log.debug("Timer set to {}".format(value))
+        if self.debug:
+            log.debug("Timer set to {}".format(value))
         self._timer = value
 
     @property
@@ -75,7 +88,8 @@ class Logic:
 
     @mock.setter
     def mock(self, value: bool):
-        log.debug("mock was set to {}".format(value))
+        if self.debug:
+            log.debug("mock was set to {}".format(value))
         self._mock = value
 
     def __init__(self):
@@ -96,19 +110,20 @@ class Logic:
 
         self._start_time = time()
 
-    @property
-    def state(self) -> STATE:
-        try:
-            with open(self.STATE_FILE, 'r+') as f:
-                return STATE(f.readline())
-        except FileNotFoundError:
-            return STATE.WAIT
-
-    @state.setter
-    def state(self, value: STATE):
-        log.debug("State changed from {} to {}".format(self.state.value, value.value))
-        with open(self.STATE_FILE, 'w+') as f:
-            f.write(value.value)
+    # @property
+    # def state(self) -> STATE:
+    #     try:
+    #         with open(self.STATE_FILE, 'r+') as f:
+    #             return STATE(f.readline())
+    #     except FileNotFoundError:
+    #         return STATE.WAIT
+    #
+    # @state.setter
+    # def state(self, value: STATE):
+    #     if debug:
+    #         log.debug("State changed from {} to {}".format(self.state.value, value.value))
+    #     with open(self.STATE_FILE, 'w+') as f:
+    #         f.write(value.value)
 
     @property
     def time(self) -> str:
@@ -136,7 +151,8 @@ class Logic:
     @lasers.setter
     def lasers(self, value: int):
         # TODO make sure the value is acceptable beofore applying it
-        log.debug("Setting new laser configuration: {}".format(bin(value)))
+        if self.debug:
+            log.debug("Setting new laser configuration: {}".format(bin(value)))
         # TODO Send the command over i2c to activate the correct lasers
         self.db.last = Row(lasers=value)
         self._code = value
@@ -148,7 +164,8 @@ class Logic:
     @keypad_code.setter
     def keypad_code(self, value: hex):
         # TODO make sure the value is acceptable beofore applying it
-        log.debug("Setting new keypad code: 0x{}".format(value))
+        if self.debug:
+            log.debug("Setting new keypad code: 0x{}".format(value))
         self.db.last = Row(code=value)
         self._code = value
 
@@ -158,7 +175,8 @@ class Logic:
 
     @team.setter
     def team(self, value: str):
-        log.debug("Setting current team name to: {}".format(value))
+        if self.debug:
+            log.debug("Setting current team name to: {}".format(value))
         self.db.last = Row(name=value)
         self._team = value
 
@@ -168,13 +186,14 @@ class Logic:
 
     @rgb_color.setter
     def rgb_color(self, value: RGBColor):
-        log.debug("Setting new rgb color: {}".format(value))
+        if self.debug:
+            log.debug("Setting new rgb color: {}".format(value))
         # TODO send the command over i2c to change the rgb color
         if value in [RGBColor.BLUE, RGBColor.RED]:
             self.db.last = Row(color=value.value)
         self._rgb_color = value
 
-    def run(self, queue, mock: bool=False):
+    def run(self, queue, mock: bool=False, debug: bool=False):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop
@@ -187,6 +206,13 @@ class Logic:
             else:
                 self._bus = SMBus(1)
                 self.mock = False
+
+            # Save debug variable
+            if debug:
+                self.debug = True
+            else:
+                self.debug = False
+
             # Initialize all the random data, such as laser patterns and codes
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
@@ -215,7 +241,9 @@ class Logic:
     def _loop(self):
         """TODO this is the game loop that polls I2C and tracks the state of the game"""
         # State Actions
-        log.debug("Current state: {}".format(self.state.name))
+        if self.debug:
+            log.debug("Current state: {}".format(self.state.name))
+
         # Check your messages from the web server
         if not self.comQueue.empty():
             # There is a message!
@@ -237,8 +265,7 @@ class Logic:
                     self.timer = TIME_GIVEN     # Reset time
                 self.comQueue.put([COMMUNICATION.TIMER_TOGGLED, self.state])
             else:
-                log.info("Unrecognized communication {}".format(command))
-                # It is probably for the other process
+                # It is for the other process
                 self.comQueue.put(command)      # Put it back
 
         # Do stuff based on state
@@ -279,7 +306,9 @@ class Logic:
         else:
             log.error("Reached an unknown state: {}".format(self.state))
             self.state = STATE.WAIT
-        log.debug("Next State: {}".format(self.state.name))
+
+        if self.debug:
+            log.debug("Next State: {}".format(self.state.name))
 
     def _send(self, device: I2C, message: str):
         """
@@ -289,7 +318,8 @@ class Logic:
         :return:
         """
         assert len(message) < 32
-        log.debug("Address: 0x{:02x}  Message: '{}'".format(device.value, message))
+        if self.debug:
+            log.debug("Address: 0x{:02x}  Message: '{}'".format(device.value, message))
         try:
             self._bus.write_i2c_block_data(device.value, 0x00, [ord(c) for c in message])
         except IOError:

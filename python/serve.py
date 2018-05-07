@@ -28,7 +28,7 @@ if __name__ == '__main__':
     q.setComQueue(procComQueue) # Set the ComQueue
 
     # Create the gameLogic Process
-    gameLogic = mp.Process(target=Logic().run, args=(procComQueue, opts.mock))
+    gameLogic = mp.Process(target=Logic().run, args=(procComQueue, opts.mock, opts.debug))
 
     # Start the Logic Process by forking (default start() behavior for unix)
     gameLogic.start()
