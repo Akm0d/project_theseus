@@ -1,3 +1,4 @@
+from datetime import time
 from logging.handlers import RotatingFileHandler
 from multiprocessing import Lock
 from MockPi.MockSmbus import MockBus
@@ -7,7 +8,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME
 from game.database import Database, Row
 
 import datetime
@@ -20,6 +21,7 @@ log.addHandler(handler)
 
 
 class Logic:
+    STATE_FILE = ".state"
     _process = Lock()
 
     _state = STATE.WAIT
@@ -84,9 +86,48 @@ class Logic:
         self._i2c_slave = None
 
         # Sensor states
-        self._code = None
         self._lasers = None
         self._rgb_color = None
+
+        # Software states
+        self._team = "--"
+        self._code = 0x123
+        self._time = MAX_TIME
+
+        self._start_time = time()
+
+    @property
+    def state(self) -> STATE:
+        try:
+            with open(self.STATE_FILE, 'r+') as f:
+                return STATE(f.readline())
+        except FileNotFoundError:
+            return STATE.WAIT
+
+    @state.setter
+    def state(self, value: STATE):
+        log.debug("State changed from {} to {}".format(self.state.value, value.value))
+        with open(self.STATE_FILE, 'w+') as f:
+            f.write(value.value)
+
+    @property
+    def time(self) -> str:
+        """
+        Return the string value that should be displayed on the timer
+        :return: The number of minutes and seconds remaining in this attempt I.E '03:12'
+        """
+        minutes = int(self._time/60)
+        seconds = self._time - (minutes * 60)
+        if self.state is STATE.EXPLODE:
+            return "BOOM!"
+        elif self.state is STATE.WIN:
+            return "SUCCESS!"
+        else:
+            return "{:02}:{:02}".format(minutes, seconds)
+
+    @time.setter
+    def time(self, value: int):
+        self._time = value
 
     @property
     def lasers(self) -> bin:
@@ -112,15 +153,25 @@ class Logic:
         self._code = value
 
     @property
-    def rgb_color(self) -> str:
+    def team(self) -> str:
+        return self._team
+
+    @team.setter
+    def team(self, value: str):
+        log.debug("Setting current team name to: {}".format(value))
+        self.db.last = Row(name=value)
+        self._team = value
+
+    @property
+    def rgb_color(self) -> RGBColor:
         return self._rgb_color
 
     @rgb_color.setter
-    def rgb_color(self, value: str):
-        # TODO make sure the value is acceptable beofore applying it
+    def rgb_color(self, value: RGBColor):
         log.debug("Setting new rgb color: {}".format(value))
         # TODO send the command over i2c to change the rgb color
-        self.db.last = Row(color=value)
+        if value in [RGBColor.BLUE, RGBColor.RED]:
+            self.db.last = Row(color=value.value)
         self._rgb_color = value
 
     def run(self, queue, mock: bool=False):
@@ -139,7 +190,6 @@ class Logic:
             # Initialize all the random data, such as laser patterns and codes
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
-            self.rgb_color = random.choice(["red", "blue"])
             self.state = STATE.WAIT      # Change state of game to WAIT
             self.timer = TIME_GIVEN
 
@@ -152,23 +202,39 @@ class Logic:
             except KeyboardInterrupt:
                 return
 
-    def _loop(self):
-        """TODO this is the game loop that polls I2C and tracks the state of the game"""
-        # Loop updates values in the database.  It is the only thing that talks to arduinos directly
-        # self._bus.write_byte_data(I2C.LASERS.value, 0, 9)
-        # for i2c in I2C:
+    def poll_sensors(self):
+        """
+        Poll all of the sensors and rais a flag if one of them has tripped
+        """
+        # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
+        pass
+
+    def _loop(self):
+        """TODO this is the game loop that polls I2C and tracks the state of the game"""
+        # State Actions
+        # log.debug("Current state: {}".format(self.state.name))
         # Check your messages from the web server
         if not self.comQueue.empty():
             # There is a message!
             command = self.comQueue.get()
-            if command == "timer-text":
-                self.comQueue.put(datetime.datetime.strftime(self.timer, "%M:%S"))
-            elif command == "start-game":
+            if command[0] == "get-timer-text":
+                self.comQueue.put(["timer-text", datetime.datetime.strftime(self.timer, "%M:%S")])
+            elif command[0] == "start-game":
                 self.state = STATE.RUNNING  # Set state to running
                 self.timer = TIME_GIVEN     # Reset time
+            elif command[0] == "get-state":
+                self.comQueue.put(["sent-state", self.state])
+            elif command[0] == "toggle":
+                if self.state is STATE.RUNNING:
+                    self.timer = TIME_GIVEN     # Reset time
+                    self.state = STATE.WAIT     # Go to WAIT state
+                else:
+                    self.state = STATE.RUNNING  # Set state to running
+                    self.timer = TIME_GIVEN     # Reset time
+                self.comQueue.put(["fin-toggle", self.state])
             else:
                 log.info("Unrecognized communication {}".format(command))
                 # It is probably for the other process
@@ -176,7 +242,7 @@ class Logic:
 
         # Do stuff based on state
         if self.state is STATE.WAIT:
-            pass
+            self.time = MAX_TIME
         elif self.state is STATE.RUNNING:
             if (self.counter < INTERRUPTS_PER_SECOND):
                 self.counter = self.counter+1
@@ -185,15 +251,39 @@ class Logic:
                 self.counter = 0
                 # Decrement time
                 self.timer = self.timer - datetime.timedelta(seconds=1)
-            if (self.timer <= TIME_OVER):
-                self.state = STATE.EXPLODE
 
         elif self.state is STATE.EXPLODE:
+            # TODO randomize laser pattern so that they flash
             pass
         elif self.state is STATE.WIN:
             pass
         else:
             log.error("Reached an unknown state: {}".format(self.state))
+
+        # State Transitions
+        if self.state is STATE.WAIT:
+            # if "TODO Start game event is set":
+            #     self.state = STATE.RUNNING
+            pass    # Set above in process communication
+        elif self.state is STATE.RUNNING:
+            # if "TODO FAILED event is set":
+            #     self.state = STATE.EXPLODE
+            # elif "TODO WIN event is set":
+            #     self.state = STATE.WIN
+            # By default stay running
+            self.state = STATE.RUNNING
+            if (self.timer <= TIME_OVER):
+                self.state = STATE.EXPLODE  # You ran out of time
+        elif self.state is STATE.EXPLODE:
+            if "RESET event is set":
+                self.state = STATE.WAIT
+        elif self.state is STATE.WIN:
+            if "RESET event is set":
+                self.state = STATE.WAIT
+        else:
+            log.error("Reached an unknown state: {}".format(self.state))
+            self.state = STATE.WAIT
+        # log.debug("Next State: {}".format(self.state.name))
 
     def _send(self, device: I2C, message: str):
         """

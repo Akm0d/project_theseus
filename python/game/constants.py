@@ -1,6 +1,10 @@
 from enum import Enum, IntEnum
 import datetime
 
+# The Time the timer should be reset to in seconds.  Defaults to 3 minutes
+MAX_TIME = 180
+
+
 # What are the logical states for the state machine
 class STATE(Enum):
     # INIT event goes to WAIT
@@ -47,3 +51,7 @@ class I2C(IntEnum):
 
 TIME_GIVEN = datetime.datetime.strptime("03:00", "%M:%S")
 TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")
+class RGBColor(Enum):
+    RED = "red"
+    BLUE = "blue"
+    BLANK = "blank"

@@ -19,6 +19,21 @@ log.addHandler(handler)
 state = Logic()
 
 
+def getState():
+        ComQueue().getComQueue().put(["get-state"])
+        while(1):
+            if not ComQueue().getComQueue().empty():
+                object = ComQueue().getComQueue().get()
+                if (object[0] == "sent-state"):
+                    return object[1]
+                else:
+                    # Not what we are looking for, put it back
+                    ComQueue().getComQueue().put(object)
+            else:
+                # queue is empty
+                pass
+
+
 class Keypad(Resource):
     def get(self):
         return {"status": state.keypad_code}
@@ -67,11 +82,30 @@ class Timer(Resource):
 
     def get(self, action: str):
         if action == "toggle":
-            log.debug("Toggling the timer")
-            # TODO make a request to the listener.  Ask to change the enabled state of the timer
+            ComQueue().getComQueue().put(["toggle"])
+            toggleComplete = False
+            while(not toggleComplete):
+                if not ComQueue().getComQueue().empty():
+                    object = ComQueue().getComQueue().get()
+                    if (object[0] == "fin-toggle"):
+                        state = object[1]
+                        toggleComplete = True   # Leave while
+                    else:
+                        # Not what we are looking for, put it back
+                        ComQueue().getComQueue().put(object)
+                else:
+                    # queue is empty
+                    pass
+        else:
+            # Get state from other process
+            state = getState()
 
-        # TODO get the state of the timer from the listener instead of a random choice
-        return {"status": random.choice(["Reset", "Start"])}
+        # Based on state, send a specific code
+        if (state == STATE.RUNNING):
+            return {"status": "Reset"}
+        else:
+            return {"status": "Start"}
+
 
 
 class Tripwire(Resource):
@@ -133,6 +167,14 @@ class PlayGame(Resource):
         ComQueue().getComQueue().put("start-game")
         return dict()
 
+class Team(Resource):
+    def get(self):
+        return {"status": state.team}
+
+    def put(self, name):
+        state.team = name
+        return {"status": state.team}
+
 
 class Attempts(Resource):
     def get(self):
@@ -146,6 +188,7 @@ class Successes(Resource):
 
 class HighScores(Resource):
     def get(self):
+        # TODO return top 5 unique scores from database
         return {"team1": {"name": "person", "time": "00:59"},
                 "team2": {"name": "person2","time": "01:25"},
                 "team3": {"name": "person3","time": "02:25"},
@@ -156,6 +199,12 @@ class HighScores(Resource):
 
 class TimerText(Resource):
     def get(self):
-        ComQueue().getComQueue().put("timer-text")
-        sleep(2*SLEEP_INTERVAL)  # Sleep enouph
-        return {"timer": ComQueue().getComQueue().get()}
+        ComQueue().getComQueue().put(["get-timer-text"])
+        recieved = False
+        while(1):
+            object = ComQueue().getComQueue().get()
+            if object[0] == "timer-text":
+                return {"timer": object[1]}
+            else:
+                # Wasn't what we were looking for, put it back
+                ComQueue().getComQueue().put(object)

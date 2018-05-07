@@ -12,6 +12,7 @@ logger = logging.getLogger()
 if __name__ == '__main__':
     args = ArgumentParser()
     args.add_argument("--mock", action="store_true")
+    args.add_argument("--debug", action="store_true")
     opts = args.parse_args()
     handler = RotatingFileHandler("webapp.log", maxBytes=1280000, backupCount=1)
     handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
