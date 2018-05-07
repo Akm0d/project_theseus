@@ -17,8 +17,21 @@ class STATE(Enum):
     EXPLODE = "explode"
     # EXPLODE and WIN go to WAIT on RESET
 
+# How often should the logic _loop function run
 INTERRUPTS_PER_SECOND = 10
+# How long should the sleep interval be inbetween runs of _loop
 SLEEP_INTERVAL = 1 / INTERRUPTS_PER_SECOND
+
+# Communication between processes must be one of these
+class COMMUNICATION(Enum):
+    TOGGLE_TIMER = "toggle-timer"
+    TIMER_TOGGLED = "timer-toggled"
+    GET_STATE = "get-state"
+    SENT_STATE = "sent-state"
+    GET_TIMER = "get-timer-text"
+    TIMER_TEXT = "timer-text"
+    START_GAME = "start-game"
+
 
 # What are the events that trigger transitions between each state
 class EVENTS(Enum):
@@ -49,8 +62,12 @@ class I2C(IntEnum):
     SEVEN_SEG = 0x0c
 
 
+# How much time do they start with?
 TIME_GIVEN = datetime.datetime.strptime("03:00", "%M:%S")
+# What is no time left?
 TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")
+
+# What are valid values for the RGB LEDS
 class RGBColor(Enum):
     RED = "red"
     BLUE = "blue"

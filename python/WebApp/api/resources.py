@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask_restful import Resource
 from game.logic import Logic
-from game.constants import STATE, SLEEP_INTERVAL
+from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION
 import datetime
 from time import sleep
 
@@ -20,11 +20,11 @@ state = Logic()
 
 
 def getState():
-        ComQueue().getComQueue().put(["get-state"])
+        ComQueue().getComQueue().put([COMMUNICATION.GET_STATE])
         while(1):
             if not ComQueue().getComQueue().empty():
                 object = ComQueue().getComQueue().get()
-                if (object[0] == "sent-state"):
+                if (object[0] == COMMUNICATION.SENT_STATE):
                     return object[1]
                 else:
                     # Not what we are looking for, put it back
@@ -82,12 +82,12 @@ class Timer(Resource):
 
     def get(self, action: str):
         if action == "toggle":
-            ComQueue().getComQueue().put(["toggle"])
+            ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_TIMER])
             toggleComplete = False
             while(not toggleComplete):
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
-                    if (object[0] == "fin-toggle"):
+                    if (object[0] == COMMUNICATION.TIMER_TOGGLED):
                         state = object[1]
                         toggleComplete = True   # Leave while
                     else:
@@ -164,7 +164,7 @@ class Entry(Resource):
 
 class PlayGame(Resource):
     def get(self):
-        ComQueue().getComQueue().put("start-game")
+        ComQueue().getComQueue().put(COMMUNICATION.START_GAME)
         return dict()
 
 class Team(Resource):
@@ -199,11 +199,11 @@ class HighScores(Resource):
 
 class TimerText(Resource):
     def get(self):
-        ComQueue().getComQueue().put(["get-timer-text"])
+        ComQueue().getComQueue().put([COMMUNICATION.GET_TIMER])
         recieved = False
         while(1):
             object = ComQueue().getComQueue().get()
-            if object[0] == "timer-text":
+            if object[0] == COMMUNICATION.TIMER_TEXT:
                 return {"timer": object[1]}
             else:
                 # Wasn't what we were looking for, put it back

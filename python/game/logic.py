@@ -8,7 +8,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION
 from game.database import Database, Row
 
 import datetime
@@ -215,26 +215,26 @@ class Logic:
     def _loop(self):
         """TODO this is the game loop that polls I2C and tracks the state of the game"""
         # State Actions
-        # log.debug("Current state: {}".format(self.state.name))
+        log.debug("Current state: {}".format(self.state.name))
         # Check your messages from the web server
         if not self.comQueue.empty():
             # There is a message!
             command = self.comQueue.get()
-            if command[0] == "get-timer-text":
-                self.comQueue.put(["timer-text", datetime.datetime.strftime(self.timer, "%M:%S")])
-            elif command[0] == "start-game":
+            if command[0] == COMMUNICATION.GET_TIMER:
+                self.comQueue.put([COMMUNICATION.TIMER_TEXT, datetime.datetime.strftime(self.timer, "%M:%S")])
+            elif command[0] == COMMUNICATION.START_GAME:
                 self.state = STATE.RUNNING  # Set state to running
                 self.timer = TIME_GIVEN     # Reset time
-            elif command[0] == "get-state":
-                self.comQueue.put(["sent-state", self.state])
-            elif command[0] == "toggle":
+            elif command[0] == COMMUNICATION.GET_STATE:
+                self.comQueue.put([COMMUNICATION.SENT_STATE, self.state])
+            elif command[0] == COMMUNICATION.TOGGLE_TIMER:
                 if self.state is STATE.RUNNING:
                     self.timer = TIME_GIVEN     # Reset time
                     self.state = STATE.WAIT     # Go to WAIT state
                 else:
                     self.state = STATE.RUNNING  # Set state to running
                     self.timer = TIME_GIVEN     # Reset time
-                self.comQueue.put(["fin-toggle", self.state])
+                self.comQueue.put([COMMUNICATION.TIMER_TOGGLED, self.state])
             else:
                 log.info("Unrecognized communication {}".format(command))
                 # It is probably for the other process
@@ -283,7 +283,7 @@ class Logic:
         else:
             log.error("Reached an unknown state: {}".format(self.state))
             self.state = STATE.WAIT
-        # log.debug("Next State: {}".format(self.state.name))
+        log.debug("Next State: {}".format(self.state.name))
 
     def _send(self, device: I2C, message: str):
         """
