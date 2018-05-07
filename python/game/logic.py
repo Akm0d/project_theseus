@@ -8,8 +8,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, \
-    COMMUNICATION, LOGGING_LEVEL
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE
 from game.database import Database, Row
 
 import datetime
@@ -29,6 +28,7 @@ class Logic:
     _process = Lock()
     _state = STATE.WAIT
     _timer = TIME_GIVEN
+    _solenoid = SOLENOID_STATE.UNLOCKED
 
     @property
     def comQueue(self):
@@ -46,6 +46,14 @@ class Logic:
     @counter.setter
     def counter(self, value: int):
         self._counter = value
+
+    @property
+    def solenoid(self):
+        return self._solenoid
+
+    @solenoid.setter
+    def solenoid(self, value: SOLENOID_STATE):
+        self._solenoid = value
 
     @property
     def state(self):
@@ -175,7 +183,7 @@ class Logic:
             self.lasers = random.randint(1, 0x3f)
             self.state = STATE.WAIT  # Change state of game to WAIT
             self.timer = TIME_GIVEN
-
+            self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue = queue
 
             try:
@@ -201,9 +209,21 @@ class Logic:
         if not self.comQueue.empty():
             command = self.comQueue.get()
             command_id = command[0]
+
+        # Non-state-changing actions
         if command_id is COMMUNICATION.GET_STATE:
             command_id = None
             self.comQueue.put([COMMUNICATION.SENT_STATE, self.state])
+        elif command_id is COMMUNICATION.SOLENOID_STATUS:
+            command_id = None
+            self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
+        elif command_id is COMMUNICATION.TOGGLE_SOLENOID:
+            command_id = None
+            if self.solenoid is SOLENOID_STATE.UNLOCKED:
+                self.solenoid = SOLENOID_STATE.LOCKED
+            else:
+                self.solenoid = SOLENOID_STATE.UNLOCKED
+            self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
 
         # State Actions
         if self.state is STATE.WAIT:

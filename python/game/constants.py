@@ -32,6 +32,9 @@ class COMMUNICATION(Enum):
     GET_TIMER = "get-timer-text"
     TIMER_TEXT = "timer-text"
     START_GAME = "start-game"
+    TOGGLE_SOLENOID = "toggle-solenoid"
+    SOLENOID_STATUS = "solenoid-status"
+    SENT_SOLENOID_STATUS = "sent-solenoid-status"
 
 
 # What are the events that trigger transitions between each state
@@ -61,6 +64,11 @@ class I2C(IntEnum):
     # TOP Lid
     KEYPAD = 0x0b
     SEVEN_SEG = 0x0c
+
+
+class SOLENOID_STATE(Enum):
+    LOCKED = "locked"
+    UNLOCKED = "unlocked"
 
 
 # How much time do they start with?
