@@ -4,10 +4,11 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask_restful import Resource
 from game.logic import Logic
-from game.constants import STATE
+from game.constants import STATE, SLEEP_INTERVAL
 import datetime
+from time import sleep
 
-from globals import comQueue
+from globals import ComQueue
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
@@ -129,7 +130,7 @@ class Entry(Resource):
 
 class PlayGame(Resource):
     def get(self):
-        state.state = STATE.RUNNING
+        ComQueue().getComQueue().put("start-game")
         return dict()
 
 
@@ -155,5 +156,6 @@ class HighScores(Resource):
 
 class TimerText(Resource):
     def get(self):
-        comQueue.put("timer-text")
-        return {"timer": "04:00"}
+        ComQueue().getComQueue().put("timer-text")
+        sleep(2*SLEEP_INTERVAL)  # Sleep enouph
+        return {"timer": ComQueue().getComQueue().get()}

@@ -53,7 +53,7 @@ document.getElementById("submitEntry").onclick = function(e) {
 
 document.getElementById("startGame").onclick = function(e) {
     e.preventDefault();
-
+    start_game();
 };
 
 function keycode_status(code){

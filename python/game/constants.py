@@ -13,6 +13,8 @@ class STATE(Enum):
     EXPLODE = "explode"
     # EXPLODE and WIN go to WAIT on RESET
 
+INTERRUPTS_PER_SECOND = 10
+SLEEP_INTERVAL = 1 / INTERRUPTS_PER_SECOND
 
 # What are the events that trigger transitions between each state
 class EVENTS(Enum):
@@ -43,4 +45,5 @@ class I2C(IntEnum):
     SEVEN_SEG = 0x0c
 
 
-TIME_GIVEN = datetime.datetime.strptime("05:00","%M:%S")
+TIME_GIVEN = datetime.datetime.strptime("03:00", "%M:%S")
+TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")

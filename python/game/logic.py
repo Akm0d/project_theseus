@@ -7,7 +7,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER
 from game.database import Database, Row
 
 import datetime
@@ -26,6 +26,8 @@ class Logic:
 
     _timer = TIME_GIVEN
 
+    _counter = 0
+
     _mock = False
 
     _comQueue = None
@@ -38,6 +40,14 @@ class Logic:
     def comQueue(self, value):
         log.debug("Queue was created")
         self._comQueue = value
+
+    @property
+    def counter(self):
+        return self._counter
+
+    @counter.setter
+    def counter(self, value: int):
+        self._counter = value
 
     @property
     def state(self):
@@ -69,6 +79,7 @@ class Logic:
     def __init__(self):
         self.db = Database()
         self._bus = None
+        self._counter = 0
         self._i2c_master = None
         self._i2c_slave = None
 
@@ -137,7 +148,7 @@ class Logic:
             try:
                 while True:
                     self._loop()
-                    sleep(1)
+                    sleep(SLEEP_INTERVAL)
             except KeyboardInterrupt:
                 return
 
@@ -153,18 +164,29 @@ class Logic:
         if not self.comQueue.empty():
             # There is a message!
             command = self.comQueue.get()
-            if command is "timer-text":
+            if command == "timer-text":
                 self.comQueue.put(datetime.datetime.strftime(self.timer, "%M:%S"))
+            elif command == "start-game":
+                self.state = STATE.RUNNING  # Set state to running
+                self.timer = TIME_GIVEN     # Reset time
             else:
-                log.error("Unrecognized communication {}".format(command))
+                log.info("Unrecognized communication {}".format(command))
+                # It is probably for the other process
+                self.comQueue.put(command)      # Put it back
 
         # Do stuff based on state
         if self.state is STATE.WAIT:
             pass
         elif self.state is STATE.RUNNING:
-            # Decrement time
-            self.timer = self.timer - datetime.timedelta(seconds=1)
-            # if (self.time < )
+            if (self.counter < INTERRUPTS_PER_SECOND):
+                self.counter = self.counter+1
+
+            else:
+                self.counter = 0
+                # Decrement time
+                self.timer = self.timer - datetime.timedelta(seconds=1)
+            if (self.timer <= TIME_OVER):
+                self.state = STATE.EXPLODE
 
         elif self.state is STATE.EXPLODE:
             pass
