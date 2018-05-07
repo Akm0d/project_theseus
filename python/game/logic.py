@@ -8,7 +8,8 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, \
+    COMMUNICATION, LOGGING_LEVEL
 from game.database import Database, Row
 
 import datetime
@@ -97,7 +98,7 @@ class Logic:
         Return the string value that should be displayed on the timer
         :return: The number of minutes and seconds remaining in this attempt I.E '03:12'
         """
-        minutes = int(self._time/60)
+        minutes = int(self._time / 60)
         seconds = self._time - (minutes * 60)
         if self.state is STATE.EXPLODE:
             return "BOOM!"
@@ -155,7 +156,7 @@ class Logic:
             self.db.last = Row(color=value.value)
         self._rgb_color = value
 
-    def run(self, queue, mock: bool=False, debug: bool=False):
+    def run(self, queue, mock: bool = False, debug: bool = False):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop
@@ -172,7 +173,7 @@ class Logic:
             # Initialize all the random data, such as laser patterns and codes
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
-            self.state = STATE.WAIT      # Change state of game to WAIT
+            self.state = STATE.WAIT  # Change state of game to WAIT
             self.timer = TIME_GIVEN
 
             self.comQueue = queue
@@ -195,50 +196,73 @@ class Logic:
         pass
 
     def _loop(self):
-        # State Transitions
-        # Check your messages from the web server
+        command = None
+        command_id = None
         if not self.comQueue.empty():
-            # There is a message!
             command = self.comQueue.get()
-            if command[0] == COMMUNICATION.GET_TIMER:
-                # TODO: Discuss what to display if player is dead
-                self.comQueue.put([COMMUNICATION.TIMER_TEXT, datetime.datetime.strftime(self.timer, "%M:%S")])
-            elif command[0] == COMMUNICATION.START_GAME:
-                self.state = STATE.RUNNING  # Set state to running
-                self.timer = TIME_GIVEN     # Reset time
-            elif command[0] == COMMUNICATION.GET_STATE:
-                self.comQueue.put([COMMUNICATION.SENT_STATE, self.state])
-            elif command[0] == COMMUNICATION.TOGGLE_TIMER:
-                if self.state is STATE.RUNNING:
-                    self.timer = TIME_GIVEN     # Reset time
-                    self.state = STATE.WAIT     # Go to WAIT state
-                else:
-                    self.state = STATE.RUNNING  # Set state to running
-                    self.timer = TIME_GIVEN     # Reset time
-                self.comQueue.put([COMMUNICATION.TIMER_TOGGLED, self.state])
-            else:
-                # It is for the other process
-                self.comQueue.put(command)      # Put it back
+            command_id = command[0]
+        if command_id is COMMUNICATION.GET_STATE:
+            command_id = None
+            self.comQueue.put([COMMUNICATION.SENT_STATE, self.state])
 
         # State Actions
         if self.state is STATE.WAIT:
             self.time = MAX_TIME
+            if command_id is COMMUNICATION.GET_TIMER:
+                command_id = None
+                self.comQueue.put([COMMUNICATION.TIMER_TEXT, datetime.datetime.strftime(self.timer, "%M:%S")])
         elif self.state is STATE.RUNNING:
             if self.counter < INTERRUPTS_PER_SECOND:
-                self.counter = self.counter+1
-
+                self.counter = self.counter + 1
             else:
                 self.counter = 0
                 # Decrement time
                 self.timer = self.timer - datetime.timedelta(seconds=1)
-
+            if command_id is COMMUNICATION.GET_TIMER:
+                command_id = None
+                # Show the current time
+                self.comQueue.put([COMMUNICATION.TIMER_TEXT, datetime.datetime.strftime(self.timer, "%M:%S")])
         elif self.state is STATE.EXPLODE:
-            # TODO randomize laser pattern so that they flash
-            pass
+            if command_id is COMMUNICATION.GET_TIMER:
+                command_id = None
+                self.comQueue.put([COMMUNICATION.TIMER_TEXT, "DEAD"])
+                # TODO randomize laser pattern so that they flash
         elif self.state is STATE.WIN:
-            pass
+            if command_id is COMMUNICATION.GET_TIMER:
+                command_id = None
+                self.comQueue.put([COMMUNICATION.TIMER_TEXT, "SUCCESS!"])
         else:
             log.error("Reached an unknown state: {}".format(self.state))
+
+        # State Transitions
+        if self.state is STATE.WAIT:
+            if command_id in [COMMUNICATION.START_GAME, COMMUNICATION.TOGGLE_TIMER]:
+                command_id = None
+                self.state = STATE.RUNNING
+                # Reset timer
+                self.timer = TIME_GIVEN
+        elif self.state is STATE.RUNNING:
+            if command_id is COMMUNICATION.TOGGLE_TIMER:
+                command_id = None
+                # Reset timer
+                self.timer = TIME_GIVEN
+                self.state = STATE.WAIT
+        elif self.state is STATE.EXPLODE:
+            if command_id is COMMUNICATION.TOGGLE_TIMER:
+                command_id = None
+                # Reset timer
+                self.timer = TIME_GIVEN
+                self.state = STATE.WAIT
+        elif self.state is STATE.WIN:
+            if command_id is COMMUNICATION.TOGGLE_TIMER:
+                command_id = None
+                # Reset timer
+                self.timer = TIME_GIVEN
+                self.state = STATE.WAIT
+
+        if command_id is not None:
+            # If the command wasn't used, it is for the other process, put it back
+            self.comQueue.put(command)
 
     def _send(self, device: I2C, message: str):
         """
