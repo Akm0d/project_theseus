@@ -210,7 +210,7 @@ class Logic:
             command = self.comQueue.get()
             command_id = command[0]
 
-        # Non-state-changing actions
+        # State independent acitons
         if command_id is COMMUNICATION.GET_STATE:
             command_id = None
             self.comQueue.put([COMMUNICATION.SENT_STATE, self.state])
