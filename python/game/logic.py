@@ -195,10 +195,7 @@ class Logic:
         pass
 
     def _loop(self):
-        """TODO this is the game loop that polls I2C and tracks the state of the game"""
-        # State Actions
-        log.debug("Current state: {}".format(self.state.name))
-
+        # State Transitions
         # Check your messages from the web server
         if not self.comQueue.empty():
             # There is a message!
@@ -223,7 +220,7 @@ class Logic:
                 # It is for the other process
                 self.comQueue.put(command)      # Put it back
 
-        # Do stuff based on state
+        # State Actions
         if self.state is STATE.WAIT:
             self.time = MAX_TIME
         elif self.state is STATE.RUNNING:
@@ -242,27 +239,6 @@ class Logic:
             pass
         else:
             log.error("Reached an unknown state: {}".format(self.state))
-
-        # State Transitions
-        if self.state is STATE.WAIT:
-            pass    # Leaving WAIT STATE is handled by communication
-        elif self.state is STATE.RUNNING:
-            # if "TODO FAILED event is set":
-            #     self.state = STATE.EXPLODE
-            # elif "TODO WIN event is set":
-            #     self.state = STATE.WIN
-            # By default stay running
-            if self.timer <= TIME_OVER:
-                self.state = STATE.EXPLODE  # You ran out of time
-        elif self.state is STATE.EXPLODE:
-            pass    # Reset event handled as part of communication
-        elif self.state is STATE.WIN:
-            pass    # Reset event handled above as part of communication
-        else:
-            log.error("Reached an unknown state: {}".format(self.state))
-            self.state = STATE.WAIT
-
-        log.debug("Next State: {}".format(self.state.name))
 
     def _send(self, device: I2C, message: str):
         """
