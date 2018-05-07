@@ -28,6 +28,17 @@ class Logic:
 
     _mock = False
 
+    _comQueue = None
+
+    @property
+    def comQueue(self):
+        return self._comQueue
+
+    @comQueue.setter
+    def comQueue(self, value):
+        log.debug("Queue was created")
+        self._comQueue = value
+
     @property
     def state(self):
         return self._state
@@ -51,7 +62,7 @@ class Logic:
         return self._mock
 
     @mock.setter
-    def mock(self, value):
+    def mock(self, value: bool):
         log.debug("mock was set to {}".format(value))
         self._mock = value
 
@@ -101,7 +112,7 @@ class Logic:
         self.db.last = Row(color=value)
         self._rgb_color = value
 
-    def run(self, mock: bool=False):
+    def run(self, queue, mock: bool=False):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop
@@ -110,7 +121,6 @@ class Logic:
             # Initialize I2C server
             if mock:
                 self._bus = MockBus(1)
-                self.timer = TIME_GIVEN
                 self.mock = True
             else:
                 self._bus = SMBus(1)
@@ -119,9 +129,10 @@ class Logic:
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
             self.rgb_color = random.choice(["red", "blue"])
-            self.state = STATE.RUNNING      # Change state of game to RUNNING
+            self.state = STATE.WAIT      # Change state of game to WAIT
+            self.timer = TIME_GIVEN
 
-
+            self.comQueue = queue
 
             try:
                 while True:
@@ -138,15 +149,23 @@ class Logic:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
+        # Check your messages from the web server
+        if not self.comQueue.empty():
+            # There is a message!
+            command = self.comQueue.get()
+            if command is "timer-text":
+                self.comQueue.put(datetime.datetime.strftime(self.timer, "%M:%S"))
+            else:
+                log.error("Unrecognized communication {}".format(command))
+
+        # Do stuff based on state
         if self.state is STATE.WAIT:
             pass
         elif self.state is STATE.RUNNING:
-            if (self.mock):
-                # We are not running on the pi. We are simulating
-                self.time = self.time - datetime.timedelta(seconds=1)
-            else:
-                # We are running on the pi
-                pass
+            # Decrement time
+            self.timer = self.timer - datetime.timedelta(seconds=1)
+            # if (self.time < )
+
         elif self.state is STATE.EXPLODE:
             pass
         elif self.state is STATE.WIN:

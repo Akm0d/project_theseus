@@ -4,9 +4,11 @@ from logging.handlers import RotatingFileHandler
 from WebApp import app
 from argparse import ArgumentParser
 import logging
-import os
+import multiprocessing as mp
 
 logger = logging.getLogger()
+
+from globals import comQueue
 
 if __name__ == '__main__':
     args = ArgumentParser()
@@ -16,7 +18,10 @@ if __name__ == '__main__':
     handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
     handler.setLevel(logging.DEBUG)
     logger.addHandler(handler)
-    if os.fork():
-        Logic().run(mock=opts.mock)
-    else:
-        app.run(debug=False, host="0.0.0.0", port=5000)
+
+    # Set up communications queue
+    comQueue = mp.Queue()
+
+    gameLogic = mp.Process(target=Logic().run, args=(comQueue, opts.mock))
+    gameLogic.start()   # Start the logic using os.fork
+    app.run(debug=False, host="0.0.0.0", port=5000)
