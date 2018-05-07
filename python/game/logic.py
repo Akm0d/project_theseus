@@ -7,7 +7,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE
+from game.constants import I2C, STATE, RGBColor, MAX_TIME
 from game.database import Database, Row
 
 log = logging.getLogger(__name__)
@@ -19,7 +19,6 @@ log.addHandler(handler)
 
 class Logic:
     _process = Lock()
-
     _state = STATE.WAIT
 
     @property
@@ -38,10 +37,26 @@ class Logic:
         self._i2c_slave = None
 
         # Sensor states
-        self._code = None
         self._lasers = None
         self._rgb_color = None
-        self._team = None
+
+        # Software states
+        self._team = "--"
+        self._code = 0x123
+        self._time = MAX_TIME
+
+    @property
+    def time(self) -> str:
+        """
+        :return: The number of minutes and seconds remaining in this attempt I.E '03:12'
+        """
+        minutes = int(self._time/60)
+        seconds = self._time - (minutes * 60)
+        return "{:02}:{:02}".format(minutes, seconds)
+
+    @time.setter
+    def time(self, value: int):
+        self._time = value
 
     @property
     def lasers(self) -> bin:
@@ -77,15 +92,15 @@ class Logic:
         self._team = value
 
     @property
-    def rgb_color(self) -> str:
+    def rgb_color(self) -> RGBColor:
         return self._rgb_color
 
     @rgb_color.setter
-    def rgb_color(self, value: str):
-        # TODO make sure the value is acceptable beofore applying it
+    def rgb_color(self, value: RGBColor):
         log.debug("Setting new rgb color: {}".format(value))
         # TODO send the command over i2c to change the rgb color
-        self.db.last = Row(color=value)
+        if value in [RGBColor.BLUE, RGBColor.RED]:
+            self.db.last = Row(color=value.value)
         self._rgb_color = value
 
     def run(self, mock: bool=False):
@@ -102,7 +117,8 @@ class Logic:
             # Initialize all the random data, such as laser patterns and codes
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
-            self.rgb_color = random.choice(["red", "blue"])
+            self.rgb_color = random.choice([RGBColor.RED, RGBColor.BLUE])
+            # TODO Start ticking every second if
 
             try:
                 while True:
@@ -120,7 +136,7 @@ class Logic:
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
         if self.state is STATE.WAIT:
-            pass
+            self.time = MAX_TIME
         elif self.state is STATE.RUNNING:
             pass
         elif self.state is STATE.EXPLODE:

@@ -144,4 +144,5 @@ class HighScores(Resource):
 
 class TimerText(Resource):
     def get(self):
-        return {"timer": "04:55"}
+        # TODO return the current time
+        return {"timer": state.time}

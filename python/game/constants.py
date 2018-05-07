@@ -1,5 +1,8 @@
 from enum import Enum, IntEnum
 
+# The Time the timer should be reset to in seconds.  Defaults to 3 minutes
+MAX_TIME = 180
+
 
 # What are the logical states for the state machine
 class STATE(Enum):
@@ -41,3 +44,9 @@ class I2C(IntEnum):
     # TOP Lid
     KEYPAD = 0x0b
     SEVEN_SEG = 0x0c
+
+
+class RGBColor(Enum):
+    RED = "red"
+    BLUE = "blue"
+    BLANK = "blank"
