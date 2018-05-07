@@ -3,11 +3,12 @@ import logging
 from logging.handlers import RotatingFileHandler
 from sqlite3 import Connection
 from typing import List, Tuple
+from game.constants import LOGGING_LEVEL
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(logging.DEBUG)
+handler.setLevel(LOGGING_LEVEL)
 log.addHandler(handler)
 
 max_time = 9999999

@@ -8,7 +8,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL
 from game.database import Database, Row
 
 import datetime
@@ -16,7 +16,7 @@ import datetime
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(logging.DEBUG)
+handler.setLevel(LOGGING_LEVEL)
 log.addHandler(handler)
 
 

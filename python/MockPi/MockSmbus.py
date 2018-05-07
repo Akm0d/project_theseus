@@ -21,7 +21,7 @@
 
 import logging
 import struct
-
+from game.constants import LOGGING_LEVEL
 from logging.handlers import RotatingFileHandler
 from queue import Queue, Empty
 from ctypes import c_int, c_uint8, POINTER, Structure
@@ -32,7 +32,7 @@ from typing import List
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(logging.DEBUG)
+handler.setLevel(LOGGING_LEVEL)
 log.addHandler(handler)
 
 I2C_SLAVE = 0x0703

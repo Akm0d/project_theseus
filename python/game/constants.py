@@ -1,5 +1,6 @@
 from enum import Enum, IntEnum
 import datetime
+import logging
 
 # The Time the timer should be reset to in seconds.  Defaults to 3 minutes
 MAX_TIME = 180
@@ -72,3 +73,6 @@ class RGBColor(Enum):
     RED = "red"
     BLUE = "blue"
     BLANK = "blank"
+
+
+LOGGING_LEVEL = logging.ERROR

@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask_restful import Resource
 from game.logic import Logic
-from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION
+from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL
 import datetime
 from time import sleep
 
@@ -13,7 +13,7 @@ from globals import ComQueue
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(logging.DEBUG)
+handler.setLevel(LOGGING_LEVEL)
 log.addHandler(handler)
 
 state = Logic()

@@ -6,6 +6,7 @@ from argparse import ArgumentParser
 import logging
 import multiprocessing as mp
 import globals
+from game.constants import LOGGING_LEVEL
 
 logger = logging.getLogger()
 
@@ -16,7 +17,7 @@ if __name__ == '__main__':
     opts = args.parse_args()
     handler = RotatingFileHandler("webapp.log", maxBytes=1280000, backupCount=1)
     handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-    handler.setLevel(logging.DEBUG)
+    handler.setLevel(LOGGING_LEVEL)
     logger.addHandler(handler)
 
     # Access ComQueue singleton
