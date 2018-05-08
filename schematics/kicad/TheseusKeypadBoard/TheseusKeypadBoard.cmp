@@ -1,0 +1,67 @@
+Cmp-Mod V01 Created by PcbNew   date = Thursday, May 03, 2018 'PMt' 10:01:40 PM
+
+BeginCmp
+TimeStamp = 5AEBCBBD
+Path = /5AD09E8D
+Reference = J2;
+ValeurCmp = Conn_01x04_Female;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x04_Pitch2.54mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEBCBA7
+Path = /5AEBEBF1
+Reference = D1;
+ValeurCmp = LED_ARGB2;
+IdModule  = LEDs:LED-RGB-5MM_Common_Cathode;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEBCBB5
+Path = /5AD09F32
+Reference = J1;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEBCBC8
+Path = /5AD09E34
+Reference = J3;
+ValeurCmp = Conn_01x07_Male;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x07_Pitch2.54mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEBCBCE
+Path = /5AD0A0FA
+Reference = R1;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEBCBD4
+Path = /5AD0A196
+Reference = R2;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEBCBDA
+Path = /5AD0A1BB
+Reference = R3;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEBCBFF
+Path = /5AEBC7BF
+Reference = U1;
+ValeurCmp = ItsyBitsy;
+IdModule  = ItsyBitsy:ItsyBitsy;
+EndCmp
+
+EndListe

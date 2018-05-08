@@ -1,0 +1,139 @@
+Cmp-Mod V01 Created by PcbNew   date = Thursday, May 03, 2018 'PMt' 10:02:11 PM
+
+BeginCmp
+TimeStamp = 5AE93902
+Path = /5AE97C12
+Reference = U1;
+ValeurCmp = PCA9306;
+IdModule  = adafruit:SO08;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9386E
+Path = /5AE3DFFE
+Reference = J1;
+ValeurCmp = Barrel_Jack;
+IdModule  = POWER_JACK_PTH;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9390E
+Path = /5AE9B1F0
+Reference = U2;
+ValeurCmp = MMA8451;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x08_Pitch2.54mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93B95
+Path = /5AE9F4EC
+Reference = J2;
+ValeurCmp = Raspberry_Pi_2_3;
+IdModule  = RPi_Hat:Pin_Header_Straight_2x20;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93867
+Path = /5AE9A872
+Reference = C1;
+ValeurCmp = 0.1uF;
+IdModule  = Capacitors_SMD:C_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE938E4
+Path = /5AE99632
+Reference = R1;
+ValeurCmp = 200K;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE938EA
+Path = /5AE9C15F
+Reference = R2;
+ValeurCmp = 1K;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE938F0
+Path = /5AE98F98
+Reference = R3;
+ValeurCmp = 1K;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE938F6
+Path = /5AE98FDD
+Reference = R4;
+ValeurCmp = 1K;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F63
+Path = /5AE970F1
+Reference = J10;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F56
+Path = /5AE96FE1
+Reference = J9;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F49
+Path = /5AE970CF
+Reference = J8;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F3C
+Path = /5AE96FBF
+Reference = J7;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F2F
+Path = /5AE970AD
+Reference = J6;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F22
+Path = /5AE96F57
+Reference = J5;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F15
+Path = /5AE9708B
+Reference = J4;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE93F08
+Path = /5AE3DF0F
+Reference = J3;
+ValeurCmp = RJ45;
+IdModule  = RJ45:RJ45-8;
+EndCmp
+
+EndListe

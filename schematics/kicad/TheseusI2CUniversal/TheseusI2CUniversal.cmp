@@ -1,0 +1,155 @@
+Cmp-Mod V01 Created by PcbNew   date = Thursday, May 03, 2018 'PMt' 10:01:56 PM
+
+BeginCmp
+TimeStamp = 5AE9104E
+Path = /5AE94391
+Reference = J3;
+ValeurCmp = Conn_01x11;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x11_Pitch2.54mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9106C
+Path = /5AE95689
+Reference = J5;
+ValeurCmp = Conn_01x11;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x11_Pitch2.54mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9105D
+Path = /5AE95640
+Reference = J4;
+ValeurCmp = Conn_01x11;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x11_Pitch2.54mm;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9103F
+Path = /5AE4F0BE
+Reference = J2;
+ValeurCmp = Barrel_Jack;
+IdModule  = SparkFun-Connectors:POWER_JACK_PTH;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE91038
+Path = /5AE4F069
+Reference = J1;
+ValeurCmp = RJ45;
+IdModule  = SparkFun-Connectors:RJ45-8;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE910C8
+Path = /5AE67FA4
+Reference = U2;
+ValeurCmp = AD7997;
+IdModule  = adafruit:TSSOP20;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEB7BE9
+Path = /5AEB807B
+Reference = U1;
+ValeurCmp = PCF8574-TSSOP20;
+IdModule  = adafruit:TSSOP20;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9101E
+Path = /5AE92419
+Reference = A0;
+ValeurCmp = GS3;
+IdModule  = Connectors:GS3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE91025
+Path = /5AE92491
+Reference = A1;
+ValeurCmp = GS3;
+IdModule  = Connectors:GS3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9102C
+Path = /5AE924DD
+Reference = A2;
+ValeurCmp = GS3;
+IdModule  = Connectors:GS3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE91072
+Path = /5AE7452B
+Reference = R1;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE91078
+Path = /5AE745C1
+Reference = R2;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9107E
+Path = /5AE745E7
+Reference = R3;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE91084
+Path = /5AE7460F
+Reference = R4;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9108A
+Path = /5AE74639
+Reference = R5;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE91090
+Path = /5AE74667
+Reference = R6;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE91096
+Path = /5AE74698
+Reference = R7;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AE9109C
+Path = /5AE746CB
+Reference = R8;
+ValeurCmp = R;
+IdModule  = Resistors_SMD:R_0805_HandSoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = 5AEB7C8A
+Path = /5AEB8315
+Reference = C1;
+ValeurCmp = C;
+IdModule  = Capacitors_SMD:C_0805_HandSoldering;
+EndCmp
+
+EndListe
