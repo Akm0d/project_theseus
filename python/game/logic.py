@@ -164,7 +164,7 @@ class Logic:
             self.db.last = Row(color=value.value)
         self._rgb_color = value
 
-    def run(self, queue, mock: bool = False, debug: bool = False):
+    def run(self, queue, mock: bool = False, debug: bool = False, logLevel: int = 0):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop
