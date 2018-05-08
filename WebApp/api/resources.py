@@ -36,11 +36,23 @@ def getState():
 
 class Keypad(Resource):
     def get(self):
-        return {"status": state.keypad_code}
+        ComQueue().getComQueue().put([COMMUNICATION.GET_CODE])
+        while(1):
+            if not ComQueue().getComQueue().empty():
+                object = ComQueue().getComQueue().get()
+                if (object[0] == COMMUNICATION.SENT_CODE):
+                    return {"status": object[1]}
+                else:
+                    # Not for me
+                    ComQueue().getComQueue().put(object)
+            else:
+                # Queue is empty
+                pass
 
     def put(self, code):
-        state.keypad_code = code
-        return {"status": state.keypad_code}
+        ComQueue().getComQueue().put([COMMUNICATION.SET_CODE, code])
+        # No need to query what it will be as I know
+        return {"status": code}
 
 
 class RGB(Resource):

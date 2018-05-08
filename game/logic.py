@@ -22,6 +22,7 @@ log.addHandler(handler)
 
 class Logic:
     STATE_FILE = ".state"
+    _code = "000"
     _comQueue = None
     _counter = 0
     _mock = False
@@ -29,6 +30,14 @@ class Logic:
     _state = STATE.WAIT
     _timer = TIME_GIVEN
     _solenoid = SOLENOID_STATE.UNLOCKED
+
+    @property
+    def code(self):
+        return self._code
+
+    @code.setter
+    def code(self, value):
+        self._code = value
 
     @property
     def comQueue(self):
@@ -185,6 +194,7 @@ class Logic:
             self.timer = TIME_GIVEN
             self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue = queue
+            self.code = "000"
 
             try:
                 while True:
@@ -224,6 +234,14 @@ class Logic:
             else:
                 self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
+        elif command_id is COMMUNICATION.GET_CODE:
+            command_id = None
+            self.comQueue.put([COMMUNICATION.SENT_CODE, self.code])
+        elif command_id is COMMUNICATION.SET_CODE:
+            command_id = None
+            self.code = command[1]
+            # No return message is necessary
+
 
         # State Actions
         if self.state is STATE.WAIT:

@@ -21,8 +21,8 @@ document.getElementById("keypad-code").addEventListener("keypress", function(e) 
 });
 
 document.getElementById("keypad-code").onchange = function(e){
-    keycode_status(e.srcElement.value);
-    e.srcElement.blur()
+    keycode_status(e['target'].value);
+    e['target'].blur()
 };
 
 document.getElementById("addTeam").onchange = function(e){
