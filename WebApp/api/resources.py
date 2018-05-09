@@ -24,7 +24,7 @@ end_time = None
 
 def getState():
     ComQueue().getComQueue().put([COMMUNICATION.GET_STATE])
-    while (1):
+    while True:
         if not ComQueue().getComQueue().empty():
             object = ComQueue().getComQueue().get()
             if object[0] == COMMUNICATION.SENT_STATE:
