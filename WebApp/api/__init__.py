@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask_restful import Api, Resource
+from flask_restful import Api
 from WebApp.api.resources import *
 
 resource = Blueprint('api', __name__, url_prefix='/api')
