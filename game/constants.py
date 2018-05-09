@@ -101,3 +101,7 @@ class RGBColor(Enum):
 
 
 LOGGING_LEVEL = logging.ERROR
+
+class JSCom(Enum):
+    START_BUTTON = "Start"
+    RESET_BUTTON = "Reset"

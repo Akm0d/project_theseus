@@ -157,15 +157,15 @@ function timer_status(toggle){
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                if(data["status"] === 'Start')
+                if(data["status"] === "Start")
                 {
                     document.getElementById("timer-start-reset").innerHTML= '<button class="btn btn-outline-primary" >Start Game</button>';
                 }
-                else if(data["status"] === 'Reset')
+                else if(data["status"] === "Reset")
                 {
                     document.getElementById("timer-start-reset").innerHTML = '<button class="btn btn-outline-danger" >Reset</button>';
                 }
-
+                console.log(data);
             }
         }
     };

@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask_restful import Resource
 from game.logic import Logic
-from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE
+from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, JSCom
 import datetime
 from time import sleep
 
@@ -143,11 +143,13 @@ class Timer(Resource):
             # Get state from other process
             state = getState()
 
+        print("\n\n\n{}\n\n\n".format(state))
+
         # Based on state, send a specific code
         if (state == STATE.RUNNING):
-            return {"status": "Reset"}
+            return {"status": JSCom.RESET_BUTTON.value}
         else:
-            return {"status": "Start"}
+            return {"status": JSCom.START_BUTTON.value}
 
 
 
@@ -204,11 +206,6 @@ class Entry(Resource):
             pass # Do nothing, they didn't put a team.
         return dict()
 
-
-class PlayGame(Resource):
-    def get(self):
-        ComQueue().getComQueue().put(COMMUNICATION.START_GAME)
-        return dict()
 
 class Team(Resource):
     def get(self):

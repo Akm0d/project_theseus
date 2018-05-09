@@ -192,6 +192,7 @@ class Logic:
             self.lasers = random.randint(1, 0x3f)
             self.state = STATE.WAIT  # Change state of game to WAIT
             self.timer = TIME_GIVEN
+            self.team = "--"
             self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue = queue
             self.code = "000"
