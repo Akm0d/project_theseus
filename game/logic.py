@@ -1,27 +1,18 @@
 from datetime import time
+from game.constants import I2C, STATE, RGBColor, COMMUNICATION, SOLENOID_STATE, ULTRASONIC_STATE
+from game.database import Database, Row
 from logging.handlers import RotatingFileHandler
 from multiprocessing import Lock
 from MockPi.MockSmbus import MockBus
 from smbus import SMBus
-from time import sleep
 
 import logging
 import random
 
-<<<<<<< Updated upstream
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, ULTRASONIC_STATE
-=======
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, \
-    COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE
->>>>>>> Stashed changes
-from game.database import Database, Row
-
-import datetime
-
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(LOGGING_LEVEL)
+handler.setLevel(logging.ERROR)
 log.addHandler(handler)
 
 
@@ -166,7 +157,7 @@ class Logic:
             self.db.last = Row(color=value.value)
         self._rgb_color = value
 
-    def run(self, queue, mock: bool = False, debug: bool = False, logLevel: int = 0):
+    def run(self, queue, mock: bool = False):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop

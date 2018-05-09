@@ -3,19 +3,17 @@ from logging.handlers import RotatingFileHandler
 
 import logging
 from flask_restful import Resource
-
 from game.database import Database
 from game.logic import Logic
-from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE
+from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE
 import datetime
-from time import sleep
 
 from globals import ComQueue
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(LOGGING_LEVEL)
+handler.setLevel(logging.ERROR)
 log.addHandler(handler)
 
 state = Logic()
@@ -29,7 +27,7 @@ def getState():
     while (1):
         if not ComQueue().getComQueue().empty():
             object = ComQueue().getComQueue().get()
-            if (object[0] == COMMUNICATION.SENT_STATE):
+            if object[0] == COMMUNICATION.SENT_STATE:
                 return object[1]
             else:
                 # Not what we are looking for, put it back
@@ -45,7 +43,7 @@ class Keypad(Resource):
         while (1):
             if not ComQueue().getComQueue().empty():
                 object = ComQueue().getComQueue().get()
-                if (object[0] == COMMUNICATION.SENT_CODE):
+                if object[0] == COMMUNICATION.SENT_CODE:
                     return {"status": object[1]}
                 else:
                     # Not for me
@@ -73,9 +71,9 @@ class RGB(Resource):
 
         # The javascript needs the index in the selection wheel that matches the given color
         return {"status": self.options.index(color), "color": ""
-        if color == "black" else "lawngreen"
-        if color == "green" else "deepskyblue"
-        if color == "blue" else color
+                if color == "black" else "lawngreen"
+                if color == "green" else "deepskyblue"
+                if color == "blue" else color
                 }
 
 
@@ -90,10 +88,10 @@ class Solenoid(Resource):
             log.debug("Toggling the solenoid")
             ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_SOLENOID])
             toggleComplete = False
-            while (not toggleComplete):
+            while not toggleComplete:
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
-                    if (object[0] == COMMUNICATION.SENT_SOLENOID_STATUS):
+                    if object[0] == COMMUNICATION.SENT_SOLENOID_STATUS:
                         status = object[1]
                         toggleComplete = True  # Leave while
                     else:
@@ -109,7 +107,7 @@ class Solenoid(Resource):
             while (not statusComplete):
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
-                    if (object[0] == COMMUNICATION.SENT_SOLENOID_STATUS):
+                    if object[0] == COMMUNICATION.SENT_SOLENOID_STATUS:
                         status = object[1]
                         statusComplete = True
                     else:
@@ -133,12 +131,12 @@ class Timer(Resource):
         state = getState()
 
         if action == "toggle":
-            if (state == STATE.WAIT):
+            if state is STATE.WAIT:
                 # Waiting to begin
                 start_time = datetime.datetime.now()
                 ComQueue().getComQueue().put([COMMUNICATION.START_GAME])
                 state = STATE.RUNNING
-            elif (state == STATE.RUNNING):
+            elif state is STATE.RUNNING:
                 end_time = datetime.datetime.now()
                 ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
                 state = STATE.WAIT
@@ -147,7 +145,7 @@ class Timer(Resource):
                 state = STATE.WAIT
 
         # Based on state, send a specific code
-        if (state == STATE.RUNNING):
+        if state is STATE.RUNNING:
             return {"status": JSCom.RESET_BUTTON.value}
         else:
             return {"status": JSCom.START_BUTTON.value}
@@ -192,12 +190,12 @@ class Ultrasonic(Resource):
             log.debug("Toggling the ultrasonic")
             ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_ULTRASONIC])
             toggleComplete = False
-            while(not toggleComplete):
+            while (not toggleComplete):
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
                     if (object[0] == COMMUNICATION.SENT_ULTRASONIC):
                         status = object[1]
-                        toggleComplete = True   # Leave while
+                        toggleComplete = True  # Leave while
                     else:
                         # Not what we are looking for, put it back
                         ComQueue().getComQueue().put(object)
@@ -265,9 +263,9 @@ class HighScores(Resource):
         scores = self.db.get_rows(success=True)
         scores.sort(key=lambda x: x.time, reverse=False)
         return {
-            "team{}".format(i): {"name": "{}".format(row.name), "time": "{}".format(row.time)} for i, row in enumerate(scores)
+            "team{}".format(i): {"name": "{}".format(row.name), "time": "{}".format(row.time)} for i, row in
+        enumerate(scores)
         }
-
 
 
 class TimerText(Resource):

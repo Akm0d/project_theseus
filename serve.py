@@ -6,34 +6,33 @@ from argparse import ArgumentParser
 import logging
 import multiprocessing as mp
 import globals
-from game.constants import LOGGING_LEVEL
 
-logger = logging.getLogger()
+log = logging.getLogger()
+handler = RotatingFileHandler("webapp.log", maxBytes=1280000, backupCount=1)
+handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
+handler.setLevel(logging.ERROR)
 
 if __name__ == '__main__':
+    # Parse command line arguments
     args = ArgumentParser()
     args.add_argument("--mock", action="store_true")
     args.add_argument("--debug", action="store_true")
     args.add_argument("--log-level", type=int, default=logging.INFO)
+
     opts = args.parse_args()
 
-    # Setup logger
-    print("Setting log level to {}".format(opts.log_level))
-    logger.setLevel(opts.log_level)
-    handler = RotatingFileHandler("webapp.log", maxBytes=1280000, backupCount=1)
-    handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-    handler.setLevel(opts.log_level)
-    logger.addHandler(handler)
+    logging.basicConfig(level=opts.log_level)
+    log.addHandler(handler)
 
     # Access ComQueue singleton
     q = globals.ComQueue()
 
     # Set up communications queue
     procComQueue = mp.Queue()
-    q.setComQueue(procComQueue) # Set the ComQueue
+    q.setComQueue(procComQueue)
 
     # Create the gameLogic Process
-    gameLogic = mp.Process(target=Logic().run, args=(procComQueue, opts.mock, opts.debug))
+    gameLogic = mp.Process(target=Logic().run, args=(procComQueue, opts.mock))
 
     # Start the Logic Process by forking (default start() behavior for unix)
     gameLogic.start()

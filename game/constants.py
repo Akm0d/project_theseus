@@ -18,10 +18,12 @@ class STATE(Enum):
     EXPLODE = "explode"
     # EXPLODE and WIN go to WAIT on RESET
 
+
 # How often should the logic _loop function run
 INTERRUPTS_PER_SECOND = 10
 # How long should the sleep interval be inbetween runs of _loop
 SLEEP_INTERVAL = 1 / INTERRUPTS_PER_SECOND
+
 
 # Communication between processes must be one of these
 class COMMUNICATION(Enum):
@@ -54,6 +56,7 @@ class COMMUNICATION(Enum):
     GET_ULTRASONIC = "get-ultrasonic"               # Return current ultrasonic state
     SENT_ULTRASONIC = "sent-ultrasonic"             # Message includes state of ultrasonic
     KILL_PLAYER = "kill-player"                     # Player has died
+
 
 # What are the events that trigger transitions between each state
 class EVENTS(Enum):
@@ -93,10 +96,12 @@ class ULTRASONIC_STATE(Enum):
     ENABLED = "enabled"
     DISABLED = "disabled"
 
+
 # How much time do they start with?
 TIME_GIVEN = 180
 # What is no time left?
 TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")
+
 
 # What are valid values for the RGB LEDS
 class RGBColor(Enum):
@@ -105,8 +110,6 @@ class RGBColor(Enum):
     BLUE = "blue"
     BLANK = "blank"
 
-
-LOGGING_LEVEL = logging.ERROR
 
 class JSCom(Enum):
     START_BUTTON = "Start"

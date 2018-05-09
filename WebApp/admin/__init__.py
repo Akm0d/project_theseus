@@ -2,8 +2,6 @@ from flask import render_template, Blueprint
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 
