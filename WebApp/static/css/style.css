@@ -74,8 +74,6 @@ a:active{outline: none;}
     padding-bottom: .8rem;
 }
 
-
-
 .scoreboard{
     position: absolute;
     bottom: 1px;
@@ -107,3 +105,4 @@ a:active{outline: none;}
     margin-bottom: 3rem;
     margin-top: 5rem;
 }
+

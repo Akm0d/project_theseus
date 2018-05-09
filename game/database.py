@@ -3,12 +3,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 from sqlite3 import Connection
 from typing import List, Tuple
-from game.constants import LOGGING_LEVEL
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(LOGGING_LEVEL)
+handler.setLevel(logging.DEBUG)
 log.addHandler(handler)
 
 max_time = 9999999
@@ -41,11 +40,11 @@ class Row(dict):
 
 
 class Database(Connection):
-    FILE = "game/scores.db"
+    FILE = "scores.db"
 
     def __init__(self):
         # if does not exist, format / create tables
-        super().__init__(self.FILE)
+        Connection.__init__(self, self.FILE)
         self.cur = self.cursor()
 
         # The TIME is the number on the clock when the game ended in success or failure
@@ -128,7 +127,19 @@ class Database(Connection):
         :return: A list of rows
         """
         # TODO select based on the given parameters and convert the data to a list of rows
-        self._execute(
-            "SELECT  * FROM DATA"
-        )
+        command = "SELECT * FROM DATA"
+        if success is not None:
+            if success:
+                # command = "SELECT ???? FROM DATA"
+                pass
+            else:
+                pass
+
+        self._execute(command)
         return [Row(*x) for x in self.cur.fetchall()]
+
+
+if __name__ == "__main__":
+    db = Database()
+    db.add_row(Row(name="chris", lasers=123, code=0x123, color="green", time=9, success=True))
+    print("\n".join([str(x) for x in db.get_rows()]))
