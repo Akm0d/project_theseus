@@ -8,7 +8,12 @@ from time import sleep
 import logging
 import random
 
+<<<<<<< Updated upstream
 from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, ULTRASONIC_STATE
+=======
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, \
+    COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE
+>>>>>>> Stashed changes
 from game.database import Database, Row
 
 import datetime
@@ -115,7 +120,6 @@ class Logic:
         self._code = 0x123
 
         self._start_time = time()
-
 
     @property
     def lasers(self) -> bin:
@@ -242,7 +246,6 @@ class Logic:
             self.comQueue.put([COMMUNICATION.SENT_ULTRASONIC, self.ultrasonic])
             # No return message is necessary
 
-
         # State Actions
         if self.state is STATE.WAIT:
             pass
@@ -250,12 +253,11 @@ class Logic:
             pass
         elif self.state is STATE.EXPLODE:
             pass
-                # TODO randomize laser pattern so that they flash
+            # TODO randomize laser pattern so that they flash
         elif self.state is STATE.WIN:
             pass
         else:
             log.error("Reached an unknown state: {}".format(self.state))
-
 
         # State Transitions
         if self.state is STATE.WAIT:

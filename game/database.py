@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 from sqlite3 import Connection
 from typing import List, Tuple
@@ -40,7 +41,7 @@ class Row(dict):
 
 
 class Database(Connection):
-    FILE = "scores.db"
+    FILE = "game/scores.db"
 
     def __init__(self):
         # if does not exist, format / create tables
@@ -128,10 +129,7 @@ class Database(Connection):
         """
         self._execute("SELECT * FROM DATA")
         result = [Row(*x) for x in self.cur.fetchall()]
-        #TODO chop up data based on funciton args
-        if id is not None:
-            result = [x for x in result if x.id == id]
-            # result = result where id match value given
+        # TODO chop up data based on funciton args
         if name is not None:
             result = [x for x in result if x.name == name]
             # result = result where name is equal to value given
@@ -150,10 +148,19 @@ class Database(Connection):
         if success is not None:
             result = [x for x in result if x.success == success]
             # result = result where success is equal to value given
-
         return result
+
 
 if __name__ == "__main__":
     db = Database()
-    db.add_row(Row(name="ted", lasers=145, code=0x123, color="green", time=9, success=False))
+    # db.add_row(Row(name="ted", lasers=145, code=0x123, color="green", time=9, success=False))
+    # db.add_row(Row(name="bill", lasers=512, code=0x113, color="red", time=3, success=True))
+    # db.add_row(Row(name="jane", lasers=301, code=0x1a3, color="green", time=6, success=False))
+    # db.add_row(Row(name="zach", lasers=333, code=0x1f3, color="green", time=1, success=False))
+    # db.add_row(Row(name="tyler", lasers=452, code=0x1e3, color="blue", time=10, success=True))
+    # db.add_row(Row(name="graig", lasers=631, code=0x12a, color="red", time=7, success=False))
+    # db.add_row(Row(name="chris", lasers=876, code=0xb23, color="green", time=8, success=True))
+    # db.add_row(Row(name="clayton", lasers=456, code=0x1c3, color="red", time=11, success=True))
+    # db.add_row(Row(name="broderick", lasers=175, code=0x12d, color="blue", time=9, success=True))
+
     print("\n".join([str(x) for x in db.get_rows()]))

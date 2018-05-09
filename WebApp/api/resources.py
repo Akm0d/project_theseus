@@ -3,6 +3,8 @@ from logging.handlers import RotatingFileHandler
 
 import logging
 from flask_restful import Resource
+
+from game.database import Database
 from game.logic import Logic
 from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE
 import datetime
@@ -18,29 +20,29 @@ log.addHandler(handler)
 
 state = Logic()
 
-
 start_time = None
 end_time = None
 
+
 def getState():
-        ComQueue().getComQueue().put([COMMUNICATION.GET_STATE])
-        while(1):
-            if not ComQueue().getComQueue().empty():
-                object = ComQueue().getComQueue().get()
-                if (object[0] == COMMUNICATION.SENT_STATE):
-                    return object[1]
-                else:
-                    # Not what we are looking for, put it back
-                    ComQueue().getComQueue().put(object)
+    ComQueue().getComQueue().put([COMMUNICATION.GET_STATE])
+    while (1):
+        if not ComQueue().getComQueue().empty():
+            object = ComQueue().getComQueue().get()
+            if (object[0] == COMMUNICATION.SENT_STATE):
+                return object[1]
             else:
-                # queue is empty
-                pass
+                # Not what we are looking for, put it back
+                ComQueue().getComQueue().put(object)
+        else:
+            # queue is empty
+            pass
 
 
 class Keypad(Resource):
     def get(self):
         ComQueue().getComQueue().put([COMMUNICATION.GET_CODE])
-        while(1):
+        while (1):
             if not ComQueue().getComQueue().empty():
                 object = ComQueue().getComQueue().get()
                 if (object[0] == COMMUNICATION.SENT_CODE):
@@ -71,9 +73,9 @@ class RGB(Resource):
 
         # The javascript needs the index in the selection wheel that matches the given color
         return {"status": self.options.index(color), "color": ""
-                if color == "black" else "lawngreen"
-                if color == "green" else "deepskyblue"
-                if color == "blue" else color
+        if color == "black" else "lawngreen"
+        if color == "green" else "deepskyblue"
+        if color == "blue" else color
                 }
 
 
@@ -88,12 +90,12 @@ class Solenoid(Resource):
             log.debug("Toggling the solenoid")
             ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_SOLENOID])
             toggleComplete = False
-            while(not toggleComplete):
+            while (not toggleComplete):
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
                     if (object[0] == COMMUNICATION.SENT_SOLENOID_STATUS):
                         status = object[1]
-                        toggleComplete = True   # Leave while
+                        toggleComplete = True  # Leave while
                     else:
                         # Not what we are looking for, put it back
                         ComQueue().getComQueue().put(object)
@@ -149,7 +151,6 @@ class Timer(Resource):
             return {"status": JSCom.RESET_BUTTON.value}
         else:
             return {"status": JSCom.START_BUTTON.value}
-
 
 
 class Tripwire(Resource):
@@ -232,7 +233,7 @@ class Entry(Resource):
             # TODO: Create a new row in the database with the current timer and with action team name
             log.info("Added team {} to the database as a team to successfully complete the box.".format(action))
         else:
-            pass # Do nothing, they didn't put a team.
+            pass  # Do nothing, they didn't put a team.
         return dict()
 
 
@@ -256,14 +257,17 @@ class Successes(Resource):
 
 
 class HighScores(Resource):
+    def __init__(self):
+        self.db = Database()
+
     def get(self):
         # TODO return top 5 unique scores from database
-        return {"team1": {"name": "person", "time": "00:59"},
-                "team2": {"name": "person2","time": "01:25"},
-                "team3": {"name": "person3","time": "02:25"},
-                "team4": {"name": "person4","time": "03:25"},
-                "team5": {"name": "person5","time": "04:25"}
-                }
+        scores = self.db.get_rows(success=True)
+        scores.sort(key=lambda x: x.time, reverse=False)
+        return {
+            "team{}".format(i): {"name": "{}".format(row.name), "time": "{}".format(row.time)} for i, row in enumerate(scores)
+        }
+
 
 
 class TimerText(Resource):
@@ -276,7 +280,7 @@ class TimerText(Resource):
             newDatetime = datetime.datetime.now() - start_time
             seconds = TIME_GIVEN - newDatetime.seconds
             minutes = seconds // 60
-            secondsToPrint =seconds - minutes * 60
+            secondsToPrint = seconds - minutes * 60
             if seconds <= 0:
                 # Player ran out of time
                 ComQueue().getComQueue().put([COMMUNICATION.KILL_PLAYER])
