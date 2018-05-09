@@ -103,8 +103,8 @@ class Logic:
         self._i2c_slave = None
 
         # Sensor states
-        self._lasers = None
-        self._rgb_color = None
+        self._lasers = 0x00
+        self._rgb_color = RGBColor.BLANK
 
         # Software states
         self._team = "--"
@@ -122,7 +122,7 @@ class Logic:
         log.debug("Setting new laser configuration: {}".format(bin(value)))
         # TODO Send the command over i2c to activate the correct lasers
         self.db.last = Row(lasers=value)
-        self._code = value
+        self._lasers = value
 
     @property
     def keypad_code(self) -> hex:
@@ -147,8 +147,6 @@ class Logic:
 
     @property
     def rgb_color(self) -> RGBColor:
-        if self._rgb_color is None:
-            self._rgb_color = random.choice([c for c in RGBColor])
         return self._rgb_color
 
     @rgb_color.setter

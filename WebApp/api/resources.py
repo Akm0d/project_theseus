@@ -63,7 +63,6 @@ class RGB(Resource):
         return self.get()
 
 
-
 class Solenoid(Resource):
     # REMOVED BECAUSE WE NOW GET THIS FROM LOGIC
     # def __init__(self):
@@ -139,32 +138,35 @@ class Timer(Resource):
 
 
 class Tripwire(Resource):
-    def get(self, name: str, action: str):
+    def get(self, name: str or int, action: str):
         toggle = action == "toggle"
         log.debug("Tripwire {}".format(name))
+        mask = 1 << int(name)
         if toggle:
-            # TODO toggle this specific tripwire
-            pass
-
-        # TODO get the status of the tripwire.  Return green if enabled, else white
-        return {"color": random.choice(["#DC3545", ""])}
+            state.lasers ^= mask
+        return {"color": "#DC3545" if state.lasers & mask else ""}
 
 
 class TripwireAll(Resource):
     def get(self, action):
         toggle = action == "toggle"
-        # TODO if at least one tripwire is on, turn them all off.  If all of them are off, then randomize or turn all on
+        # if at least one tripwire is on, turn them all off.  If all of them are off, then randomize or turn all on
+        if toggle:
+            if state.lasers:
+                state.lasers = 0x00
+            else:
+                state.lasers = 0xFF
         status = dict()
         for i in range(1, 7):
-            # TODO get the status of each tripwire.  Is it on or off?
-            status[i] = random.choice(["#DC3545", ""])
+            status[i] = Tripwire().get(i, "status")["color"]
         return status
 
 
 class Randomize(Resource):
     def get(self):
-        # TODO send a request to randomize the order of the lasers then return the status of all of them
-        return dict()
+        log.debug("Randomizing the lasers")
+        # TODO Make sure certain rules are followed when selecting random lasers
+        state.lasers = random.randint(0, 127)
 
 
 class Ultrasonic(Resource):

@@ -196,9 +196,9 @@ function tripwire_all(toggle) {
     x.send();
 }
 
-function tripwire_randomize(toggle) {
+function tripwire_randomize() {
     var x = new XMLHttpRequest();
-    x.open('GET', 'http://' + document.location.host + '/api/tripwire/randomize' + (toggle? "/toggle": "/status"), true);
+    x.open('GET', 'http://' + document.location.host + '/api/tripwire/randomize', true);
     x.onload = function () {
         if (x.readyState === 4) {
             if (x.status === 200) {
