@@ -126,18 +126,32 @@ class Database(Connection):
         :param success: Select rows with success or failure
         :return: A list of rows
         """
-        # TODO select based on the given parameters and convert the data to a list of rows
-        command = "SELECT * FROM DATA"
+        self._execute("SELECT * FROM DATA")
+        result = [Row(*x) for x in self.cur.fetchall()]
+        #TODO chop up data based on funciton args
+        if id is not None:
+            result = [x for x in result if x.id == id]
+            # result = result where id match value given
+        if name is not None:
+            result = [x for x in result if x.name == name]
+            # result = result where name is equal to value given
+        if lasers is not None:
+            result = [x for x in result if x.lasers == lasers]
+            # result = result where lasers is equal to value given
+        if code is not None:
+            result = [x for x in result if x.code == code]
+            # result = result where code is equal to value given
+        if color is not None:
+            result = [x for x in result if x.color == color]
+            # result = result where color is equal to value given
+        if time is not None:
+            result = [x for x in result if x.time == time]
+            # result = result where time is equal to value given
         if success is not None:
-            if success:
-                # command = "SELECT ???? FROM DATA"
-                pass
-            else:
-                pass
+            result = [x for x in result if x.success == success]
+            # result = result where success is equal to value given
 
-        self._execute(command)
-        return [Row(*x) for x in self.cur.fetchall()]
-
+        return result
 
 if __name__ == "__main__":
     db = Database()
