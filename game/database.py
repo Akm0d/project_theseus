@@ -136,7 +136,6 @@ class Database(Connection):
         """
         self._execute("SELECT * FROM DATA")
         result = [Row(*x) for x in self.cur.fetchall()]
-        # TODO chop up data based on funciton args
         if name is not None:
             result = [x for x in result if x.name == name]
             # result = result where name is equal to value given
