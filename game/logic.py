@@ -147,6 +147,8 @@ class Logic:
 
     @property
     def rgb_color(self) -> RGBColor:
+        if self._rgb_color is None:
+            self._rgb_color = random.choice([c for c in RGBColor])
         return self._rgb_color
 
     @rgb_color.setter

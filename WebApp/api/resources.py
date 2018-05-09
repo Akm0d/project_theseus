@@ -5,7 +5,7 @@ import logging
 from flask_restful import Resource
 from game.database import Database
 from game.logic import Logic
-from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE
+from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE, RGBColor
 import datetime
 
 from globals import ComQueue
@@ -39,42 +39,28 @@ def getState():
 
 class Keypad(Resource):
     def get(self):
-        ComQueue().getComQueue().put([COMMUNICATION.GET_CODE])
-        while (1):
-            if not ComQueue().getComQueue().empty():
-                object = ComQueue().getComQueue().get()
-                if object[0] == COMMUNICATION.SENT_CODE:
-                    return {"status": object[1]}
-                else:
-                    # Not for me
-                    ComQueue().getComQueue().put(object)
-            else:
-                # Queue is empty
-                pass
+        return {"status": state.keypad_code}
 
     def put(self, code):
-        ComQueue().getComQueue().put([COMMUNICATION.SET_CODE, code])
-        # No need to query what it will be as I know
-        return {"status": code}
+        state.keypad_code = code
+        return self.get()
 
 
 class RGB(Resource):
     options = ["black", "red", "green", "blue"]
 
-    def get(self, color: str):
-        if not color == "status":
-            # TODO Send a request to the Listener that changes the color of the RGB
-            log.debug("selecting '{}'".format(color))
-        # TODO Get the actual color of the rgb from the listener
-        if color == "status":
-            color = random.choice(self.options)
-
-        # The javascript needs the index in the selection wheel that matches the given color
-        return {"status": self.options.index(color), "color": ""
-                if color == "black" else "lawngreen"
-                if color == "green" else "deepskyblue"
-                if color == "blue" else color
+    def get(self):
+        color = state.rgb_color
+        return {"status": self.options.index(color.value),
+                "color": "" if color is RGBColor.BLANK else
+                "lawngreen" if color is RGBColor.GREEN else
+                "deepskyblue" if color is RGBColor.BLUE else
+                color.value
                 }
+
+    def put(self, color: str):
+        state.rgb_color = RGBColor(color)
+        return self.get()
 
 
 class Solenoid(Resource):
@@ -104,7 +90,7 @@ class Solenoid(Resource):
             # Get solenoid status
             ComQueue().getComQueue().put([COMMUNICATION.SOLENOID_STATUS])
             statusComplete = False
-            while (not statusComplete):
+            while not statusComplete:
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
                     if object[0] == COMMUNICATION.SENT_SOLENOID_STATUS:
@@ -190,7 +176,7 @@ class Ultrasonic(Resource):
             log.debug("Toggling the ultrasonic")
             ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_ULTRASONIC])
             toggleComplete = False
-            while (not toggleComplete):
+            while not toggleComplete:
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
                     if (object[0] == COMMUNICATION.SENT_ULTRASONIC):
@@ -206,7 +192,7 @@ class Ultrasonic(Resource):
             # Get solenoid status
             ComQueue().getComQueue().put([COMMUNICATION.GET_ULTRASONIC])
             statusComplete = False
-            while (not statusComplete):
+            while not statusComplete:
                 if not ComQueue().getComQueue().empty():
                     object = ComQueue().getComQueue().get()
                     if (object[0] == COMMUNICATION.SENT_ULTRASONIC):
@@ -264,7 +250,7 @@ class HighScores(Resource):
         scores.sort(key=lambda x: x.time, reverse=False)
         return {
             "team{}".format(i): {"name": "{}".format(row.name), "time": "{}".format(row.time)} for i, row in
-        enumerate(scores)
+            enumerate(scores)
         }
 
 

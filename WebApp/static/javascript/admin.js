@@ -31,7 +31,7 @@ document.getElementById("addTeam").onchange = function(e){
 };
 
 document.getElementById("rgb-select").onchange = function(e) {
-    rgb_select(e.srcElement.value);
+    rgb_status(e.srcElement.value);
     e.srcElement.blur()
 };
 
@@ -50,16 +50,6 @@ document.getElementById("timer-start-reset").onclick = function() {
 document.getElementById("ultrasonic-enable").onclick = function() {
     ultrasonic_status(toggle=true)
 };
-
-// document.getElementById("submitEntry").onclick = function(e) {
-//     e.preventDefault();
-//     add_team(teamName=document.getElementById("addTeam").value);
-// };
-
-// document.getElementById("startGame").onclick = function(e) {
-//     e.preventDefault();
-//     start_game();
-// };
 
 function keycode_status(code){
     // Don't refresh this part of the page if it is in focus
@@ -110,25 +100,30 @@ function refresh_all(){
     timer_status(toggle=false);
     tripwire_all(toggle=false);
     ultrasonic_status(toggle=false);
-    rgb_select("status")
+    rgb_status("status")
 }
 
-function rgb_select(color){
+function rgb_status(color){
     // Don't refresh this part of the page if it is in focus
-    if (!$(document.getElementById("rgb-select")).is(':focus')) {
-        var x = new XMLHttpRequest();
-        x.open('GET', 'http://' + document.location.host + '/api/rgb_select/' + color, true);
-        x.onload = function () {
-            if (x.readyState === 4) {
-                if (x.status === 200) {
-                    var data = JSON.parse(x.response);
-                    document.getElementById("rgb-select").selectedIndex = data["status"];
-                    document.getElementById("rgb-select").style.backgroundColor = data["color"];
-                }
-            }
-        };
-        x.send();
+    var x = new XMLHttpRequest();
+    if (color === "status") {
+        if (!$(document.getElementById("rgb-select")).is(':focus')) {
+            x.open('GET', 'http://' + document.location.host + '/api/rgb_status/', true)
+        }
+    } else {
+        x.open('PUT', 'http://' + document.location.host + '/api/rgb_status/' + color, true);
+
     }
+    x.onload = function () {
+        if (x.readyState === 4) {
+            if (x.status === 200) {
+                var data = JSON.parse(x.response);
+                document.getElementById("rgb-select").selectedIndex = data["status"];
+                document.getElementById("rgb-select").style.backgroundColor = data["color"];
+            }
+        }
+    };
+    x.send();
 }
 
 function solenoid_status(toggle){
@@ -165,7 +160,6 @@ function timer_status(toggle){
                 {
                     document.getElementById("timer-start-reset").innerHTML = '<button class="btn btn-outline-danger" >Reset</button>';
                 }
-                console.log(data);
             }
         }
     };

@@ -108,7 +108,7 @@ class RGBColor(Enum):
     GREEN = "green"
     RED = "red"
     BLUE = "blue"
-    BLANK = "blank"
+    BLANK = "black"
 
 
 class JSCom(Enum):

@@ -6,7 +6,7 @@ resource = Blueprint('api', __name__, url_prefix='/api')
 api = Api(resource)
 
 api.add_resource(Keypad, '/keycode/', '/keycode/<code>')
-api.add_resource(RGB, '/rgb_select/<color>')
+api.add_resource(RGB, '/rgb_status/', '/rgb_status/<color>')
 api.add_resource(Solenoid, '/solenoid/<action>')
 api.add_resource(Timer, '/timer/<action>')
 api.add_resource(Tripwire, '/tripwire/<name>/<action>')
