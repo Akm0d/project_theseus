@@ -122,14 +122,13 @@ class Logic:
 
     @property
     def rgb_color(self) -> RGBColor:
-        return self.db.last.color
+        return RGBColor(self.db.last.color)
 
     @rgb_color.setter
     def rgb_color(self, value: RGBColor):
         log.debug("Setting new rgb color: {}".format(value))
         # TODO send the command over i2c to change the rgb color
-        if value in [RGBColor.BLUE, RGBColor.RED]:
-            self.db.last = Row(color=value.value)
+        self.db.last = Row(color=value.value)
 
     def run(self, queue, mock: bool = False):
         """
@@ -240,10 +239,16 @@ class Logic:
             if command_id is COMMUNICATION.RESET_GAME:
                 command_id = None
                 self.state = STATE.WAIT
+                # Lock solenoid
+                self.solenoid = SOLENOID_STATE.LOCKED
+                self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
         elif self.state is STATE.WIN:
             if command_id is COMMUNICATION.RESET_GAME:
                 command_id = None
                 self.state = STATE.WAIT
+                # Lock solenoid
+                self.solenoid = SOLENOID_STATE.LOCKED
+                self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
         if command_id is not None:
             # If the command wasn't used, it is for the other process, put it back
             self.comQueue.put(command)
@@ -278,3 +283,4 @@ class Logic:
 
         log.debug("Adding new row to the database:\n{}".format(row))
         self.db.add_row(row)
+

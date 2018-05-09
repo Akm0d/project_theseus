@@ -44,7 +44,7 @@ document.getElementById("tripwire-randomize").onclick = function() {
 };
 
 document.getElementById("timer-start-reset").onclick = function() {
-    timer_status(toggle=true)
+    timer_status(toggle=true);
 };
 
 document.getElementById("ultrasonic-enable").onclick = function() {
@@ -164,6 +164,7 @@ function timer_status(toggle){
         }
     };
     x.send();
+    /* TODO refresh all after start game, but not while hovering setTimeout(function() { refresh_all(); }, 500);*/
 }
 
 function tripwire_status(number, toggle) {
@@ -232,5 +233,6 @@ function ultrasonic_status(toggle){
 setInterval(function(){
     // TODO after the project is complete the refresh time can be set based on how long it takes python code to run
     refresh_all()
+    keycode_status("status");
 }, 1600);
 */
