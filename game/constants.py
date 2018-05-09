@@ -32,6 +32,7 @@ class COMMUNICATION(Enum):
     GET_TIMER = "get-timer-text"                    # Please get the timer text
     TIMER_TEXT = "timer-text"                       # Message contains timer text
     START_GAME = "start-game"
+    RESET_GAME = "reset-game"
     TOGGLE_SOLENOID = "toggle-solenoid"             # Toggle if solenoid is open or closed
     SOLENOID_STATUS = "solenoid-status"             # Please send state of solenoid
     SENT_SOLENOID_STATUS = "sent-solenoid-status"   # Message contains state of solenoid
@@ -52,6 +53,7 @@ class COMMUNICATION(Enum):
     TOGGLE_ULTRASONIC = "toggle-ultrasonic"         # Toggle whether the ultrasonic is active or not
     GET_ULTRASONIC = "get-ultrasonic"               # Return current ultrasonic state
     SENT_ULTRASONIC = "sent-ultrasonic"             # Message includes state of ultrasonic
+    KILL_PLAYER = "kill-player"                     # Player has died
 
 # What are the events that trigger transitions between each state
 class EVENTS(Enum):
@@ -88,7 +90,7 @@ class SOLENOID_STATE(Enum):
 
 
 # How much time do they start with?
-TIME_GIVEN = datetime.datetime.strptime("03:00", "%M:%S")
+TIME_GIVEN = 180
 # What is no time left?
 TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")
 

@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flask_restful import Resource
 from game.logic import Logic
-from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, JSCom
+from game.constants import STATE, SLEEP_INTERVAL, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, JSCom, TIME_GIVEN
 import datetime
 from time import sleep
 
@@ -18,6 +18,9 @@ log.addHandler(handler)
 
 state = Logic()
 
+
+start_time = None
+end_time = None
 
 def getState():
         ComQueue().getComQueue().put([COMMUNICATION.GET_STATE])
@@ -124,26 +127,22 @@ class Timer(Resource):
         self.enabled = True
 
     def get(self, action: str):
-        if action == "toggle":
-            ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_TIMER])
-            toggleComplete = False
-            while(not toggleComplete):
-                if not ComQueue().getComQueue().empty():
-                    object = ComQueue().getComQueue().get()
-                    if (object[0] == COMMUNICATION.TIMER_TOGGLED):
-                        state = object[1]
-                        toggleComplete = True   # Leave while
-                    else:
-                        # Not what we are looking for, put it back
-                        ComQueue().getComQueue().put(object)
-                else:
-                    # queue is empty
-                    pass
-        else:
-            # Get state from other process
-            state = getState()
+        global start_time
+        state = getState()
 
-        print("\n\n\n{}\n\n\n".format(state))
+        if action == "toggle":
+            if (state == STATE.WAIT):
+                # Waiting to begin
+                start_time = datetime.datetime.now()
+                ComQueue().getComQueue().put([COMMUNICATION.START_GAME])
+                state = STATE.RUNNING
+            elif (state == STATE.RUNNING):
+                end_time = datetime.datetime.now()
+                ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
+                state = STATE.WAIT
+            else:
+                ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
+                state = STATE.WAIT
 
         # Based on state, send a specific code
         if (state == STATE.RUNNING):
@@ -239,12 +238,18 @@ class HighScores(Resource):
 
 class TimerText(Resource):
     def get(self):
-        ComQueue().getComQueue().put([COMMUNICATION.GET_TIMER])
-        recieved = False
-        while(1):
-            object = ComQueue().getComQueue().get()
-            if object[0] == COMMUNICATION.TIMER_TEXT:
-                return {"timer": object[1]}
+        global start_time
+        state = getState()
+        if state == STATE.WAIT:
+            return {"timer": "03:00"}
+        elif state == STATE.RUNNING:
+            newDatetime = datetime.datetime.now() - start_time
+            seconds = TIME_GIVEN - newDatetime.seconds
+            minutes = seconds // 60
+            secondsToPrint =seconds - minutes * 60
+            if seconds <= 0:
+                # Player ran out of time
+                ComQueue().getComQueue().put([COMMUNICATION.KILL_PLAYER])
+                return {"timer": "DEAD"}
             else:
-                # Wasn't what we were looking for, put it back
-                ComQueue().getComQueue().put(object)
+                return {"timer": "{}:{:2}".format(minutes, secondsToPrint)}

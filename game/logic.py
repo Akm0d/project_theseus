@@ -28,7 +28,6 @@ class Logic:
     _mock = False
     _process = Lock()
     _state = STATE.WAIT
-    _timer = TIME_GIVEN
     _solenoid = SOLENOID_STATE.UNLOCKED
 
     @property
@@ -105,28 +104,9 @@ class Logic:
         # Software states
         self._team = "--"
         self._code = 0x123
-        self._time = MAX_TIME
 
         self._start_time = time()
 
-    @property
-    def time(self) -> str:
-        """
-        Return the string value that should be displayed on the timer
-        :return: The number of minutes and seconds remaining in this attempt I.E '03:12'
-        """
-        minutes = int(self._time / 60)
-        seconds = self._time - (minutes * 60)
-        if self.state is STATE.EXPLODE:
-            return "BOOM!"
-        elif self.state is STATE.WIN:
-            return "SUCCESS!"
-        else:
-            return "{:02}:{:02}".format(minutes, seconds)
-
-    @time.setter
-    def time(self, value: int):
-        self._time = value
 
     @property
     def lasers(self) -> bin:
@@ -191,7 +171,6 @@ class Logic:
             self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
             self.lasers = random.randint(1, 0x3f)
             self.state = STATE.WAIT  # Change state of game to WAIT
-            self.timer = TIME_GIVEN
             self.team = "--"
             self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue = queue
@@ -200,7 +179,7 @@ class Logic:
             try:
                 while True:
                     self._loop()
-                    sleep(SLEEP_INTERVAL)
+                    # sleep(SLEEP_INTERVAL)
             except KeyboardInterrupt:
                 return
 
@@ -246,59 +225,38 @@ class Logic:
 
         # State Actions
         if self.state is STATE.WAIT:
-            self.time = MAX_TIME
-            if command_id is COMMUNICATION.GET_TIMER:
-                command_id = None
-                self.comQueue.put([COMMUNICATION.TIMER_TEXT, datetime.datetime.strftime(self.timer, "%M:%S")])
+            pass
         elif self.state is STATE.RUNNING:
-            if self.counter < INTERRUPTS_PER_SECOND:
-                self.counter = self.counter + 1
-            else:
-                self.counter = 0
-                # Decrement time
-                self.timer = self.timer - datetime.timedelta(seconds=1)
-            if command_id is COMMUNICATION.GET_TIMER:
-                command_id = None
-                # Show the current time
-                self.comQueue.put([COMMUNICATION.TIMER_TEXT, datetime.datetime.strftime(self.timer, "%M:%S")])
+            pass
         elif self.state is STATE.EXPLODE:
-            if command_id is COMMUNICATION.GET_TIMER:
-                command_id = None
-                self.comQueue.put([COMMUNICATION.TIMER_TEXT, "DEAD"])
+            pass
                 # TODO randomize laser pattern so that they flash
         elif self.state is STATE.WIN:
-            if command_id is COMMUNICATION.GET_TIMER:
-                command_id = None
-                self.comQueue.put([COMMUNICATION.TIMER_TEXT, "SUCCESS!"])
+            pass
         else:
             log.error("Reached an unknown state: {}".format(self.state))
 
+
         # State Transitions
         if self.state is STATE.WAIT:
-            if command_id in [COMMUNICATION.START_GAME, COMMUNICATION.TOGGLE_TIMER]:
+            if command_id is COMMUNICATION.START_GAME:
                 command_id = None
                 self.state = STATE.RUNNING
-                # Reset timer
-                self.timer = TIME_GIVEN
         elif self.state is STATE.RUNNING:
-            if command_id is COMMUNICATION.TOGGLE_TIMER:
+            if command_id is COMMUNICATION.RESET_GAME:
                 command_id = None
-                # Reset timer
-                self.timer = TIME_GIVEN
                 self.state = STATE.WAIT
-        elif self.state is STATE.EXPLODE:
-            if command_id is COMMUNICATION.TOGGLE_TIMER:
+            elif command_id is COMMUNICATION.KILL_PLAYER:
                 command_id = None
-                # Reset timer
-                self.timer = TIME_GIVEN
+                self.state = STATE.EXPLODE
+        elif self.state is STATE.EXPLODE:
+            if command_id is COMMUNICATION.RESET_GAME:
+                command_id = None
                 self.state = STATE.WAIT
         elif self.state is STATE.WIN:
-            if command_id is COMMUNICATION.TOGGLE_TIMER:
+            if command_id is COMMUNICATION.RESET_GAME:
                 command_id = None
-                # Reset timer
-                self.timer = TIME_GIVEN
                 self.state = STATE.WAIT
-
         if command_id is not None:
             # If the command wasn't used, it is for the other process, put it back
             self.comQueue.put(command)
