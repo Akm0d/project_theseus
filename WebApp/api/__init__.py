@@ -12,6 +12,7 @@ api = Api(resource)
 #         api.add_resource(t, "/{base}/".format(base=base), "/{base}/<arg>".format(base=base))
 
 api.add_resource(Keypad, '/keycode/', '/keycode/<code>')
+api.add_resource(RGB, '/rgb_status/', '/rgb_status/<color>')
 api.add_resource(Solenoid, '/solenoid/<action>')
 api.add_resource(Timer, '/timer/<action>')
 api.add_resource(Tripwire, '/tripwire/<name>/<action>')

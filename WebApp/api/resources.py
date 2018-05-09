@@ -63,6 +63,7 @@ class RGB(Resource):
         return self.get()
 
 
+
 class Solenoid(Resource):
     # REMOVED BECAUSE WE NOW GET THIS FROM LOGIC
     # def __init__(self):
