@@ -4,14 +4,16 @@ from logging.handlers import RotatingFileHandler
 from os import path
 from sqlite3 import Connection
 from typing import List
+try:
+    from game.constants import TIME_GIVEN
+except ModuleNotFoundError:
+    from constants import TIME_GIVEN
 
 log = logging.getLogger(__name__)
 handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
 handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
 handler.setLevel(logging.ERROR)
 log.addHandler(handler)
-
-max_time = 9999999
 
 
 class Row(dict):
@@ -41,7 +43,7 @@ class Row(dict):
     def __str__(self):
         return "{id}, {name}, {lasers}, {code}, {color}, {time}, {success}".format(
             id=self.id, name=self.name, lasers=bin(self.lasers),
-            code=hex(self.code), color=self.color, time=self.time, success=bool(self.success)
+            code=hex(int("0x" + str(self.code), 16)), color=self.color, time=self.time, success=bool(self.success)
         )
 
 
@@ -91,7 +93,7 @@ class Database(Connection):
         """
         # Brief Error checking for columns that cannot be null
         if item.time is None:
-            item.time = max_time
+            item.time = TIME_GIVEN
         if item.success is None:
             item.success = False
 
@@ -160,14 +162,14 @@ if __name__ == "__main__":
     db = Database()
 
     if not db.get_rows():
-        db.add_row(Row(name="ted", lasers=145, code=0x123, color="green", time=9, success=False))
-        db.add_row(Row(name="bill", lasers=512, code=0x113, color="red", time=3, success=True))
-        db.add_row(Row(name="jane", lasers=301, code=0x1a3, color="green", time=6, success=False))
-        db.add_row(Row(name="zach", lasers=333, code=0x1f3, color="green", time=1, success=False))
-        db.add_row(Row(name="tyler", lasers=452, code=0x1e3, color="blue", time=10, success=True))
-        db.add_row(Row(name="graig", lasers=631, code=0x12a, color="red", time=7, success=False))
-        db.add_row(Row(name="chris", lasers=876, code=0xb23, color="green", time=8, success=True))
-        db.add_row(Row(name="clayton", lasers=456, code=0x1c3, color="red", time=11, success=True))
-        db.add_row(Row(name="broderick", lasers=175, code=0x12d, color="blue", time=9, success=True))
+        db.add_row(Row(name="ted", lasers=14, code=0x123, color="green", time=9, success=False))
+        db.add_row(Row(name="bill", lasers=52, code=0x113, color="red", time=3, success=True))
+        db.add_row(Row(name="jane", lasers=31, code=0x1a3, color="green", time=6, success=False))
+        db.add_row(Row(name="zach", lasers=33, code=0x1f3, color="green", time=1, success=False))
+        db.add_row(Row(name="tyler", lasers=52, code=0x1e3, color="blue", time=10, success=True))
+        db.add_row(Row(name="graig", lasers=31, code=0x12a, color="red", time=7, success=False))
+        db.add_row(Row(name="chris", lasers=86, code=0xb23, color="green", time=8, success=True))
+        db.add_row(Row(name="clayton", lasers=46, code=0x1c3, color="red", time=11, success=True))
+        db.add_row(Row(name="broderick", lasers=15, code=0x12d, color="blue", time=9, success=True))
 
     print("\n".join([str(x) for x in db.get_rows()]))
