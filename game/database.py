@@ -141,5 +141,5 @@ class Database(Connection):
 
 if __name__ == "__main__":
     db = Database()
-    db.add_row(Row(name="chris", lasers=123, code=0x123, color="green", time=9, success=True))
+    db.add_row(Row(name="ted", lasers=145, code=0x123, color="green", time=9, success=False))
     print("\n".join([str(x) for x in db.get_rows()]))
