@@ -1,5 +1,5 @@
 from datetime import time
-from game.constants import I2C, STATE, RGBColor, COMMUNICATION, SOLENOID_STATE, ULTRASONIC_STATE
+from game.constants import I2C, STATE, RGBColor, COMMUNICATION, SOLENOID_STATE, ULTRASONIC_STATE, TIME_GIVEN
 from game.database import Database, Row
 from logging.handlers import RotatingFileHandler
 from multiprocessing import Lock
@@ -17,15 +17,23 @@ log.addHandler(handler)
 
 
 class Logic:
-    STATE_FILE = ".state"
-    _code = "000"
+    mock = True
     _comQueue = None
     _counter = 0
-    _mock = False
     _process = Lock()
     _state = STATE.WAIT
     _solenoid = SOLENOID_STATE.UNLOCKED
     _ultrasonic = ULTRASONIC_STATE.ENABLED
+
+    def __init__(self):
+        self.db = Database()
+        self._bus = None
+        self._counter = 0
+        self._timer = 0
+        self._i2c_master = None
+        self._i2c_slave = None
+
+        self._start_time = time()
 
     @property
     def ultrasonic(self):
@@ -34,14 +42,6 @@ class Logic:
     @ultrasonic.setter
     def ultrasonic(self, value: ULTRASONIC_STATE):
         self._ultrasonic = value
-
-    @property
-    def code(self):
-        return self._code
-
-    @code.setter
-    def code(self, value):
-        self._code = value
 
     @property
     def comQueue(self):
@@ -87,67 +87,42 @@ class Logic:
         self._timer = value
 
     @property
-    def mock(self):
-        return self._mock
-
-    @mock.setter
-    def mock(self, value: bool):
-        log.debug("mock was set to {}".format(value))
-        self._mock = value
-
-    def __init__(self):
-        self.db = Database()
-        self._bus = None
-        self._counter = 0
-        self._i2c_master = None
-        self._i2c_slave = None
-
-        # Sensor states
-        self._lasers = 0x00
-        self._rgb_color = RGBColor.BLANK
-
-        # Software states
-        self._team = "--"
-        self._code = 0x123
-
-        self._start_time = time()
-
-    @property
     def lasers(self) -> bin:
-        return self._lasers
+        return self.db.last.lasers
 
     @lasers.setter
     def lasers(self, value: int):
-        # TODO make sure the value is acceptable beofore applying it
+        assert 0 <= value < 128
         log.debug("Setting new laser configuration: {}".format(bin(value)))
         # TODO Send the command over i2c to activate the correct lasers
         self.db.last = Row(lasers=value)
-        self._lasers = value
 
     @property
     def keypad_code(self) -> hex:
-        return self._code
+        return self.db.last.code
 
     @keypad_code.setter
     def keypad_code(self, value: hex):
-        # TODO make sure the value is acceptable beofore applying it
-        log.debug("Setting new keypad code: 0x{}".format(value))
-        self.db.last = Row(code=value)
-        self._code = value
+        try:
+            typed = int(value)
+        except ValueError:
+            typed = int("0x" + str(value), 16)
+        assert 0x0 <= typed <= 0xfff
+        log.debug("Setting new keypad code: 0x{}".format(typed))
+        self.db.last = Row(code=typed)
 
     @property
     def team(self) -> str:
-        return self._team
+        return self.db.last.name
 
     @team.setter
     def team(self, value: str):
         log.debug("Setting current team name to: {}".format(value))
         self.db.last = Row(name=value)
-        self._team = value
 
     @property
     def rgb_color(self) -> RGBColor:
-        return self._rgb_color
+        return self.db.last.color
 
     @rgb_color.setter
     def rgb_color(self, value: RGBColor):
@@ -155,7 +130,6 @@ class Logic:
         # TODO send the command over i2c to change the rgb color
         if value in [RGBColor.BLUE, RGBColor.RED]:
             self.db.last = Row(color=value.value)
-        self._rgb_color = value
 
     def run(self, queue, mock: bool = False):
         """
@@ -172,13 +146,13 @@ class Logic:
                 self.mock = False
 
             # Initialize all the random data, such as laser patterns and codes
-            self.keypad_code = '{:03x}'.format(random.randint(0, 0xfff))
+            self.keypad_code = random.randint(0, 0xfff)
             self.lasers = random.randint(1, 0x3f)
             self.state = STATE.WAIT  # Change state of game to WAIT
             self.team = "--"
             self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue = queue
-            self.code = "000"
+            self.keypad_code = random.randint(0, 0xfff)
             self.ultrasonic = ULTRASONIC_STATE.ENABLED
 
             try:
@@ -219,12 +193,6 @@ class Logic:
             else:
                 self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
-        elif command_id is COMMUNICATION.GET_CODE:
-            command_id = None
-            self.comQueue.put([COMMUNICATION.SENT_CODE, self.code])
-        elif command_id is COMMUNICATION.SET_CODE:
-            command_id = None
-            self.code = command[1]
         elif command_id is COMMUNICATION.GET_ULTRASONIC:
             command_id = None
             self.comQueue.put([COMMUNICATION.SENT_ULTRASONIC, self.ultrasonic])
@@ -255,6 +223,7 @@ class Logic:
             if command_id is COMMUNICATION.START_GAME:
                 command_id = None
                 self.state = STATE.RUNNING
+                self.start_game()
         elif self.state is STATE.RUNNING:
             if command_id is COMMUNICATION.RESET_GAME:
                 command_id = None
@@ -262,6 +231,11 @@ class Logic:
             elif command_id is COMMUNICATION.KILL_PLAYER:
                 command_id = None
                 self.state = STATE.EXPLODE
+                self.db.last.success = False
+            elif command_id is COMMUNICATION.DEFUSED:
+                command_id = None
+                self.state = STATE.WIN
+                self.db.last.success = True
         elif self.state is STATE.EXPLODE:
             if command_id is COMMUNICATION.RESET_GAME:
                 command_id = None
@@ -287,3 +261,20 @@ class Logic:
             self._bus.write_i2c_block_data(device.value, 0x00, [ord(c) for c in message])
         except IOError:
             pass
+
+    @staticmethod
+    def random_laser_pattern()-> int:
+        # TODO make sure the laser pattern conforms to certain rules
+        return random.randint(0, 127)
+
+    def start_game(self):
+        """
+        Add a row to the database, generate random data for all the puzzles
+        """
+        row = Row(
+            name=self.db.last.name, lasers=self.random_laser_pattern(), code=random.randint(0, 0xfff), success=False,
+            color=random.choice([RGBColor.RED.value, RGBColor.BLUE.value]), time=TIME_GIVEN
+        )
+
+        log.debug("Adding new row to the database:\n{}".format(row))
+        self.db.add_row(row)

@@ -39,7 +39,7 @@ def getState():
 
 class Keypad(Resource):
     def get(self):
-        return {"status": state.keypad_code}
+        return {"status": str(hex(state.keypad_code)[2:])}
 
     def put(self, code):
         state.keypad_code = code
@@ -114,24 +114,24 @@ class Timer(Resource):
 
     def get(self, action: str):
         global start_time
-        state = getState()
+        cur_state = getState()
 
         if action == "toggle":
-            if state is STATE.WAIT:
+            if cur_state is STATE.WAIT:
                 # Waiting to begin
                 start_time = datetime.datetime.now()
                 ComQueue().getComQueue().put([COMMUNICATION.START_GAME])
                 state = STATE.RUNNING
-            elif state is STATE.RUNNING:
+            elif cur_state is STATE.RUNNING:
                 end_time = datetime.datetime.now()
                 ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
-                state = STATE.WAIT
+                cur_state = STATE.WAIT
             else:
                 ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
-                state = STATE.WAIT
+                cur_state = STATE.WAIT
 
         # Based on state, send a specific code
-        if state is STATE.RUNNING:
+        if cur_state is STATE.RUNNING:
             return {"status": JSCom.RESET_BUTTON.value}
         else:
             return {"status": JSCom.START_BUTTON.value}
@@ -155,7 +155,7 @@ class TripwireAll(Resource):
             if state.lasers:
                 state.lasers = 0x00
             else:
-                state.lasers = 0xFF
+                state.lasers = 0x7F
         status = dict()
         for i in range(1, 7):
             status[i] = Tripwire().get(i, "status")["color"]
@@ -165,8 +165,7 @@ class TripwireAll(Resource):
 class Randomize(Resource):
     def get(self):
         log.debug("Randomizing the lasers")
-        # TODO Make sure certain rules are followed when selecting random lasers
-        state.lasers = random.randint(0, 127)
+        state.lasers = state.random_laser_pattern()
 
 
 class Ultrasonic(Resource):
@@ -225,6 +224,8 @@ class Entry(Resource):
 
 
 class Team(Resource):
+    db = Database()
+
     def get(self):
         return {"status": state.team}
 
@@ -234,18 +235,21 @@ class Team(Resource):
 
 
 class Attempts(Resource):
+    db = Database()
+
     def get(self):
-        return {"attempts": 100}
+        return {"attempts": len(self.db.get_rows())}
 
 
 class Successes(Resource):
+    db = Database()
+
     def get(self):
-        return {"successes": 5}
+        return {"successes": len(self.db.get_rows(success=True))}
 
 
 class HighScores(Resource):
-    def __init__(self):
-        self.db = Database()
+    db = Database()
 
     def get(self):
         # TODO return top 5 unique scores from database
@@ -260,10 +264,10 @@ class HighScores(Resource):
 class TimerText(Resource):
     def get(self):
         global start_time
-        state = getState()
+        cur_state = getState()
         if state == STATE.WAIT:
             return {"timer": "03:00"}
-        elif state == STATE.RUNNING:
+        elif cur_state == STATE.RUNNING:
             newDatetime = datetime.datetime.now() - start_time
             seconds = TIME_GIVEN - newDatetime.seconds
             minutes = seconds // 60
