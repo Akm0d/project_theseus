@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import logging
 from logging.handlers import RotatingFileHandler
+from os import path
 from sqlite3 import Connection
 from typing import List
 
@@ -17,6 +18,13 @@ class Row(dict):
     """
     An object representing a single row from the database
     """
+    code = None
+    color = None
+    id = None
+    lasers = None
+    name = None
+    time = None
+    success = None
 
     def __init__(self, key: int = None, name=None, lasers: bin = None, code: hex = None, color: str = None,
                  time: int = None, success: bool = None):
@@ -25,7 +33,6 @@ class Row(dict):
         self["lasers"] = lasers
         self["code"] = code
         self["color"] = color
-        # TODO Convert timestamp
         self["time"] = time
         self["success"] = success
         # Add dict values to namespace
@@ -39,7 +46,7 @@ class Row(dict):
 
 
 class Database(Connection):
-    FILE = "game/scores.db"
+    FILE = path.dirname(__file__) + "/scores.db"
 
     def __init__(self):
         # if does not exist, format / create tables
