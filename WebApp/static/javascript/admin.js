@@ -222,10 +222,10 @@ function ultrasonic_status(toggle){
         if (x.readyState === 4) {
             if (x.status === 200) {
                 var data = JSON.parse(x.response);
-                if(data["status"] === 'Enabled') {
+                if(data["status"] === 'enabled') {
                     document.getElementById("ultrasonic-enable").innerHTML = '<button class="btn btn-outline-success" >Enabled</button>';
                 }
-                else if(data["status"] === 'Disabled'){
+                else if(data["status"] === 'disabled'){
                     document.getElementById("ultrasonic-enable").innerHTML = '<button class="btn btn-outline-danger" >Disabled</button>';
                 }
             }

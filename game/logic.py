@@ -8,7 +8,7 @@ from time import sleep
 import logging
 import random
 
-from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, ULTRASONIC_STATE
 from game.database import Database, Row
 
 import datetime
@@ -29,6 +29,15 @@ class Logic:
     _process = Lock()
     _state = STATE.WAIT
     _solenoid = SOLENOID_STATE.UNLOCKED
+    _ultrasonic = ULTRASONIC_STATE.ENABLED
+
+    @property
+    def ultrasonic(self):
+        return self._ultrasonic
+
+    @ultrasonic.setter
+    def ultrasonic(self, value: ULTRASONIC_STATE):
+        self._ultrasonic = value
 
     @property
     def code(self):
@@ -175,6 +184,7 @@ class Logic:
             self.solenoid = SOLENOID_STATE.UNLOCKED
             self.comQueue = queue
             self.code = "000"
+            self.ultrasonic = ULTRASONIC_STATE.ENABLED
 
             try:
                 while True:
@@ -220,6 +230,16 @@ class Logic:
         elif command_id is COMMUNICATION.SET_CODE:
             command_id = None
             self.code = command[1]
+        elif command_id is COMMUNICATION.GET_ULTRASONIC:
+            command_id = None
+            self.comQueue.put([COMMUNICATION.SENT_ULTRASONIC, self.ultrasonic])
+        elif command_id is COMMUNICATION.TOGGLE_ULTRASONIC:
+            command_id = None
+            if self.ultrasonic is ULTRASONIC_STATE.ENABLED:
+                self.ultrasonic = ULTRASONIC_STATE.DISABLED
+            else:
+                self.ultrasonic = ULTRASONIC_STATE.ENABLED
+            self.comQueue.put([COMMUNICATION.SENT_ULTRASONIC, self.ultrasonic])
             # No return message is necessary
 
 

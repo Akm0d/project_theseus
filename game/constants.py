@@ -89,6 +89,10 @@ class SOLENOID_STATE(Enum):
     UNLOCKED = "unlocked"
 
 
+class ULTRASONIC_STATE(Enum):
+    ENABLED = "enabled"
+    DISABLED = "disabled"
+
 # How much time do they start with?
 TIME_GIVEN = 180
 # What is no time left?

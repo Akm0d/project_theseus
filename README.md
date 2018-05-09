@@ -24,5 +24,15 @@ I highly suggest using PyCharm if you are working with Flask and Python
 ```bash
 $ sudo apt-get update
 $ sudo apt-get install snapd
-$ snap install pycharm-community 
+$ snap install pycharm-community
 ```
+
+## Where are variables stored?
+### Stored in the database
+ID
+Name
+Laser
+Code
+Color
+Time    -- Stored as a datetime object but written at end of game
+Success
