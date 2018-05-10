@@ -433,7 +433,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>380</y>
+      <y>360</y>
       <width>171</width>
       <height>51</height>
      </rect>
@@ -449,32 +449,32 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
-       <widget class="QRadioButton" name="WIRE_RED">
-        <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="checkBox">
         <property name="text">
          <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="WIRE_GREEN">
-        <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="checkBox_2">
         <property name="text">
          <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="WIRE_BLUE">
-        <property name="focusPolicy">
-         <enum>Qt::StrongFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="checkBox_3">
         <property name="text">
          <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -492,12 +492,12 @@
        </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="Solenoid">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="checkBox_4">
         <property name="text">
          <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
