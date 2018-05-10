@@ -8,6 +8,7 @@ from os import path, mkdir
 import globals
 from WebApp import app
 from game.logic import Logic
+from qt.mock_box_ui import ApplicationWindow
 
 log = logging.getLogger()
 log_dir = path.dirname(__file__)
@@ -46,8 +47,17 @@ if __name__ == '__main__':
     # Start the Logic Process by forking (default start() behavior for unix)
     gameLogic.start()
 
+    qt_app = None
+    if opts.mock:
+        # Start the gui the simulates the box
+        print("starting app window")
+        qt_app = mp.Process(target=ApplicationWindow.run)
+        qt_app.start()
+
     # Run the Flask server here in the parent
     app.run(debug=False, host="0.0.0.0", port=5000)
 
     # Wait for the gameLogic process to finish. Prevents Zombie processes
     gameLogic.join()
+    if qt_app is not None:
+        qt_app.join()

@@ -1,15 +1,12 @@
-import random
-from logging.handlers import RotatingFileHandler
-
+import datetime
 import logging
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, url_for
 from flask_restful import Resource
+
+from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE, RGBColor
 from game.database import Database
 from game.logic import Logic
-from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE, RGBColor
-import datetime
-
 from globals import ComQueue
 
 log = logging.getLogger(__name__)

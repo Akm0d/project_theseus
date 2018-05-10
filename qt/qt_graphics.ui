@@ -264,7 +264,7 @@
      <rect>
       <x>10</x>
       <y>350</y>
-      <width>201</width>
+         <width>251</width>
       <height>51</height>
      </rect>
     </property>
@@ -273,15 +273,18 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>173</width>
+          <width>236</width>
        <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QCheckBox" name="wire_red">
+           <property name="layoutDirection">
+               <enum>Qt::RightToLeft</enum>
+           </property>
         <property name="text">
-         <string/>
+            <string>R</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -290,8 +293,11 @@
       </item>
       <item>
        <widget class="QCheckBox" name="wire_green">
+           <property name="layoutDirection">
+               <enum>Qt::RightToLeft</enum>
+           </property>
         <property name="text">
-         <string/>
+            <string>G</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -300,8 +306,11 @@
       </item>
       <item>
        <widget class="QCheckBox" name="wire_blue">
+           <property name="layoutDirection">
+               <enum>Qt::RightToLeft</enum>
+           </property>
         <property name="text">
-         <string/>
+            <string>B</string>
         </property>
         <property name="checked">
          <bool>true</bool>
