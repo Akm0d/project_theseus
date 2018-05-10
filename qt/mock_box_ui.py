@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import logging
 import sys
+from functools import partial
 from typing import Dict
-
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QCheckBox, QPushButton
 
@@ -9,6 +10,8 @@ try:
     from qt.qt_graphics import Ui_MainWindow
 except ModuleNotFoundError:
     from qt_graphics import Ui_MainWindow
+
+log = logging.getLogger(__name__)
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
@@ -19,7 +22,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         # Get easy access to UI elements
-        self.rgb = self.ui.lid_display.layout().children()
+        self.rgb = self.ui.lid_display.layout()
         self.minutes = self.ui.lcdMinutes
         self.seconds = self.ui.lcdSeconds
         self.potentiometer = self.ui.dial
@@ -29,6 +32,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # TODO Listen on the SMBus for messages and then call the right functions
 
         # TODO connect clicked.connect from UI elements to functions
+        log.debug("Connecting Buttons")
+        for h, button in self.keypad.items():
+            button.clicked.connect(partial(lambda x: log.debug("{} key was pressed".format(hex(x))), h))
 
         # TODO simulate sending SMBus messages when things are clicked
 
@@ -60,13 +66,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @property
     def photo_resistor(self) -> Dict[int, QCheckBox]:
         return {
-        0: self.ui.photodiode_0,
-        1: self.ui.photodiode_1,
-        2: self.ui.photodiode_2,
-        3: self.ui.photodiode_3,
-        4: self.ui.photodiode_4,
-        5: self.ui.photodiode_5,
-    }
+            0: self.ui.photodiode_0,
+            1: self.ui.photodiode_1,
+            2: self.ui.photodiode_2,
+            3: self.ui.photodiode_3,
+            4: self.ui.photodiode_4,
+            5: self.ui.photodiode_5,
+        }
 
     @property
     def led(self) -> Dict[int, QCheckBox]:
@@ -111,4 +117,5 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     ApplicationWindow.run()
