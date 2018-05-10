@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from os import path, mkdir
+
 from game.logic import Logic
 from logging.handlers import RotatingFileHandler
 from WebApp import app
@@ -8,9 +10,7 @@ import multiprocessing as mp
 import globals
 
 log = logging.getLogger()
-handler = RotatingFileHandler("webapp.log", maxBytes=1280000, backupCount=1)
-handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(logging.ERROR)
+log_dir = path.dirname(__file__)
 
 if __name__ == '__main__':
     # Parse command line arguments
@@ -21,8 +21,17 @@ if __name__ == '__main__':
 
     opts = args.parse_args()
 
-    logging.basicConfig(level=opts.log_level)
-    log.addHandler(handler)
+    # Configure logginga
+    if not path.exists(log_dir):
+        mkdir(log_dir)
+    logging.basicConfig(level=logging.INFO,  handlers=[
+        RotatingFileHandler("{}/{}.log".format(log_dir, __file__.split('/')[-1][:-3]), maxBytes=1280000, backupCount=1),
+    ], format="[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s")
+
+    stream = logging.StreamHandler()
+    stream.setLevel(opts.log_level)
+    stream.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
+    log.addHandler(stream)
 
     # Access ComQueue singleton
     q = globals.ComQueue()

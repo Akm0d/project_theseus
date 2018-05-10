@@ -10,10 +10,6 @@ except ModuleNotFoundError:
     from constants import TIME_GIVEN
 
 log = logging.getLogger(__name__)
-handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
-handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(logging.ERROR)
-log.addHandler(handler)
 
 
 class Row(dict):

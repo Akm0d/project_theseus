@@ -1,8 +1,6 @@
 from flask import Flask
 from WebApp.admin import admin
-from WebApp.api import resource
-from WebApp.base import base
-from WebApp.scoreboard import scoreboard
+from WebApp.api import resource, scoreboard, base
 from WebApp.timer import timer
 from game.database import Database
 

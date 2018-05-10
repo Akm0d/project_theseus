@@ -2,6 +2,8 @@ import random
 from logging.handlers import RotatingFileHandler
 
 import logging
+
+from flask import Blueprint, render_template
 from flask_restful import Resource
 from game.database import Database
 from game.logic import Logic
@@ -11,15 +13,37 @@ import datetime
 from globals import ComQueue
 
 log = logging.getLogger(__name__)
-handler = RotatingFileHandler("{}.log".format(__name__), maxBytes=1280000, backupCount=1)
-handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-handler.setLevel(logging.ERROR)
-log.addHandler(handler)
+# handler = RotatingFileHandler("log/{}.log".format(__file__.split('/')[-1][:-3]), maxBytes=1280000, backupCount=1)
+# handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
+# handler.setLevel(logging.ERROR)
+# log.addHandler(handler)
 
 state = Logic()
 
 start_time = None
 end_time = None
+
+base = Blueprint('base', __name__)
+
+
+@base.route('/', methods=['GET'])
+def base_view():
+    return render_template("index.html")
+
+
+# TODO 404 not found and other error pages
+
+@base.route('/favicon.ico', methods=['GET'])
+def favicon():
+    return url_for('static', filename='favicon.ico')
+
+
+scoreboard = Blueprint('scoreboard', __name__)
+
+
+@scoreboard.route('/scoreboard', methods=['GET'])
+def admin_view():
+    return render_template("scoreboard.html")
 
 
 def getState():
