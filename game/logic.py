@@ -1,13 +1,13 @@
-from datetime import time
-from game.constants import I2C, STATE, RGBColor, COMMUNICATION, SOLENOID_STATE, ULTRASONIC_STATE, TIME_GIVEN
-from game.database import Database, Row
-from logging.handlers import RotatingFileHandler
-from multiprocessing import Lock
-from MockPi.MockSmbus import MockBus
-from smbus import SMBus
-
 import logging
 import random
+from datetime import time
+from multiprocessing import Lock
+
+from smbus import SMBus
+
+from MockPi.MockSmbus import MockBus
+from game.constants import I2C, STATE, RGBColor, COMMUNICATION, SOLENOID_STATE, ULTRASONIC_STATE, TIME_GIVEN
+from game.database import Database, Row
 
 log = logging.getLogger(__name__)
 
@@ -140,14 +140,9 @@ class Logic:
                 self._bus = SMBus(1)
                 self.mock = False
 
-            # Initialize all the random data, such as laser patterns and codes
-            self.keypad_code = random.randint(0, 0xfff)
-            self.lasers = random.randint(1, 0x3f)
             self.state = STATE.WAIT  # Change state of game to WAIT
-            self.team = "--"
-            self.solenoid = SOLENOID_STATE.UNLOCKED
+            self.solenoid = SOLENOID_STATE.LOCKED
             self.comQueue = queue
-            self.keypad_code = random.randint(0, 0xfff)
             self.ultrasonic = ULTRASONIC_STATE.ENABLED
 
             try:
