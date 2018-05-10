@@ -315,18 +315,21 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>241</width>
+       <width>248</width>
        <height>41</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QRadioButton" name="LED_0">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_0">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -344,32 +347,41 @@
        </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="LED_1">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_1">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LED_2">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_2">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LED_3">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_3">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -387,42 +399,54 @@
        </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="LED_4">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_4">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LED_5">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_5">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LED_6">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_6">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LED_7">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
+       <widget class="QCheckBox" name="led_7">
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -493,6 +517,119 @@
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_4">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="laser_tripwires" native="true">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>280</y>
+      <width>151</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <widget class="QWidget" name="gridLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>9</y>
+       <width>141</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="laser_2">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="laser_0">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="laser_4">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="laser_3">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="laser_1">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="laser_5">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="photodiode_0">
         <property name="text">
          <string/>
         </property>
