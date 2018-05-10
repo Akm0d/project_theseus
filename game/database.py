@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import logging
-from logging.handlers import RotatingFileHandler
 from os import path
 from sqlite3 import Connection
 from typing import List

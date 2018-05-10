@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-from os import path, mkdir
-
-from game.logic import Logic
-from logging.handlers import RotatingFileHandler
-from WebApp import app
-from argparse import ArgumentParser
 import logging
 import multiprocessing as mp
+from argparse import ArgumentParser
+from logging.handlers import RotatingFileHandler
+from os import path, mkdir
+
 import globals
+from WebApp import app
+from game.logic import Logic
 
 log = logging.getLogger()
 log_dir = path.dirname(__file__)
