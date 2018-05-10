@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>429</width>
-    <height>473</height>
+    <width>367</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,11 +17,14 @@
    <widget class="QWidget" name="keypad" native="true">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>80</y>
+      <x>0</x>
+      <y>50</y>
       <width>361</width>
       <height>131</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <widget class="QWidget" name="gridLayoutWidget">
      <property name="geometry">
@@ -151,8 +154,8 @@
    <widget class="QWidget" name="puzzle" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>270</y>
+      <x>10</x>
+      <y>250</y>
       <width>201</width>
       <height>91</height>
      </rect>
@@ -230,9 +233,9 @@
    <widget class="QWidget" name="lid_display" native="true">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>241</width>
+      <x>10</x>
+      <y>10</y>
+      <width>281</width>
       <height>31</height>
      </rect>
     </property>
@@ -241,7 +244,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>231</width>
+       <width>281</width>
        <height>31</height>
       </rect>
      </property>
@@ -289,12 +292,32 @@
        </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="RGB">
+       <widget class="QRadioButton" name="RGB_red">
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
         <property name="text">
-         <string/>
+         <string>R</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="RGB_green">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>G</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="RGB_blue">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>B</string>
         </property>
        </widget>
       </item>
@@ -304,11 +327,14 @@
    <widget class="QWidget" name="LEDs" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>210</y>
+      <x>10</x>
+      <y>180</y>
       <width>251</width>
       <height>51</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <widget class="QWidget" name="horizontalLayoutWidget_3">
      <property name="geometry">
@@ -319,9 +345,15 @@
        <height>41</height>
       </rect>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QCheckBox" name="led_0">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -335,6 +367,9 @@
       </item>
       <item>
        <spacer name="horizontalSpacer">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -348,6 +383,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="led_1">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -361,6 +399,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="led_2">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -374,6 +415,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="led_3">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -387,6 +431,9 @@
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -400,6 +447,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="led_4">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -413,6 +463,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="led_5">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -426,6 +479,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="led_6">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -439,6 +495,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="led_7">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -456,8 +515,8 @@
    <widget class="QWidget" name="inner_box" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>360</y>
+      <x>10</x>
+      <y>350</y>
       <width>171</width>
       <height>51</height>
      </rect>
@@ -517,6 +576,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_4">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -534,8 +596,8 @@
    <widget class="QWidget" name="laser_tripwires" native="true">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>270</y>
+      <x>260</x>
+      <y>250</y>
       <width>91</width>
       <height>141</height>
      </rect>
@@ -552,6 +614,9 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="2" column="0">
        <widget class="QCheckBox" name="laser_2">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -565,6 +630,9 @@
       </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="laser_0">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -578,6 +646,9 @@
       </item>
       <item row="4" column="0">
        <widget class="QCheckBox" name="laser_4">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -591,6 +662,9 @@
       </item>
       <item row="3" column="0">
        <widget class="QCheckBox" name="laser_3">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -604,6 +678,9 @@
       </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="laser_1">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -617,6 +694,9 @@
       </item>
       <item row="5" column="0">
        <widget class="QCheckBox" name="laser_5">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -697,7 +777,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>429</width>
+     <width>367</width>
      <height>20</height>
     </rect>
    </property>
