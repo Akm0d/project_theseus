@@ -229,10 +229,15 @@ function ultrasonic_status(toggle){
     x.send();
 }
 
-/*
+
 setInterval(function(){
     // TODO after the project is complete the refresh time can be set based on how long it takes python code to run
     refresh_all()
+<<<<<<< Updated upstream
     keycode_status("status");
 }, 1600);
 */
+=======
+}, 1000);
+
+>>>>>>> Stashed changes

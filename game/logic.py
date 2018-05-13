@@ -5,8 +5,13 @@ from multiprocessing import Lock
 
 from smbus import SMBus
 
+<<<<<<< Updated upstream
 from MockPi.MockSmbus import MockBus
 from game.constants import I2C, STATE, RGBColor, COMMUNICATION, SOLENOID_STATE, ULTRASONIC_STATE, TIME_GIVEN
+=======
+from game.constants import I2C, STATE, TIME_GIVEN, SLEEP_INTERVAL, INTERRUPTS_PER_SECOND, TIME_OVER, RGBColor, MAX_TIME, \
+    COMMUNICATION, LOGGING_LEVEL, SOLENOID_STATE, ULTRASONIC_STATE
+>>>>>>> Stashed changes
 from game.database import Database, Row
 
 log = logging.getLogger(__name__)
