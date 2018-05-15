@@ -1,7 +1,7 @@
 import logging
 import random
 from datetime import time
-from multiprocessing import Lock
+from multiprocessing import Lock, Manager
 
 from smbus import SMBus
 
@@ -13,11 +13,11 @@ log = logging.getLogger(__name__)
 
 
 class Logic:
+    shared = Manager().dict()
     mock = True
     _comQueue = None
     _counter = 0
     _process = Lock()
-    _state = STATE.WAIT
     _solenoid = SOLENOID_STATE.UNLOCKED
     _ultrasonic = ULTRASONIC_STATE.ENABLED
 
@@ -66,12 +66,15 @@ class Logic:
 
     @property
     def state(self):
-        return self._state
+        if self.shared.get("state", None) is None:
+            return STATE.WAIT
+        else:
+            return STATE(self.shared["state"])
 
     @state.setter
     def state(self, value: STATE):
-        log.debug("State changed from {} to {}".format(self._state.value, value.value))
-        self._state = value
+        log.debug("State changed from {} to {}".format(self.state.value, value.value))
+        self.shared["state"] = value.value
 
     @property
     def timer(self):
@@ -154,7 +157,7 @@ class Logic:
 
     def poll_sensors(self):
         """
-        Poll all of the sensors and rais a flag if one of them has tripped
+        Poll all of the sensors and raise a flag if one of them has tripped
         """
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
@@ -170,6 +173,7 @@ class Logic:
             command_id = command[0]
 
         # State independent actions
+        # TODO put all of these in the shared dictionary
         if command_id is COMMUNICATION.GET_STATE:
             command_id = None
             self.comQueue.put([COMMUNICATION.SENT_STATE, self.state])

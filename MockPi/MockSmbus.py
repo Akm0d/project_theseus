@@ -8,9 +8,7 @@ log = logging.getLogger(__name__)
 
 
 class MockBus(object):
-    manager = Manager()
-
-    messages = manager.dict()
+    messages = Manager().dict()
 
     # Mock the smbus.SMBus class to record all data written to specific
     # addresses and registers in the _written member.
