@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright (c) 2014 Adafruit Industries
 # Author: Tony DiCola
 #
@@ -21,11 +22,9 @@
 
 import logging
 import struct
-from logging.handlers import RotatingFileHandler
-from queue import Queue, Empty
 from ctypes import c_int, c_uint8, POINTER, Structure
-
-# Enable debug logging to stdout during tests.
+from multiprocessing import Manager, Process
+from queue import Queue, Empty
 from typing import List
 
 log = logging.getLogger(__name__)
@@ -52,11 +51,13 @@ class i2c_smbus_msg(Structure):
 
 
 class MockBus(object):
+    manager = Manager()
+    fd = manager.dict()
+
     # Mock the smbus.SMBus class to record all data written to specific
     # addresses and registers in the _written member.
-    def __init__(self, bus):
+    def __init__(self, bus: int = None):
         log.debug("Initializing mock SMBus")
-        self.fd = dict()
         self.addr = 0
         self.messages = {self.addr: Queue()}
 
@@ -91,3 +92,19 @@ class MockBus(object):
 
     def write_i2c_block_data(self, address: hex, start_register: hex, data: List[ord]):
         pass
+
+
+if __name__ == "__main__":
+    from time import sleep
+
+
+    def foo():
+        MockBus().fd["a"] = 1
+
+
+    Process(target=foo).start()
+
+    sleep(.1)
+
+    bar = MockBus()
+    print(bar.fd)
