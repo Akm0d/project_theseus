@@ -106,7 +106,7 @@ class Logic:
 
     @property
     def keypad_code(self) -> hex:
-        return self.shared.get("code", random.randint(0, 0xfff))
+        return self.shared.get("code", 0x000)
 
     @keypad_code.setter
     def keypad_code(self, value: hex):
