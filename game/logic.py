@@ -16,7 +16,6 @@ class Logic:
     shared = Manager().dict()
     mock = True
     _comQueue = None
-    _counter = 0
     _process = Lock()
     _solenoid = SOLENOID_STATE.UNLOCKED
     _ultrasonic = ULTRASONIC_STATE.ENABLED
@@ -24,7 +23,6 @@ class Logic:
     def __init__(self):
         self.db = Database()
         self._bus = None
-        self._counter = 0
         self._timer = 0
         self._i2c_master = None
         self._i2c_slave = None
@@ -36,17 +34,15 @@ class Logic:
         minutes = seconds // 60
         secondsToPrint = seconds - minutes * 60
         if self.state is STATE.WAIT:
-            return "3:00"
-        elif self.state is STATE.RUNNING:
+            return "RESET"
+        if self.state is STATE.RUNNING:
             if seconds <= 0:
-                # TODO is this is a logic change event?
                 self._comQueue.put([INTERRUPT.KILL_PLAYER])
         elif self.state is STATE.EXPLODE:
             return "DEAD"
         elif self.state is STATE.WIN:
             return "SUCCESS!"
-        else:
-            return "{}:{:2}".format(minutes, secondsToPrint)
+        return "{}:{:2}".format(minutes, secondsToPrint)
 
     @property
     def start_time(self) -> datetime:
@@ -74,14 +70,6 @@ class Logic:
     def comQueue(self, value):
         log.debug("Queue was created")
         self._comQueue = value
-
-    @property
-    def counter(self):
-        return self._counter
-
-    @counter.setter
-    def counter(self, value: int):
-        self._counter = value
 
     @property
     def solenoid(self) -> SOLENOID_STATE:
