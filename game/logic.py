@@ -6,7 +6,7 @@ from multiprocessing import Lock, Manager
 from smbus import SMBus
 
 from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, COMMUNICATION, SOLENOID_STATE, ULTRASONIC_STATE, TIME_GIVEN
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, TIME_GIVEN
 from game.database import Database, Row
 
 log = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class Logic:
         elif self.state is STATE.RUNNING:
             if seconds <= 0:
                 # TODO is this is a logic change event?
-                self._comQueue.put([COMMUNICATION.KILL_PLAYER])
+                self._comQueue.put([INTERRUPT.KILL_PLAYER])
         elif self.state is STATE.EXPLODE:
             return "DEAD"
         elif self.state is STATE.WIN:
@@ -179,7 +179,6 @@ class Logic:
         pass
 
     def _loop(self):
-        command = None
         command_id = None
         if not self.comQueue.empty():
             command = self.comQueue.get()
@@ -200,39 +199,32 @@ class Logic:
 
         # State Transitions
         if self.state is STATE.WAIT:
-            if command_id is COMMUNICATION.START_GAME:
-                command_id = None
+            if command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.RUNNING
                 self.start_game()
         elif self.state is STATE.RUNNING:
-            if command_id is COMMUNICATION.RESET_GAME:
-                command_id = None
+            if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
-            elif command_id is COMMUNICATION.KILL_PLAYER:
-                command_id = None
+            elif command_id is INTERRUPT.KILL_PLAYER:
                 self.state = STATE.EXPLODE
                 self.db.last.success = False
-            elif command_id is COMMUNICATION.DEFUSED:
-                command_id = None
+            elif command_id is INTERRUPT.DEFUSED:
                 self.state = STATE.WIN
                 self.db.last.success = True
         elif self.state is STATE.EXPLODE:
-            if command_id is COMMUNICATION.RESET_GAME:
-                command_id = None
+            if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
+                self.end_time = datetime.now()
                 # Lock solenoid
                 self.solenoid = SOLENOID_STATE.LOCKED
-                self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
+                self.comQueue.put([INTERRUPT.SENT_SOLENOID_STATUS, self.solenoid])
         elif self.state is STATE.WIN:
-            if command_id is COMMUNICATION.RESET_GAME:
-                command_id = None
+            if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
+                self.end_time = datetime.now()
                 self.state = STATE.WAIT
                 # Lock solenoid
                 self.solenoid = SOLENOID_STATE.LOCKED
-                self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
-        if command_id is not None:
-            # If the command wasn't used, it is for the other process, put it back
-            self.comQueue.put(command)
+                self.comQueue.put([INTERRUPT.SENT_SOLENOID_STATUS, self.solenoid])
 
     def _send(self, device: I2C, message: str):
         """
@@ -257,11 +249,14 @@ class Logic:
         """
         Add a row to the database, generate random data for all the puzzles
         """
+        self.start_time = datetime.now()
+        self.lasers = self.random_laser_pattern()
+        self.keypad_code = random.randint(0, 0xfff)
+        self.rgb_color = random.choice([RGBColor.RED, RGBColor.BLUE])
         row = Row(
-            name=self.db.last.name, lasers=self.random_laser_pattern(), code=random.randint(0, 0xfff), success=False,
-            color=random.choice([RGBColor.RED.value, RGBColor.BLUE.value]), time=TIME_GIVEN
+            name=self.db.last.name, lasers=self.lasers, code=self.keypad_code, success=False,
+            color=self.rgb_color.value, time=TIME_GIVEN
         )
-
         log.debug("Adding new row to the database:\n{}".format(row))
         self.db.add_row(row)
 

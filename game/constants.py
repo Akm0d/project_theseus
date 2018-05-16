@@ -22,11 +22,9 @@ SLEEP_INTERVAL = 1 / INTERRUPTS_PER_SECOND
 
 
 # Communication between processes must be one of these
-class COMMUNICATION(Enum):
+class INTERRUPT(Enum):
     DEFUSED = "Yay I won!!!!"                       # The device was successfully defused
     TOGGLE_TIMER = "toggle-timer"                   # Toggle if timer is on/off
-    TIMER_TOGGLED = "timer-toggled"                 # Confirmation of timer toggle
-    START_GAME = "start-game"
     RESET_GAME = "reset-game"
     KILL_PLAYER = "kill-player"                     # Player has died
 

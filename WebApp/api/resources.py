@@ -1,10 +1,9 @@
-import datetime
 import logging
 
 from flask import Blueprint, render_template, url_for
 from flask_restful import Resource
 
-from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, ULTRASONIC_STATE, RGBColor
+from game.constants import STATE, INTERRUPT, SOLENOID_STATE, JSCom, ULTRASONIC_STATE, RGBColor
 from game.database import Database
 from game.logic import Logic
 from globals import ComQueue
@@ -79,14 +78,7 @@ class Timer(Resource):
 
     def get(self, action: str):
         if action == "toggle":
-            if logic.state is STATE.WAIT:
-                # Waiting to begin
-                logic.start_time = datetime.datetime.now()
-            elif logic.state is STATE.RUNNING:
-                logic.end_time = datetime.datetime.now()
-                ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
-            else:
-                ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
+            ComQueue().getComQueue().put([INTERRUPT.TOGGLE_TIMER])
 
         return {"status": JSCom.RESET_BUTTON.value if logic.state is STATE.RUNNING else JSCom.START_BUTTON.value}
 
