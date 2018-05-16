@@ -50,8 +50,7 @@ class Logic:
 
     @property
     def start_time(self) -> datetime:
-        print(self.shared["start time"].__class__)
-        return self.shared["start time"]
+        return self.shared.get("start time", datetime.now())
 
     @start_time.setter
     def start_time(self, value: datetime):
