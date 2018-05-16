@@ -1,6 +1,6 @@
 import logging
 import random
-from datetime import time
+from datetime import datetime
 from multiprocessing import Lock, Manager
 
 from smbus import SMBus
@@ -29,15 +29,43 @@ class Logic:
         self._i2c_master = None
         self._i2c_slave = None
 
-        self._start_time = time()
+    @property
+    def timer_text(self) -> str:
+        newDatetime = datetime.now() - self.start_time
+        seconds = TIME_GIVEN - newDatetime.seconds
+        minutes = seconds // 60
+        secondsToPrint = seconds - minutes * 60
+        if self.state is STATE.WAIT:
+            return "3:00"
+        elif self.state is STATE.RUNNING:
+            if seconds <= 0:
+                # TODO is this is a logic change event?
+                self._comQueue.put([COMMUNICATION.KILL_PLAYER])
+        elif self.state is STATE.EXPLODE:
+            return "DEAD"
+        elif self.state is STATE.WIN:
+            return "SUCCESS!"
+        else:
+            return "{}:{:2}".format(minutes, secondsToPrint)
 
     @property
-    def ultrasonic(self):
-        return self._ultrasonic
+    def start_time(self) -> datetime:
+        print(self.shared["start time"].__class__)
+        return self.shared["start time"]
+
+    @start_time.setter
+    def start_time(self, value: datetime):
+        self.shared["start time"] = value
+
+    @property
+    def ultrasonic(self) -> ULTRASONIC_STATE:
+        return ULTRASONIC_STATE(self.shared.get("ultrasonic", ULTRASONIC_STATE.ENABLED.value))
 
     @ultrasonic.setter
     def ultrasonic(self, value: ULTRASONIC_STATE):
-        self._ultrasonic = value
+        # TODO send the new ultrasonic logic over I2C
+        log.debug("Ultrasonic logic changed from {} to {}".format(self.ultrasonic.value, value.value))
+        self.shared["ultrasonic"] = value.value
 
     @property
     def comQueue(self):
@@ -57,24 +85,26 @@ class Logic:
         self._counter = value
 
     @property
-    def solenoid(self):
-        return self._solenoid
+    def solenoid(self) -> SOLENOID_STATE:
+        return SOLENOID_STATE(self.shared.get("solenoid", SOLENOID_STATE.UNLOCKED.value))
 
     @solenoid.setter
     def solenoid(self, value: SOLENOID_STATE):
-        self._solenoid = value
+        # TODO send the new solenoid logic over I2C
+        log.debug("Solenoid logic changed from {} to {}".format(self.solenoid.value, value.value))
+        self.shared["solenoid"] = value.value
 
     @property
     def state(self):
-        if self.shared.get("state", None) is None:
+        if self.shared.get("logic", None) is None:
             return STATE.WAIT
         else:
-            return STATE(self.shared["state"])
+            return STATE(self.shared["logic"])
 
     @state.setter
     def state(self, value: STATE):
         log.debug("State changed from {} to {}".format(self.state.value, value.value))
-        self.shared["state"] = value.value
+        self.shared["logic"] = value.value
 
     @property
     def timer(self):
@@ -143,7 +173,7 @@ class Logic:
                 self._bus = SMBus(1)
                 self.mock = False
 
-            self.state = STATE.WAIT  # Change state of game to WAIT
+            self.state = STATE.WAIT  # Change logic of game to WAIT
             self.solenoid = SOLENOID_STATE.LOCKED
             self.comQueue = queue
             self.ultrasonic = ULTRASONIC_STATE.ENABLED
@@ -172,33 +202,6 @@ class Logic:
             command = self.comQueue.get()
             command_id = command[0]
 
-        # State independent actions
-        # TODO put all of these in the shared dictionary
-        if command_id is COMMUNICATION.GET_STATE:
-            command_id = None
-            self.comQueue.put([COMMUNICATION.SENT_STATE, self.state])
-        elif command_id is COMMUNICATION.SOLENOID_STATUS:
-            command_id = None
-            self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
-        elif command_id is COMMUNICATION.TOGGLE_SOLENOID:
-            command_id = None
-            if self.solenoid is SOLENOID_STATE.UNLOCKED:
-                self.solenoid = SOLENOID_STATE.LOCKED
-            else:
-                self.solenoid = SOLENOID_STATE.UNLOCKED
-            self.comQueue.put([COMMUNICATION.SENT_SOLENOID_STATUS, self.solenoid])
-        elif command_id is COMMUNICATION.GET_ULTRASONIC:
-            command_id = None
-            self.comQueue.put([COMMUNICATION.SENT_ULTRASONIC, self.ultrasonic])
-        elif command_id is COMMUNICATION.TOGGLE_ULTRASONIC:
-            command_id = None
-            if self.ultrasonic is ULTRASONIC_STATE.ENABLED:
-                self.ultrasonic = ULTRASONIC_STATE.DISABLED
-            else:
-                self.ultrasonic = ULTRASONIC_STATE.ENABLED
-            self.comQueue.put([COMMUNICATION.SENT_ULTRASONIC, self.ultrasonic])
-            # No return message is necessary
-
         # State Actions
         if self.state is STATE.WAIT:
             pass
@@ -210,7 +213,7 @@ class Logic:
         elif self.state is STATE.WIN:
             pass
         else:
-            log.error("Reached an unknown state: {}".format(self.state))
+            log.error("Reached an unknown logic: {}".format(self.state))
 
         # State Transitions
         if self.state is STATE.WAIT:

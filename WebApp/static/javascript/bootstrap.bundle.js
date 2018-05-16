@@ -2472,7 +2472,7 @@
       target.removeEventListener('scroll', state.updateBound);
     });
 
-    // Reset state
+      // Reset logic
     state.updateBound = null;
     state.scrollParents = [];
     state.scrollElement = null;
@@ -3790,7 +3790,7 @@
       // with {} we create a new object with the options inside it
       this.options = _extends({}, Popper.Defaults, options);
 
-      // init state
+        // init logic
       this.state = {
         isDestroyed: false,
         isCreated: false,

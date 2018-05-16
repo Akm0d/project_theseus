@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     opts = args.parse_args()
 
-    # Configure logginga
+    # Configure logging
     if not path.exists(log_dir):
         mkdir(log_dir)
     logging.basicConfig(level=logging.INFO,  handlers=[

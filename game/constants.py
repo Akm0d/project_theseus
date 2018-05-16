@@ -1,12 +1,8 @@
-from enum import Enum, IntEnum
 import datetime
-import logging
-
-# The Time the timer should be reset to in seconds.  Defaults to 3 minutes
-MAX_TIME = 180
+from enum import Enum, IntEnum
 
 
-# What are the logical states for the state machine
+# What are the logical states for the logic machine
 class STATE(Enum):
     # INIT event goes to WAIT
     WAIT = "wait"
@@ -30,22 +26,12 @@ class COMMUNICATION(Enum):
     DEFUSED = "Yay I won!!!!"                       # The device was successfully defused
     TOGGLE_TIMER = "toggle-timer"                   # Toggle if timer is on/off
     TIMER_TOGGLED = "timer-toggled"                 # Confirmation of timer toggle
-    GET_STATE = "get-state"                         # Please send me the state
-    SENT_STATE = "sent-state"                       # Message includes state
-    GET_TIMER = "get-timer-text"                    # Please get the timer text
-    TIMER_TEXT = "timer-text"                       # Message contains timer text
     START_GAME = "start-game"
     RESET_GAME = "reset-game"
-    TOGGLE_SOLENOID = "toggle-solenoid"             # Toggle if solenoid is open or closed
-    SOLENOID_STATUS = "solenoid-status"             # Please send state of solenoid
-    SENT_SOLENOID_STATUS = "sent-solenoid-status"   # Message contains state of solenoid
-    TOGGLE_ULTRASONIC = "toggle-ultrasonic"         # Toggle whether the ultrasonic is active or not
-    GET_ULTRASONIC = "get-ultrasonic"               # Return current ultrasonic state
-    SENT_ULTRASONIC = "sent-ultrasonic"             # Message includes state of ultrasonic
     KILL_PLAYER = "kill-player"                     # Player has died
 
 
-# What are the events that trigger transitions between each state
+# What are the events that trigger transitions between each logic
 class EVENTS(Enum):
     INIT = "init"
     PLAY = "play"
@@ -74,17 +60,17 @@ class I2C(IntEnum):
     SEVEN_SEG = 0x0c
 
 
-class SOLENOID_STATE(Enum):
-    LOCKED = "locked"
-    UNLOCKED = "unlocked"
+class SOLENOID_STATE(IntEnum):
+    LOCKED = 1
+    UNLOCKED = 0
 
 
-class ULTRASONIC_STATE(Enum):
-    ENABLED = "enabled"
-    DISABLED = "disabled"
+class ULTRASONIC_STATE(IntEnum):
+    ENABLED = 1
+    DISABLED = 0
 
 
-# How much time do they start with?
+# The Time the timer should be reset to in seconds.  Defaults to 3 minutes
 TIME_GIVEN = 180
 # What is no time left?
 TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")

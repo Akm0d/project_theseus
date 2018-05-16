@@ -4,21 +4,14 @@ import logging
 from flask import Blueprint, render_template, url_for
 from flask_restful import Resource
 
-from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, TIME_GIVEN, ULTRASONIC_STATE, RGBColor
+from game.constants import STATE, COMMUNICATION, SOLENOID_STATE, JSCom, ULTRASONIC_STATE, RGBColor
 from game.database import Database
 from game.logic import Logic
 from globals import ComQueue
 
 log = logging.getLogger(__name__)
-# handler = RotatingFileHandler("log/{}.log".format(__file__.split('/')[-1][:-3]), maxBytes=1280000, backupCount=1)
-# handler.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
-# handler.setLevel(logging.ERROR)
-# log.addHandler(handler)
 
-state = Logic()
-
-start_time = None
-end_time = None
+logic = Logic()
 
 base = Blueprint('base', __name__)
 
@@ -43,27 +36,12 @@ def admin_view():
     return render_template("scoreboard.html")
 
 
-def getState():
-    ComQueue().getComQueue().put([COMMUNICATION.GET_STATE])
-    while True:
-        if not ComQueue().getComQueue().empty():
-            object = ComQueue().getComQueue().get()
-            if object[0] == COMMUNICATION.SENT_STATE:
-                return object[1]
-            else:
-                # Not what we are looking for, put it back
-                ComQueue().getComQueue().put(object)
-        else:
-            # queue is empty
-            pass
-
-
 class Keypad(Resource):
     def get(self):
-        return {"status": str(hex(state.keypad_code)[2:])}
+        return {"status": str(hex(logic.keypad_code)[2:])}
 
     def put(self, code):
-        state.keypad_code = code
+        logic.keypad_code = code
         return self.get()
 
 
@@ -71,7 +49,7 @@ class RGB(Resource):
     options = ["black", "red", "green", "blue"]
 
     def get(self):
-        color = state.rgb_color
+        color = logic.rgb_color
         return {"status": self.options.index(color.value),
                 "color": "" if color is RGBColor.BLANK else
                 "lawngreen" if color is RGBColor.GREEN else
@@ -80,7 +58,7 @@ class RGB(Resource):
                 }
 
     def put(self, color: str):
-        state.rgb_color = RGBColor(color)
+        logic.rgb_color = RGBColor(color)
         return self.get()
 
 
@@ -90,43 +68,9 @@ class Solenoid(Resource):
     #     self.enabled = True
 
     def get(self, action: str):
-        status = "unlocked"
         if action == "toggle":
-            log.debug("Toggling the solenoid")
-            ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_SOLENOID])
-            toggleComplete = False
-            while not toggleComplete:
-                if not ComQueue().getComQueue().empty():
-                    object = ComQueue().getComQueue().get()
-                    if object[0] == COMMUNICATION.SENT_SOLENOID_STATUS:
-                        status = object[1]
-                        toggleComplete = True  # Leave while
-                    else:
-                        # Not what we are looking for, put it back
-                        ComQueue().getComQueue().put(object)
-                else:
-                    # queue is empty
-                    pass
-        else:
-            # Get solenoid status
-            ComQueue().getComQueue().put([COMMUNICATION.SOLENOID_STATUS])
-            statusComplete = False
-            while not statusComplete:
-                if not ComQueue().getComQueue().empty():
-                    object = ComQueue().getComQueue().get()
-                    if object[0] == COMMUNICATION.SENT_SOLENOID_STATUS:
-                        status = object[1]
-                        statusComplete = True
-                    else:
-                        ComQueue().getComQueue().put(object)
-                else:
-                    # queue is empty
-                    pass
-
-        if status is SOLENOID_STATE.LOCKED:
-            return {"status": SOLENOID_STATE.LOCKED.value}
-        elif status is SOLENOID_STATE.UNLOCKED:
-            return {"status": SOLENOID_STATE.UNLOCKED.value}
+            logic.solenoid = SOLENOID_STATE.UNLOCKED if logic.solenoid else SOLENOID_STATE.UNLOCKED
+        return {"status": logic.solenoid.name.lower()}
 
 
 class Timer(Resource):
@@ -134,28 +78,17 @@ class Timer(Resource):
         self.enabled = True
 
     def get(self, action: str):
-        global start_time
-        cur_state = getState()
-
         if action == "toggle":
-            if cur_state is STATE.WAIT:
+            if logic.state is STATE.WAIT:
                 # Waiting to begin
-                start_time = datetime.datetime.now()
-                ComQueue().getComQueue().put([COMMUNICATION.START_GAME])
-                state = STATE.RUNNING
-            elif cur_state is STATE.RUNNING:
-                end_time = datetime.datetime.now()
+                logic.start_time = datetime.datetime.now()
+            elif logic.state is STATE.RUNNING:
+                logic.end_time = datetime.datetime.now()
                 ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
-                cur_state = STATE.WAIT
             else:
                 ComQueue().getComQueue().put([COMMUNICATION.RESET_GAME])
-                cur_state = STATE.WAIT
 
-        # Based on state, send a specific code
-        if cur_state is STATE.RUNNING:
-            return {"status": JSCom.RESET_BUTTON.value}
-        else:
-            return {"status": JSCom.START_BUTTON.value}
+        return {"status": JSCom.RESET_BUTTON.value if logic.state is STATE.RUNNING else JSCom.START_BUTTON.value}
 
 
 class Tripwire(Resource):
@@ -164,8 +97,8 @@ class Tripwire(Resource):
         log.debug("Tripwire {}".format(name))
         mask = 1 << int(name)
         if toggle:
-            state.lasers ^= mask
-        return {"color": "#DC3545" if state.lasers & mask else ""}
+            logic.lasers ^= mask
+        return {"color": "#DC3545" if logic.lasers & mask else ""}
 
 
 class TripwireAll(Resource):
@@ -173,10 +106,10 @@ class TripwireAll(Resource):
         toggle = action == "toggle"
         # if at least one tripwire is on, turn them all off.  If all of them are off, then randomize or turn all on
         if toggle:
-            if state.lasers:
-                state.lasers = 0x00
+            if logic.lasers:
+                logic.lasers = 0x00
             else:
-                state.lasers = 0x7F
+                logic.lasers = 0x7F
         status = dict()
         for i in range(1, 7):
             status[i] = Tripwire().get(i, "status")["color"]
@@ -186,7 +119,7 @@ class TripwireAll(Resource):
 class Randomize(Resource):
     def get(self):
         log.debug("Randomizing the lasers")
-        state.lasers = state.random_laser_pattern()
+        logic.lasers = logic.random_laser_pattern()
 
 
 class Ultrasonic(Resource):
@@ -194,43 +127,10 @@ class Ultrasonic(Resource):
         self.enabled = True
 
     def get(self, action: str):
-        status = ULTRASONIC_STATE.DISABLED
         if action == "toggle":
             log.debug("Toggling the ultrasonic")
-            ComQueue().getComQueue().put([COMMUNICATION.TOGGLE_ULTRASONIC])
-            toggleComplete = False
-            while not toggleComplete:
-                if not ComQueue().getComQueue().empty():
-                    object = ComQueue().getComQueue().get()
-                    if (object[0] == COMMUNICATION.SENT_ULTRASONIC):
-                        status = object[1]
-                        toggleComplete = True  # Leave while
-                    else:
-                        # Not what we are looking for, put it back
-                        ComQueue().getComQueue().put(object)
-                else:
-                    # queue is empty
-                    pass
-        else:
-            # Get solenoid status
-            ComQueue().getComQueue().put([COMMUNICATION.GET_ULTRASONIC])
-            statusComplete = False
-            while not statusComplete:
-                if not ComQueue().getComQueue().empty():
-                    object = ComQueue().getComQueue().get()
-                    if (object[0] == COMMUNICATION.SENT_ULTRASONIC):
-                        status = object[1]
-                        statusComplete = True
-                    else:
-                        ComQueue().getComQueue().put(object)
-                else:
-                    # queue is empty
-                    pass
-
-        if status is ULTRASONIC_STATE.DISABLED:
-            return {"status": ULTRASONIC_STATE.DISABLED.value}
-        elif status is ULTRASONIC_STATE.ENABLED:
-            return {"status": ULTRASONIC_STATE.ENABLED.value}
+            logic.ultrasonic = ULTRASONIC_STATE.DISABLED if logic.ultrasonic else ULTRASONIC_STATE.ENABLED
+        return {"status": ULTRASONIC_STATE.name.lower()}
 
 
 class Entry(Resource):
@@ -248,11 +148,11 @@ class Team(Resource):
     db = Database()
 
     def get(self):
-        return {"status": state.team}
+        return {"status": logic.team}
 
     def put(self, name):
-        state.team = name
-        return {"status": state.team}
+        logic.team = name
+        return {"status": logic.team}
 
 
 class Attempts(Resource):
@@ -284,18 +184,4 @@ class HighScores(Resource):
 
 class TimerText(Resource):
     def get(self):
-        global start_time
-        cur_state = getState()
-        if state == STATE.WAIT:
-            return {"timer": "03:00"}
-        elif cur_state == STATE.RUNNING:
-            newDatetime = datetime.datetime.now() - start_time
-            seconds = TIME_GIVEN - newDatetime.seconds
-            minutes = seconds // 60
-            secondsToPrint = seconds - minutes * 60
-            if seconds <= 0:
-                # Player ran out of time
-                ComQueue().getComQueue().put([COMMUNICATION.KILL_PLAYER])
-                return {"timer": "DEAD"}
-            else:
-                return {"timer": "{}:{:2}".format(minutes, secondsToPrint)}
+        return {"timer": logic.timer_text}

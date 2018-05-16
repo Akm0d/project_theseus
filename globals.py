@@ -2,7 +2,7 @@
 # to be able to communicate with the Logic Process. In setup.py, the Logic
 # process is forked to another process, and communication is handled via a
 # process and thread proof shared queue. The Borg class that ComQueue inherits
-# from ensures that all instances of ComQueue have the same state.
+# from ensures that all instances of ComQueue have the same logic.
 
 # Singleton/BorgSingleton.py
 # Alex Martelli's 'Borg'
