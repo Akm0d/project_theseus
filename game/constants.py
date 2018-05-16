@@ -1,5 +1,7 @@
-import datetime
 from enum import Enum, IntEnum
+
+# The Time the timer should be reset to in seconds.  Defaults to 3 minutes
+MAX_TIME = 180
 
 
 # What are the logical states for the logic machine
@@ -23,10 +25,10 @@ SLEEP_INTERVAL = 1 / INTERRUPTS_PER_SECOND
 
 # Communication between processes must be one of these
 class INTERRUPT(Enum):
-    DEFUSED = "Yay I won!!!!"                       # The device was successfully defused
-    TOGGLE_TIMER = "toggle-timer"                   # Toggle if timer is on/off
+    DEFUSED = "Yay I won!!!!"  # The device was successfully defused
+    TOGGLE_TIMER = "toggle-timer"  # Toggle if timer is on/off
     RESET_GAME = "reset-game"
-    KILL_PLAYER = "kill-player"                     # Player has died
+    KILL_PLAYER = "kill-player"  # Player has died
 
 
 # What are the events that trigger transitions between each logic
@@ -66,12 +68,6 @@ class SOLENOID_STATE(IntEnum):
 class ULTRASONIC_STATE(IntEnum):
     ENABLED = 1
     DISABLED = 0
-
-
-# The Time the timer should be reset to in seconds.  Defaults to 3 minutes
-MAX_TIME = 1
-# What is no time left?
-TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")
 
 
 # What are valid values for the RGB LEDS
