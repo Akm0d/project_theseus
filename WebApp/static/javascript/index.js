@@ -98,8 +98,18 @@ function updatePercentage() {
 setInterval(function(){
     // TODO after the project is complete the refresh time can be set based on how long it takes python code to run
     updateTimerText();
-}, 1000);
+}, 500);
 
+/* Reload all elements when the document is ready */
+$(document).ready(function () {
+    updateAttemptText();
+    updateSuccessText();
+    updateTableText();
+    updatePercentage();
+    updateTimerText();
+});
+
+/* Reload all elements every minute */
 setInterval(function(){
     updateAttemptText();
     updateSuccessText();

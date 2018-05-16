@@ -1,12 +1,12 @@
 import logging
 import random
 from datetime import datetime
-from multiprocessing import Lock, Manager
+from multiprocessing import Lock, Manager, Queue
 
 from smbus import SMBus
 
 from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, TIME_GIVEN
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME
 from game.database import Database, Row
 
 log = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 class Logic:
     shared = Manager().dict()
     mock = True
-    _comQueue = None
+    _comQueue = Queue()
     _process = Lock()
     _solenoid = SOLENOID_STATE.UNLOCKED
     _ultrasonic = ULTRASONIC_STATE.ENABLED
@@ -30,14 +30,14 @@ class Logic:
     @property
     def timer_text(self) -> str:
         newDatetime = datetime.now() - self.start_time
-        seconds = TIME_GIVEN - newDatetime.seconds
+        seconds = MAX_TIME - newDatetime.seconds
         minutes = seconds // 60
         secondsToPrint = seconds - minutes * 60
         if self.state is STATE.WAIT:
             return "RESET"
         if self.state is STATE.RUNNING:
             if seconds <= 0:
-                self._comQueue.put([INTERRUPT.KILL_PLAYER])
+                self.comQueue.put([INTERRUPT.KILL_PLAYER])
         elif self.state is STATE.EXPLODE:
             return "DEAD"
         elif self.state is STATE.WIN:
@@ -63,7 +63,7 @@ class Logic:
         self.shared["ultrasonic"] = value.value
 
     @property
-    def comQueue(self):
+    def comQueue(self) -> Queue:
         return self._comQueue
 
     @comQueue.setter
@@ -130,7 +130,7 @@ class Logic:
         # TODO send the command over i2c to change the rgb color
         self.shared["rgb"] = value.value
 
-    def run(self, queue, mock: bool = False):
+    def run(self, queue: Queue, mock: bool = False):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop
@@ -196,23 +196,17 @@ class Logic:
             elif command_id is INTERRUPT.KILL_PLAYER:
                 self.state = STATE.EXPLODE
                 self.db.last.success = False
+                self.end_game()
             elif command_id is INTERRUPT.DEFUSED:
                 self.state = STATE.WIN
                 self.db.last.success = True
+                self.end_game()
         elif self.state is STATE.EXPLODE:
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
-                self.end_time = datetime.now()
-                # Lock solenoid
-                self.solenoid = SOLENOID_STATE.LOCKED
-                self.comQueue.put([INTERRUPT.SENT_SOLENOID_STATUS, self.solenoid])
         elif self.state is STATE.WIN:
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
-                self.end_time = datetime.now()
                 self.state = STATE.WAIT
-                # Lock solenoid
-                self.solenoid = SOLENOID_STATE.LOCKED
-                self.comQueue.put([INTERRUPT.SENT_SOLENOID_STATUS, self.solenoid])
 
     def _send(self, device: I2C, message: str):
         """
@@ -237,13 +231,17 @@ class Logic:
         """
         Add a row to the database, generate random data for all the puzzles
         """
+        self.solenoid = SOLENOID_STATE.LOCKED
         self.start_time = datetime.now()
         self.lasers = self.random_laser_pattern()
         self.keypad_code = random.randint(0, 0xfff)
         self.rgb_color = random.choice([RGBColor.RED, RGBColor.BLUE])
+
+    def end_game(self):
+        log.debug("Game Over")
         row = Row(
-            name=self.db.last.name, lasers=self.lasers, code=self.keypad_code, success=False,
-            color=self.rgb_color.value, time=TIME_GIVEN
+            name=self.shared.get("team", self.db.last.name), lasers=self.lasers, code=self.keypad_code, success=False,
+            color=self.rgb_color.value, time=datetime.now() - self.start_time
         )
         log.debug("Adding new row to the database:\n{}".format(row))
         self.db.add_row(row)

@@ -12,7 +12,14 @@ log = logging.getLogger(__name__)
 
 logic = Logic()
 
+admin = Blueprint('admin', __name__, url_prefix='/admin')
 base = Blueprint('base', __name__)
+timer = Blueprint('timer', __name__)
+
+
+@admin.route('/', methods=['GET'])
+def admin_view():
+    return render_template("admin.html")
 
 
 @base.route('/', methods=['GET'])
@@ -27,12 +34,9 @@ def favicon():
     return url_for('static', filename='favicon.ico')
 
 
-scoreboard = Blueprint('scoreboard', __name__)
-
-
-@scoreboard.route('/scoreboard', methods=['GET'])
+@timer.route('/timer', methods=['GET'])
 def admin_view():
-    return render_template("scoreboard.html")
+    return "TODO timer"
 
 
 class Keypad(Resource):
@@ -165,11 +169,10 @@ class HighScores(Resource):
     db = Database()
 
     def get(self):
-        # TODO return top 5 unique scores from database
         scores = self.db.get_rows(success=True)
         scores.sort(key=lambda x: x.time, reverse=False)
         return {
-            "team{}".format(i): {"name": "{}".format(row.name), "time": "{}".format(row.time)} for i, row in
+            "team{}".format(i + 1): {"name": "{}".format(row.name), "time": "{}".format(row.time)} for i, row in
             enumerate(scores)
         }
 

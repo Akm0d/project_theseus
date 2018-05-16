@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+import datetime
 import logging
 from os import path
 from sqlite3 import Connection
 from typing import List
 try:
-    from game.constants import TIME_GIVEN
+    from game.constants import MAX_TIME
 except ModuleNotFoundError:
     from constants import TIME_GIVEN
 
@@ -24,7 +25,7 @@ class Row(dict):
     success = None
 
     def __init__(self, key: int = None, name=None, lasers: bin = None, code: hex = None, color: str = None,
-                 time: int = None, success: bool = None):
+                 time: datetime = None, success: bool = None):
         dict.__init__(self)
         self["name"] = name
         self["lasers"] = lasers
@@ -88,7 +89,7 @@ class Database(Connection):
         """
         # Brief Error checking for columns that cannot be null
         if item.time is None:
-            item.time = TIME_GIVEN
+            item.time = MAX_TIME
         if item.success is None:
             item.success = False
 
@@ -156,14 +157,14 @@ if __name__ == "__main__":
     db = Database()
 
     if not db.get_rows():
+        db.add_row(Row(name="zach", lasers=33, code=0x1f3, color="green", time=1, success=False))
+        db.add_row(Row(name="jane", lasers=31, code=0x1a3, color="green", time=6, success=False))
+        db.add_row(Row(name="graig", lasers=31, code=0x12a, color="red", time=7, success=False))
         db.add_row(Row(name="ted", lasers=14, code=0x123, color="green", time=9, success=False))
         db.add_row(Row(name="bill", lasers=52, code=0x113, color="red", time=3, success=True))
-        db.add_row(Row(name="jane", lasers=31, code=0x1a3, color="green", time=6, success=False))
-        db.add_row(Row(name="zach", lasers=33, code=0x1f3, color="green", time=1, success=False))
-        db.add_row(Row(name="tyler", lasers=52, code=0x1e3, color="blue", time=10, success=True))
-        db.add_row(Row(name="graig", lasers=31, code=0x12a, color="red", time=7, success=False))
         db.add_row(Row(name="chris", lasers=86, code=0xb23, color="green", time=8, success=True))
-        db.add_row(Row(name="clayton", lasers=46, code=0x1c3, color="red", time=11, success=True))
         db.add_row(Row(name="broderick", lasers=15, code=0x12d, color="blue", time=9, success=True))
+        db.add_row(Row(name="tyler", lasers=52, code=0x1e3, color="blue", time=10, success=True))
+        db.add_row(Row(name="clayton", lasers=46, code=0x1c3, color="red", time=11, success=True))
 
     print("\n".join([str(x) for x in db.get_rows()]))

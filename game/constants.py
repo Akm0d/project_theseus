@@ -69,7 +69,7 @@ class ULTRASONIC_STATE(IntEnum):
 
 
 # The Time the timer should be reset to in seconds.  Defaults to 3 minutes
-TIME_GIVEN = 180
+MAX_TIME = 1
 # What is no time left?
 TIME_OVER = datetime.datetime.strptime("00:00", "%M:%S")
 
