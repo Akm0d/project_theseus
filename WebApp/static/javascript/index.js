@@ -83,7 +83,7 @@ function updatePercentage() {
                         {
                             var dividend = JSON.parse(y.response);
                             var divisor = JSON.parse(z.response);
-                            document.getElementById("percentID").innerHTML = (dividend['successes'] / divisor['attempts'])*100 + '%';
+                            document.getElementById("percentID").innerHTML = ((dividend['successes'] / divisor['attempts'])*100).toFixed(1) + '%';
                         }
                     }
                 }
@@ -101,8 +101,8 @@ setInterval(function(){
 }, 1000);
 
 setInterval(function(){
-  updateAttemptText();
-  updateSuccessText();
-  updateTableText();
-  updatePercentage();
+    updateAttemptText();
+    updateSuccessText();
+    updateTableText();
+    updatePercentage();
 }, 10000);
