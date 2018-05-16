@@ -95,10 +95,7 @@ class Logic:
 
     @property
     def state(self):
-        if self.shared.get("logic", None) is None:
-            return STATE.WAIT
-        else:
-            return STATE(self.shared["logic"])
+        return STATE(self.shared.get("logic", STATE.WAIT.value))
 
     @state.setter
     def state(self, value: STATE):
@@ -106,57 +103,44 @@ class Logic:
         self.shared["logic"] = value.value
 
     @property
-    def timer(self):
-        return self._timer
-
-    @timer.setter
-    def timer(self, value):
-        log.debug("Timer set to {}".format(value))
-        self._timer = value
-
-    @property
     def lasers(self) -> bin:
-        return self.db.last.lasers
+        return self.shared.get("lasers", 0x00)
 
     @lasers.setter
     def lasers(self, value: int):
         assert 0 <= value < 128
         log.debug("Setting new laser configuration: {}".format(bin(value)))
         # TODO Send the command over i2c to activate the correct lasers
-        self.db.last = Row(lasers=value)
+        self.shared["lasers"] = value
 
     @property
     def keypad_code(self) -> hex:
-        return self.db.last.code
+        return self.shared.get("code", random.randint(0, 0xfff))
 
     @keypad_code.setter
     def keypad_code(self, value: hex):
-        try:
-            typed = int(value)
-        except ValueError:
-            typed = int("0x" + str(value), 16)
-        assert 0x0 <= typed <= 0xfff
-        log.debug("Setting new keypad code: 0x{}".format(typed))
-        self.db.last = Row(code=typed)
+        assert 0x0 <= value <= 0xfff
+        log.debug("Setting new keypad code: 0x{}".format(value))
+        self.shared["code"] = value
 
     @property
     def team(self) -> str:
-        return self.db.last.name
+        return self.shared.get("team", "--")
 
     @team.setter
     def team(self, value: str):
         log.debug("Setting current team name to: {}".format(value))
-        self.db.last = Row(name=value)
+        self.shared["team"] = value
 
     @property
     def rgb_color(self) -> RGBColor:
-        return RGBColor(self.db.last.color)
+        return RGBColor(self.shared.get("rgb", RGBColor.BLANK.value))
 
     @rgb_color.setter
     def rgb_color(self, value: RGBColor):
         log.debug("Setting new rgb color: {}".format(value))
         # TODO send the command over i2c to change the rgb color
-        self.db.last = Row(color=value.value)
+        self.shared["rgb"] = value.value
 
     def run(self, queue, mock: bool = False):
         """
@@ -212,7 +196,7 @@ class Logic:
         elif self.state is STATE.WIN:
             pass
         else:
-            log.error("Reached an unknown logic: {}".format(self.state))
+            log.error("Reached an unknown state: {}".format(self.state))
 
         # State Transitions
         if self.state is STATE.WAIT:

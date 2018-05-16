@@ -41,7 +41,7 @@ class Keypad(Resource):
         return {"status": str(hex(logic.keypad_code)[2:])}
 
     def put(self, code):
-        logic.keypad_code = code
+        logic.keypad_code = int("0x" + str(code), 16)
         return self.get()
 
 
@@ -69,7 +69,7 @@ class Solenoid(Resource):
 
     def get(self, action: str):
         if action == "toggle":
-            logic.solenoid = SOLENOID_STATE.UNLOCKED if logic.solenoid else SOLENOID_STATE.UNLOCKED
+            logic.solenoid = SOLENOID_STATE.UNLOCKED if logic.solenoid else SOLENOID_STATE.LOCKED
         return {"status": logic.solenoid.name.lower()}
 
 
@@ -130,7 +130,7 @@ class Ultrasonic(Resource):
         if action == "toggle":
             log.debug("Toggling the ultrasonic")
             logic.ultrasonic = ULTRASONIC_STATE.DISABLED if logic.ultrasonic else ULTRASONIC_STATE.ENABLED
-        return {"status": ULTRASONIC_STATE.name.lower()}
+        return {"status": logic.ultrasonic.name.lower()}
 
 
 class Entry(Resource):

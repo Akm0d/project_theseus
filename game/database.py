@@ -47,7 +47,7 @@ class Database(Connection):
 
     def __init__(self):
         # if does not exist, format / create tables
-        Connection.__init__(self, self.FILE)
+        Connection.__init__(self, self.FILE, check_same_thread=False)
         self.cur = self.cursor()
 
         # The TIME is the number on the clock when the game ended in success or failure
