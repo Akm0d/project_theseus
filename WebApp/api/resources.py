@@ -1,6 +1,5 @@
 import logging
 
-from flask import Blueprint, render_template, url_for
 from flask_restful import Resource
 
 from game.constants import STATE, INTERRUPT, SOLENOID_STATE, JSCom, ULTRASONIC_STATE, RGBColor
@@ -11,32 +10,6 @@ from globals import ComQueue
 log = logging.getLogger(__name__)
 
 logic = Logic()
-
-admin = Blueprint('admin', __name__, url_prefix='/admin')
-base = Blueprint('base', __name__)
-timer = Blueprint('timer', __name__)
-
-
-@admin.route('/', methods=['GET'])
-def admin_view():
-    return render_template("admin.html")
-
-
-@base.route('/', methods=['GET'])
-def base_view():
-    return render_template("index.html")
-
-
-# TODO 404 not found and other error pages
-
-@base.route('/favicon.ico', methods=['GET'])
-def favicon():
-    return url_for('static', filename='favicon.ico')
-
-
-@timer.route('/timer', methods=['GET'])
-def admin_view():
-    return "TODO timer"
 
 
 class Keypad(Resource):
