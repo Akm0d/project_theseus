@@ -45,7 +45,7 @@ class Logic:
             return "DEAD"
         elif self.state is STATE.WIN:
             return "SUCCESS!"
-        return "{}:{:2}".format(minutes, secondsToPrint)
+        return "{}:{:2}".format(minutes, str(secondsToPrint).zfill(2))
 
     @property
     def start_time(self) -> datetime:
