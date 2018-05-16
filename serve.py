@@ -12,8 +12,7 @@ from qt.mock_box_ui import ApplicationWindow
 
 log = logging.getLogger()
 log_dir = path.dirname(__file__)
-print(log_dir)
-exit()
+
 if __name__ == '__main__':
     # Parse command line arguments
     args = ArgumentParser()
