@@ -2,17 +2,20 @@ import logging
 import random
 from datetime import datetime
 from multiprocessing import Lock, Manager, Queue
+from time import sleep
 
 from smbus import SMBus
 
 from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, SLEEP_INTERVAL
 from game.database import Database, Row
+from globals import ComQueue
 
 log = logging.getLogger(__name__)
 
 
 class Logic:
+    db = Database()
     shared = Manager().dict()
     mock = True
     _comQueue = Queue()
@@ -21,7 +24,6 @@ class Logic:
     _ultrasonic = ULTRASONIC_STATE.ENABLED
 
     def __init__(self):
-        self.db = Database()
         self._bus = None
         self._timer = 0
         self._i2c_master = None
@@ -36,8 +38,9 @@ class Logic:
         if self.state is STATE.WAIT:
             return "RESET"
         if self.state is STATE.RUNNING:
-            if seconds <= 0:
-                self.comQueue.put([INTERRUPT.KILL_PLAYER])
+            if minutes < 0 or seconds < 0:
+                ComQueue().getComQueue().put([INTERRUPT.KILL_PLAYER])
+                return "DEAD"
         elif self.state is STATE.EXPLODE:
             return "DEAD"
         elif self.state is STATE.WIN:
@@ -113,12 +116,14 @@ class Logic:
 
     @property
     def team(self) -> str:
-        return self.shared.get("team", "--")
+        return self.shared.get("team", self.db.last.name)
 
     @team.setter
     def team(self, value: str):
         log.debug("Setting current team name to: {}".format(value))
         self.shared["team"] = value
+        if (self.state is STATE.EXPLODE) or (self.state is STATE.WIN):
+            self.db.last = Row(name=value)
 
     @property
     def rgb_color(self) -> RGBColor:
@@ -152,7 +157,7 @@ class Logic:
             try:
                 while True:
                     self._loop()
-                    # sleep(SLEEP_INTERVAL)
+                    sleep(SLEEP_INTERVAL)
             except KeyboardInterrupt:
                 return
 
@@ -195,12 +200,10 @@ class Logic:
                 self.state = STATE.WAIT
             elif command_id is INTERRUPT.KILL_PLAYER:
                 self.state = STATE.EXPLODE
-                self.db.last.success = False
-                self.end_game()
+                self.end_game(success=False)
             elif command_id is INTERRUPT.DEFUSED:
                 self.state = STATE.WIN
-                self.db.last.success = True
-                self.end_game()
+                self.end_game(success=True)
         elif self.state is STATE.EXPLODE:
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
@@ -223,7 +226,7 @@ class Logic:
             pass
 
     @staticmethod
-    def random_laser_pattern()-> int:
+    def random_laser_pattern() -> int:
         # TODO make sure the laser pattern conforms to certain rules
         return random.randint(0, 127)
 
@@ -236,13 +239,18 @@ class Logic:
         self.lasers = self.random_laser_pattern()
         self.keypad_code = random.randint(0, 0xfff)
         self.rgb_color = random.choice([RGBColor.RED, RGBColor.BLUE])
-
-    def end_game(self):
-        log.debug("Game Over")
         row = Row(
-            name=self.shared.get("team", self.db.last.name), lasers=self.lasers, code=self.keypad_code, success=False,
-            color=self.rgb_color.value, time=datetime.now() - self.start_time
+            name=self.team, lasers=self.lasers, code=self.keypad_code, success=False, time=MAX_TIME,
+            color=self.rgb_color.value,
         )
         log.debug("Adding new row to the database:\n{}".format(row))
         self.db.add_row(row)
 
+    def end_game(self, success: bool = False):
+        log.debug("Game Over")
+        self.db.last = Row(
+            code=self.keypad_code,
+            lasers=self.lasers,
+            success=success,
+            time=(datetime.now() - self.start_time).seconds
+        )

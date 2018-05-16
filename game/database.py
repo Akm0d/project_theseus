@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import datetime
 import logging
 from os import path
 from sqlite3 import Connection
@@ -25,7 +24,7 @@ class Row(dict):
     success = None
 
     def __init__(self, key: int = None, name=None, lasers: bin = None, code: hex = None, color: str = None,
-                 time: datetime = None, success: bool = None):
+                 time: int = None, success: bool = None):
         dict.__init__(self)
         self["name"] = name
         self["lasers"] = lasers
