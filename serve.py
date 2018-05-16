@@ -3,7 +3,7 @@ import logging
 import multiprocessing as mp
 from argparse import ArgumentParser
 from logging.handlers import RotatingFileHandler
-from os import path, mkdir
+from os import path
 
 import globals
 from WebApp import app
@@ -23,8 +23,6 @@ if __name__ == '__main__':
     opts = args.parse_args()
 
     # Configure logging
-    if not path.exists(log_dir):
-        mkdir(log_dir)
     logging.basicConfig(level=logging.INFO,  handlers=[
         RotatingFileHandler("{}/{}.log".format(log_dir, __file__.split('/')[-1][:-3]), maxBytes=1280000, backupCount=1),
     ], format="[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s")
