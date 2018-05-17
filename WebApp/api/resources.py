@@ -64,7 +64,7 @@ class Tripwire(Resource):
     def get(self, name: str or int, action: str):
         toggle = action == "toggle"
         log.debug("Tripwire {}".format(name))
-        mask = 1 << int(name)
+        mask = 1 << int(int(name) - 1)
         if toggle:
             logic.lasers ^= mask
         return {"color": "#DC3545" if logic.lasers & mask else ""}
@@ -78,7 +78,8 @@ class TripwireAll(Resource):
             if logic.lasers:
                 logic.lasers = 0x00
             else:
-                logic.lasers = 0x7F
+                logic.lasers = 0x3f
+
         status = dict()
         for i in range(1, 7):
             status[i] = Tripwire().get(i, "status")["color"]

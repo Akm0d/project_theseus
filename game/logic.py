@@ -99,7 +99,7 @@ class Logic:
 
     @lasers.setter
     def lasers(self, value: int):
-        assert 0 <= value < 128
+        assert 0 <= value <= 0x3f
         log.debug("Setting new laser configuration: {}".format(bin(value)))
         # TODO Send the command over i2c to activate the correct lasers
         self.shared["lasers"] = value
@@ -116,13 +116,13 @@ class Logic:
 
     @property
     def team(self) -> str:
-        return self.shared.get("team", self.db.last.name)
+        return self.shared.get("team", self.db.last.name if self.db.get_rows() else "--")
 
     @team.setter
     def team(self, value: str):
         log.debug("Setting current team name to: {}".format(value))
         self.shared["team"] = value
-        if (self.state is STATE.EXPLODE) or (self.state is STATE.WIN):
+        if self.db.get_rows():
             self.db.last = Row(name=value)
 
     @property
@@ -198,6 +198,7 @@ class Logic:
         elif self.state is STATE.RUNNING:
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
+                self.end_game(success=False)
             elif command_id is INTERRUPT.KILL_PLAYER:
                 self.state = STATE.EXPLODE
                 self.end_game(success=False)
@@ -228,7 +229,7 @@ class Logic:
     @staticmethod
     def random_laser_pattern() -> int:
         # TODO make sure the laser pattern conforms to certain rules
-        return random.randint(0, 127)
+        return random.randint(0, 0x3f)
 
     def start_game(self):
         """
@@ -249,6 +250,7 @@ class Logic:
     def end_game(self, success: bool = False):
         log.debug("Game Over")
         self.db.last = Row(
+            name=self.team,
             code=self.keypad_code,
             lasers=self.lasers,
             success=success,
