@@ -3,10 +3,7 @@ import logging
 from os import path
 from sqlite3 import Connection
 from typing import List
-try:
-    from game.constants import MAX_TIME
-except ModuleNotFoundError:
-    from constants import TIME_GIVEN
+from game.constants import MAX_TIME
 
 log = logging.getLogger(__name__)
 
