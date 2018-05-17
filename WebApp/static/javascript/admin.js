@@ -1,6 +1,7 @@
 // When the page is loaded, query the logic of all the sensors
 $(document).ready(function(){
-    refresh_all()
+    refresh_all();
+    timer_status(toggle = false);
 });
 
 document.getElementById("solenoid-toggle").onclick = function() {
@@ -160,11 +161,16 @@ function timer_status(toggle){
                 {
                     document.getElementById("timer-start-reset").innerHTML = '<button class="btn btn-outline-danger" >Reset</button>';
                 }
+                if (toggle) {
+                    /* Refresh everything on the page after the python gets a moment to start the game */
+                    setTimeout(function () {
+                        refresh_all();
+                    }, 100);
+                }
             }
         }
     };
     x.send();
-    /* TODO refresh all after start game, but not while hovering setTimeout(function() { refresh_all(); }, 500);*/
 }
 
 function tripwire_status(number, toggle) {

@@ -163,7 +163,8 @@ class Logic:
 
     def poll_sensors(self):
         """
-        Poll all of the sensors and raise a flag if one of them has tripped
+        Poll all of the sensors and raise a flag if one of them has tripped.
+        If the right wire was clipped at the end of the puzzle, raise the win flag
         """
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
@@ -193,11 +194,13 @@ class Logic:
         # State Transitions
         if self.state is STATE.WAIT:
             if command_id is INTERRUPT.TOGGLE_TIMER:
+                # TODO? Verify that the box is reset before starting the game
                 self.state = STATE.RUNNING
                 self.start_game()
         elif self.state is STATE.RUNNING:
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
+                # FIXME? Delete last row on reset
                 self.end_game(success=False)
             elif command_id is INTERRUPT.KILL_PLAYER:
                 self.state = STATE.EXPLODE
