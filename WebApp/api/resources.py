@@ -56,8 +56,7 @@ class Timer(Resource):
     def get(self, action: str):
         if action == "toggle":
             ComQueue().getComQueue().put([INTERRUPT.TOGGLE_TIMER])
-
-        return {"status": JSCom.RESET_BUTTON.value if logic.state is STATE.RUNNING else JSCom.START_BUTTON.value}
+        return {"status": JSCom.START_BUTTON.value if logic.state is STATE.WAIT else JSCom.RESET_BUTTON.value}
 
 
 class Tripwire(Resource):
