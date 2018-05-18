@@ -399,3 +399,4 @@ class Ui_MainWindow(object):
         self.RGB_green.setText(_translate("MainWindow", "G"))
         self.RGB_blue.setText(_translate("MainWindow", "B"))
         self.start_reset.setText(_translate("MainWindow", "Start"))
+
