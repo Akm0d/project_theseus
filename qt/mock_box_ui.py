@@ -36,12 +36,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         # TODO Listen on the SMBus for messages and then call the right functions
 
-        # TODO connect clicked.connect from UI elements to functions
-        log.debug("Connecting Buttons")
         for h, button in self.keypad.items():
-            button.clicked.connect(partial(lambda x: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, x), h))
+            assert isinstance(button, QPushButton)
+            button.clicked.connect(partial(
+                lambda x: self.bus.write_byte_data(Logic.bus_num, I2C.KEYPAD, x), h
+            ))
 
-        # TODO simulate sending SMBus messages when things are clicked
+        for _, checkbox in self.photo_resistor.items():
+            assert isinstance(checkbox, QCheckBox)
+            checkbox.clicked.connect(partial(
+                lambda x: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, x), self.laser_mask
+            ))
 
     @property
     def time(self) -> str:
@@ -56,6 +61,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         :param value:
         :return:
         """
+
+    @property
+    def laser_mask(self) -> bin:
+        """
+        :return: An integer that represents all the photo resistors that have a laser shining on them
+        """
+        return 0
 
     @property
     def laser(self) -> Dict[int, QCheckBox]:
