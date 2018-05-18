@@ -59,6 +59,8 @@ class I2C(IntEnum):
     # TOP Lid
     KEYPAD = 0x0c
     SEVEN_SEG = 0x0d
+    # Outer box
+    RESET = 0x0e
 
 
 class SOLENOID_STATE(IntEnum):

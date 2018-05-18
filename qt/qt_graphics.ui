@@ -168,7 +168,7 @@
       <rect>
        <x>10</x>
        <y>0</y>
-          <width>181</width>
+       <width>181</width>
        <height>81</height>
       </rect>
      </property>
@@ -226,10 +226,10 @@
       <item>
        <widget class="QDial" name="dial">
         <property name="maximum">
-            <number>360</number>
+         <number>360</number>
         </property>
-           <property name="wrapping">
-               <bool>true</bool>
+        <property name="wrapping">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -267,7 +267,7 @@
      <rect>
       <x>10</x>
       <y>350</y>
-         <width>251</width>
+      <width>251</width>
       <height>51</height>
      </rect>
     </property>
@@ -276,18 +276,18 @@
       <rect>
        <x>10</x>
        <y>10</y>
-          <width>236</width>
+       <width>236</width>
        <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QCheckBox" name="wire_red">
-           <property name="layoutDirection">
-               <enum>Qt::RightToLeft</enum>
-           </property>
+        <property name="layoutDirection">
+         <enum>Qt::RightToLeft</enum>
+        </property>
         <property name="text">
-            <string>R</string>
+         <string>R</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -296,11 +296,11 @@
       </item>
       <item>
        <widget class="QCheckBox" name="wire_green">
-           <property name="layoutDirection">
-               <enum>Qt::RightToLeft</enum>
-           </property>
+        <property name="layoutDirection">
+         <enum>Qt::RightToLeft</enum>
+        </property>
         <property name="text">
-            <string>G</string>
+         <string>G</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -309,11 +309,11 @@
       </item>
       <item>
        <widget class="QCheckBox" name="wire_blue">
-           <property name="layoutDirection">
-               <enum>Qt::RightToLeft</enum>
-           </property>
+        <property name="layoutDirection">
+         <enum>Qt::RightToLeft</enum>
+        </property>
         <property name="text">
-            <string>B</string>
+         <string>B</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -865,19 +865,19 @@
      </widget>
     </widget>
    </widget>
-      <widget class="QPushButton" name="start_reset">
-          <property name="geometry">
-              <rect>
-                  <x>20</x>
-                  <y>400</y>
-                  <width>108</width>
-                  <height>23</height>
-              </rect>
-          </property>
-          <property name="text">
-              <string>Start</string>
-          </property>
-      </widget>
+   <widget class="QPushButton" name="start_reset">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>400</y>
+      <width>108</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
