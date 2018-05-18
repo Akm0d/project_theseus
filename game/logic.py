@@ -2,12 +2,14 @@ import logging
 import random
 from datetime import datetime
 from multiprocessing import Lock, Manager, Queue
-from time import sleep
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import current_app
+from flask_apscheduler import APScheduler
 from smbus import SMBus
 
 from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, SLEEP_INTERVAL
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME
 from game.database import Database, Row
 from globals import ComQueue
 
@@ -15,9 +17,11 @@ log = logging.getLogger(__name__)
 
 
 class Logic:
+    bus_num = 1
     db = Database()
     shared = Manager().dict()
     mock = True
+    scheduler = None
     _comQueue = Queue()
     _process = Lock()
     _solenoid = SOLENOID_STATE.UNLOCKED
@@ -26,8 +30,6 @@ class Logic:
     def __init__(self):
         self._bus = None
         self._timer = 0
-        self._i2c_master = None
-        self._i2c_slave = None
 
     @property
     def timer_text(self) -> str:
@@ -143,23 +145,24 @@ class Logic:
         with self._process:
             # Initialize I2C server
             if mock:
-                self._bus = MockBus(1)
+                self._bus = MockBus(self.bus_num)
                 self.mock = True
             else:
-                self._bus = SMBus(1)
+                self._bus = SMBus(self.bus_num)
                 self.mock = False
 
             self.state = STATE.WAIT  # Change logic of game to WAIT
             self.solenoid = SOLENOID_STATE.LOCKED
             self.comQueue = queue
             self.ultrasonic = ULTRASONIC_STATE.ENABLED
+            self.scheduler = APScheduler(scheduler=BackgroundScheduler(), app=current_app)
+            self.scheduler.add_job("loop", self._loop, trigger='interval', seconds=1)
+            self.scheduler.start()
 
             # TODO start thread polling sensors
             try:
                 while True:
-                    self._loop()
                     self.poll_sensors()
-                    sleep(SLEEP_INTERVAL)
             except KeyboardInterrupt:
                 return
 
@@ -168,14 +171,14 @@ class Logic:
         Poll all of the sensors and raise a flag if one of them has tripped.
         If the right wire was clipped at the end of the puzzle, raise the win flag
         """
-        word = self._bus.read_word_data(0x1, 0x1)
-        if word:
-            print(word)
+        for i in I2C:
+            word = self._bus.read_word_data(self.bus_num, i)
+            if word:
+                print(word)
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
-        pass
 
     def _loop(self):
         command_id = None
