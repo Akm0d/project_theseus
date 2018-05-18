@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QCheckBox, QPushButton
 
 from MockPi.MockSmbus import MockBus as Smbus
 from game.constants import I2C
+from game.logic import Logic
 
 try:
     from qt.qt_graphics import Ui_MainWindow
@@ -21,7 +22,7 @@ log = logging.getLogger(__name__)
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(ApplicationWindow, self).__init__()
-        self.bus = Smbus(1)
+        self.bus = Smbus(Logic.bus_num)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -38,7 +39,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # TODO connect clicked.connect from UI elements to functions
         log.debug("Connecting Buttons")
         for h, button in self.keypad.items():
-            button.clicked.connect(partial(lambda x: self.bus.write_byte_data(0x1, I2C.LASERS, x), h))
+            button.clicked.connect(partial(lambda x: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, x), h))
 
         # TODO simulate sending SMBus messages when things are clicked
 

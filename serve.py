@@ -34,6 +34,8 @@ if __name__ == '__main__':
     stream = logging.StreamHandler()
     stream.setLevel(opts.log_level)
     stream.setFormatter(logging.Formatter("[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s"))
+    logging.getLogger("apscheduler").setLevel(opts.log_level)
+    logging.getLogger("apscheduler").propagate = False
     log.addHandler(stream)
 
     # Access ComQueue singleton

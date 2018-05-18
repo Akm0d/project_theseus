@@ -156,7 +156,8 @@ class Logic:
             self.comQueue = queue
             self.ultrasonic = ULTRASONIC_STATE.ENABLED
             self.scheduler = APScheduler(scheduler=BackgroundScheduler(), app=current_app)
-            self.scheduler.add_job("loop", self._loop, trigger='interval', seconds=1)
+            self.scheduler.add_job("loop", self._loop, trigger='interval', seconds=1, max_instances=1,
+                                   replace_existing=False)
             self.scheduler.start()
 
             # TODO start thread polling sensors
