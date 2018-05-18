@@ -58,6 +58,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.wire_blue.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xb))
         self.ui.wire_green.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xe))
 
+        self.ui.start_reset.clicked.connect(lambda: print("ya"))
+
     @property
     def time(self) -> str:
         """

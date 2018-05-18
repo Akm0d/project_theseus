@@ -355,6 +355,9 @@ class Ui_MainWindow(object):
         self.RGB_blue.setCheckable(False)
         self.RGB_blue.setObjectName("RGB_blue")
         self.horizontalLayout_2.addWidget(self.RGB_blue)
+        self.start_reset = QtWidgets.QPushButton(self.centralwidget)
+        self.start_reset.setGeometry(QtCore.QRect(20, 400, 108, 23))
+        self.start_reset.setObjectName("start_reset")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 372, 20))
@@ -395,4 +398,4 @@ class Ui_MainWindow(object):
         self.RGB_red.setText(_translate("MainWindow", "R"))
         self.RGB_green.setText(_translate("MainWindow", "G"))
         self.RGB_blue.setText(_translate("MainWindow", "B"))
-
+        self.start_reset.setText(_translate("MainWindow", "Start"))
