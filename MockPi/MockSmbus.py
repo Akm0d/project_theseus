@@ -33,7 +33,9 @@ class MockBus(object):
     def read_word_data(self, i2c_addr, register: int):
         """Read a single word from a designated register."""
         self._create_queue_if_none(register)
-        result = self.messages[register].pop()
+        result = None
+        if self.messages[register]:
+            result = self.messages[register].pop()
         self.messages[register] = self.messages[register][:-1]
         return result
 

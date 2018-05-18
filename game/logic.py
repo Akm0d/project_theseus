@@ -154,9 +154,11 @@ class Logic:
             self.comQueue = queue
             self.ultrasonic = ULTRASONIC_STATE.ENABLED
 
+            # TODO start thread polling sensors
             try:
                 while True:
                     self._loop()
+                    self.poll_sensors()
                     sleep(SLEEP_INTERVAL)
             except KeyboardInterrupt:
                 return
@@ -166,6 +168,9 @@ class Logic:
         Poll all of the sensors and raise a flag if one of them has tripped.
         If the right wire was clipped at the end of the puzzle, raise the win flag
         """
+        word = self._bus.read_word_data(0x1, 0x1)
+        if word:
+            print(word)
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
