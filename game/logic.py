@@ -175,7 +175,7 @@ class Logic:
         for i in I2C:
             word = self._bus.read_word_data(self.bus_num, i)
             if word is not None:
-                print(word)
+                print("{}: {}".format(i.name, hex(word)))
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
