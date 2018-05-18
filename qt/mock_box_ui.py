@@ -5,7 +5,7 @@ from functools import partial
 from typing import Dict
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QCheckBox, QPushButton
+from PyQt5.QtWidgets import QCheckBox, QPushButton, QSlider
 
 from MockPi.MockSmbus import MockBus as Smbus
 from game.constants import I2C
@@ -49,6 +49,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.potentiometer.valueChanged.connect(
             lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ROTARY, self.potentiometer.value()))
 
+        for _, switch in self.switches.items():
+            switch.valueChanged.connect(
+                lambda: self.bus.write_byte_data(Logic.bus_num, I2C.SWITCHES, self.switch_mask)
+            )
+
     @property
     def time(self) -> str:
         """
@@ -64,6 +69,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         """
 
     @property
+    def switches(self) -> Dict[int, QSlider]:
+        return {
+            4: self.ui.verticalSlider_1,
+            3: self.ui.verticalSlider_2,
+            2: self.ui.verticalSlider_3,
+            1: self.ui.verticalSlider_4,
+            0: self.ui.verticalSlider_5,
+        }
+
+    @property
+    def switch_mask(self) -> bin:
+        result = 0b00000
+        for offset, sw in self.switches.items():
+            result ^= ((1 if sw.value() else 0) << offset)
+        return result
+
+    @property
     def laser_mask(self) -> bin:
         """
         :return: An integer that represents all the photo resistors that have a laser shining on them
@@ -76,23 +98,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @property
     def laser(self) -> Dict[int, QCheckBox]:
         return {
-            0: self.ui.laser_0,
-            1: self.ui.laser_1,
-            2: self.ui.laser_2,
-            3: self.ui.laser_3,
-            4: self.ui.laser_4,
-            5: self.ui.laser_5,
+            5: self.ui.laser_0,
+            4: self.ui.laser_1,
+            3: self.ui.laser_2,
+            2: self.ui.laser_3,
+            1: self.ui.laser_4,
+            0: self.ui.laser_5,
         }
 
     @property
     def photo_resistor(self) -> Dict[int, QCheckBox]:
         return {
-            0: self.ui.photodiode_0,
-            1: self.ui.photodiode_1,
-            2: self.ui.photodiode_2,
-            3: self.ui.photodiode_3,
-            4: self.ui.photodiode_4,
-            5: self.ui.photodiode_5,
+            5: self.ui.photodiode_0,
+            4: self.ui.photodiode_1,
+            3: self.ui.photodiode_2,
+            2: self.ui.photodiode_3,
+            1: self.ui.photodiode_4,
+            0: self.ui.photodiode_5,
         }
 
     @property
