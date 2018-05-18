@@ -226,7 +226,10 @@
       <item>
        <widget class="QDial" name="dial">
         <property name="maximum">
-         <number>4</number>
+            <number>360</number>
+        </property>
+           <property name="wrapping">
+               <bool>true</bool>
         </property>
        </widget>
       </item>

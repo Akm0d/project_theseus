@@ -46,6 +46,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 lambda: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, self.laser_mask)
             ))
 
+        self.potentiometer.valueChanged.connect(
+            lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ROTARY, self.potentiometer.value()))
+
     @property
     def time(self) -> str:
         """
