@@ -55,9 +55,10 @@ class I2C(IntEnum):
     ROTARY = 0x08
     SWITCHES = 0x09
     LEDS = 0x0a
+    WIRE = 0x0b
     # TOP Lid
-    KEYPAD = 0x0b
-    SEVEN_SEG = 0x0c
+    KEYPAD = 0x0c
+    SEVEN_SEG = 0x0d
 
 
 class SOLENOID_STATE(IntEnum):
