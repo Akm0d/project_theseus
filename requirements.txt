@@ -6,4 +6,4 @@ Flask == 1.0.2
 Flask_APScheduler == 1.7.1
 Flask_RESTful == 0.3.6
 pysmbus == 0.1
-# python-qt5
+PyQt5 == 5.10.1
