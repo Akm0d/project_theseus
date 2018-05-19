@@ -157,19 +157,19 @@
    <widget class="QWidget" name="puzzle" native="true">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>250</y>
-      <width>201</width>
-      <height>91</height>
+         <x>20</x>
+         <y>310</y>
+         <width>131</width>
+         <height>51</height>
      </rect>
     </property>
     <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>0</y>
-       <width>181</width>
-       <height>81</height>
+          <x>0</x>
+          <y>10</y>
+          <width>121</width>
+          <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -223,16 +223,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QDial" name="dial">
-        <property name="maximum">
-         <number>360</number>
-        </property>
-        <property name="wrapping">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </widget>
@@ -265,8 +255,8 @@
    <widget class="QWidget" name="inner_box" native="true">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>350</y>
+         <x>0</x>
+         <y>250</y>
       <width>251</width>
       <height>51</height>
      </rect>
@@ -536,7 +526,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>260</x>
+         <x>270</x>
       <y>250</y>
       <width>121</width>
       <height>16</height>
@@ -869,13 +859,29 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>400</y>
+         <y>390</y>
       <width>108</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Start</string>
+        <string>Start/Reset</string>
+    </property>
+   </widget>
+      <widget class="QDial" name="dial">
+          <property name="geometry">
+              <rect>
+                  <x>150</x>
+                  <y>310</y>
+                  <width>101</width>
+                  <height>111</height>
+              </rect>
+          </property>
+          <property name="maximum">
+              <number>360</number>
+          </property>
+          <property name="wrapping">
+              <bool>true</bool>
     </property>
    </widget>
   </widget>
