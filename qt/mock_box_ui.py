@@ -62,6 +62,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Reset button
         self.ui.start_reset.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.RESET, 0x1))
 
+        self.ui.ultrasonicSlider.valueChanged.connect(
+            lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ULTRASONIC, self.ui.ultrasonicSlider.value())
+        )
+
     @property
     def time(self) -> str:
         """

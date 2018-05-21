@@ -6,8 +6,11 @@ from multiprocessing import Lock, Manager, Queue
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import current_app
 from flask_apscheduler import APScheduler
-from smbus import SMBus
 
+try:
+    from smbus import SMBus
+except ModuleNotFoundError:
+    print("SMBus module not found, please run this script with --mock")
 from MockPi.MockSmbus import MockBus
 from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME
 from game.database import Database, Row
