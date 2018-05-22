@@ -6,6 +6,8 @@ from typing import Dict
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QCheckBox, QPushButton, QSlider
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask_apscheduler import APScheduler
 
 from MockPi.MockSmbus import MockBus as Smbus
 from game.constants import I2C
@@ -65,6 +67,21 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.ultrasonicSlider.valueChanged.connect(
             lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ULTRASONIC, self.ui.ultrasonicSlider.value())
         )
+
+        self.scheduler = APScheduler(scheduler=BackgroundScheduler())
+        self.scheduler.add_job("poll", self.poll_sensors, max_instances=2,
+                               replace_existing=False)
+        self.scheduler.start()
+
+    def poll_sensors(self):
+        for i in I2C:
+            word = self._bus.read_word_data(self.bus_num, i)
+            if word is not None:
+                log.info("{}: {}".format(i.name, hex(word)))
+                if i is I2C.SEVEN_SEG:
+                    pass
+        self.scheduler.add_job("poll", self.poll_sensors, max_instances=2,
+                               replace_existing=False)
 
     @property
     def time(self) -> str:
