@@ -43,10 +43,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 lambda x: self.bus.write_byte_data(Logic.bus_num, I2C.KEYPAD, x), h
             ))
 
-        for _, checkbox in self.photo_resistor.items():
-            checkbox.clicked.connect(partial(
-                lambda: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, self.laser_mask)
-            ))
+        #for _, checkbox in self.photo_resistor.items():
+        #    checkbox.clicked.connect(partial(
+        #        lambda: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, self.laser_mask)
+        #    ))
 
         self.potentiometer.valueChanged.connect(
             lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ROTARY, self.potentiometer.value()))
