@@ -24,7 +24,8 @@ log = logging.getLogger(__name__)
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(ApplicationWindow, self).__init__()
-        self.bus = Smbus(Logic.bus_num)
+        self.bus_num = Logic.bus_num
+        self.bus = Smbus(self.bus_num)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -40,32 +41,32 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         for h, button in self.keypad.items():
             button.clicked.connect(partial(
-                lambda x: self.bus.write_byte_data(Logic.bus_num, I2C.KEYPAD, x), h
+                lambda x: self.bus.write_byte_data(self.bus_num, I2C.KEYPAD, x), h
             ))
 
-        #for _, checkbox in self.photo_resistor.items():
-        #    checkbox.clicked.connect(partial(
-        #        lambda: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, self.laser_mask)
-        #    ))
+        for _, checkbox in self.photo_resistor.items():
+            checkbox.clicked.connect(partial(
+                lambda: self.bus.write_byte_data(self.bus_num, I2C.LASERS, self.laser_mask)
+            ))
 
         self.potentiometer.valueChanged.connect(
-            lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ROTARY, self.potentiometer.value()))
+            lambda: self.bus.write_byte_data(self.bus_num, I2C.ROTARY, self.potentiometer.value()))
 
         for _, switch in self.switches.items():
             switch.valueChanged.connect(
-                lambda: self.bus.write_byte_data(Logic.bus_num, I2C.SWITCHES, self.switch_mask)
+                lambda: self.bus.write_byte_data(self.bus_num, I2C.SWITCHES, self.switch_mask)
             )
 
         # Colored disconnectable wires
-        self.ui.wire_red.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xd))
-        self.ui.wire_blue.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xb))
-        self.ui.wire_green.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xe))
+        self.ui.wire_red.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.WIRE, 0xd))
+        self.ui.wire_blue.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.WIRE, 0xb))
+        self.ui.wire_green.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.WIRE, 0xe))
 
         # Reset button
-        self.ui.start_reset.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.RESET, 0x1))
+        self.ui.start_reset.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.RESET, 0x1))
 
         self.ui.ultrasonicSlider.valueChanged.connect(
-            lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ULTRASONIC, self.ui.ultrasonicSlider.value())
+            lambda: self.bus.write_byte_data(self.bus_num, I2C.ULTRASONIC, self.ui.ultrasonicSlider.value())
         )
 
         self.scheduler = APScheduler(scheduler=BackgroundScheduler())
@@ -75,7 +76,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def poll_sensors(self):
         for i in I2C:
-            word = self._bus.read_word_data(self.bus_num, i)
+            word = self.bus.read_word_data(self.bus_num, i)
             if word is not None:
                 log.info("{}: {}".format(i.name, hex(word)))
                 if i is I2C.SEVEN_SEG:
