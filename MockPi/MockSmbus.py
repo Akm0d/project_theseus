@@ -34,7 +34,7 @@ class MockBus(object):
         """Read a single word from a designated register."""
         self._create_queue_if_none(register)
         result = None
-        if self.messages[register]:
+        if len(self.messages[register]):
             result = self.messages[register].pop()
         self.messages[register] = self.messages[register][:-1]
         return result

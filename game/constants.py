@@ -45,6 +45,7 @@ class I2C(IntEnum):
     I2C addresses of each slave device
     """
     # Sensors
+    ACCELEROMETER = 0x1d
     FLEX = 0x03
     IMU = 0x04
     ULTRASONIC = 0x05

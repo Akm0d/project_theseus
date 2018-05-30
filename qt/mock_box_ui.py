@@ -6,6 +6,8 @@ from typing import Dict
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QCheckBox, QPushButton, QSlider
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask_apscheduler import APScheduler
 
 from MockPi.MockSmbus import MockBus as Smbus
 from game.constants import I2C
@@ -22,7 +24,8 @@ log = logging.getLogger(__name__)
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(ApplicationWindow, self).__init__()
-        self.bus = Smbus(Logic.bus_num)
+        self.bus_num = Logic.bus_num
+        self.bus = Smbus(self.bus_num)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -38,29 +41,48 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         for h, button in self.keypad.items():
             button.clicked.connect(partial(
-                lambda x: self.bus.write_byte_data(Logic.bus_num, I2C.KEYPAD, x), h
+                lambda x: self.bus.write_byte_data(self.bus_num, I2C.KEYPAD, x), h
             ))
 
         for _, checkbox in self.photo_resistor.items():
             checkbox.clicked.connect(partial(
-                lambda: self.bus.write_byte_data(Logic.bus_num, I2C.LASERS, self.laser_mask)
+                lambda: self.bus.write_byte_data(self.bus_num, I2C.LASERS, self.laser_mask)
             ))
 
         self.potentiometer.valueChanged.connect(
-            lambda: self.bus.write_byte_data(Logic.bus_num, I2C.ROTARY, self.potentiometer.value()))
+            lambda: self.bus.write_byte_data(self.bus_num, I2C.ROTARY, self.potentiometer.value()))
 
         for _, switch in self.switches.items():
             switch.valueChanged.connect(
-                lambda: self.bus.write_byte_data(Logic.bus_num, I2C.SWITCHES, self.switch_mask)
+                lambda: self.bus.write_byte_data(self.bus_num, I2C.SWITCHES, self.switch_mask)
             )
 
         # Colored disconnectable wires
-        self.ui.wire_red.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xd))
-        self.ui.wire_blue.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xb))
-        self.ui.wire_green.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.WIRE, 0xe))
+        self.ui.wire_red.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.WIRE, 0xd))
+        self.ui.wire_blue.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.WIRE, 0xb))
+        self.ui.wire_green.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.WIRE, 0xe))
 
         # Reset button
-        self.ui.start_reset.clicked.connect(lambda: self.bus.write_byte_data(Logic.bus_num, I2C.RESET, 0x1))
+        self.ui.start_reset.clicked.connect(lambda: self.bus.write_byte_data(self.bus_num, I2C.RESET, 0x1))
+
+        self.ui.ultrasonicSlider.valueChanged.connect(
+            lambda: self.bus.write_byte_data(self.bus_num, I2C.ULTRASONIC, self.ui.ultrasonicSlider.value())
+        )
+
+        self.scheduler = APScheduler(scheduler=BackgroundScheduler())
+        self.scheduler.add_job("poll", self.poll_sensors, max_instances=2,
+                               replace_existing=False)
+        self.scheduler.start()
+
+    def poll_sensors(self):
+        for i in I2C:
+            word = self.bus.read_word_data(self.bus_num, i)
+            if word is not None:
+                log.info("{}: {}".format(i.name, hex(word)))
+                if i is I2C.SEVEN_SEG:
+                    pass
+        self.scheduler.add_job("poll", self.poll_sensors, max_instances=2,
+                               replace_existing=False)
 
     @property
     def time(self) -> str:
