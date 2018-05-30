@@ -84,3 +84,27 @@ class RGBColor(Enum):
 class JSCom(Enum):
     START_BUTTON = "Start"
     RESET_BUTTON = "Reset"
+
+
+class LaserPattern(Enum):
+    ONE_CYCLES = "one_cycles"   # One laser cycles diwb
+    TWO_CYCLES = "two_cycles"   # Two (separated by one) move down slowly.
+    UP_AND_DOWN = "up_and_down" # Top and bottom turn on, move to the center than back out
+    INVERSION = "inversion"     # Every other is turned on and then every second, they invert
+    LASER_OFF = "laser_off"     # No laser is active
+    STATIC = "static"           # Lasers stay at what admin sets them
+    RANDOM = "random"           # Lasers turn on and off randomly
+
+class LaserPatternValues(Enum):
+    ONE_CYCLES = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20]
+    TWO_CYCLES = [0x05, 0x0A, 0x14, 0x28, 0x11, 0x22]
+    UP_AND_DOWN = [0x21, 0x12, 0x0C, 0x12]
+    INVERSION = [0x2A, 0x15]
+    LASER_OFF = [0x00]
+    RANDOM = [0xFF]
+
+SECONDS_PER_PATTERN = 45        # Time each laser pattern runs
+SECONDS_PER_CHANGE = 1          # How often does the pattern change
+
+# What is the order for the patterns to change by
+PATTERN_LIST = [LaserPatternValues.ONE_CYCLES, LaserPatternValues.TWO_CYCLES, LaserPatternValues.UP_AND_DOWN, LaserPatternValues.INVERSION]

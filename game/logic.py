@@ -9,7 +9,7 @@ from flask_apscheduler import APScheduler
 from smbus import SMBus
 
 from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, SECONDS_PER_PATTERN, SECONDS_PER_CHANGE, PATTERN_LIST
 from game.database import Database, Row
 from globals import ComQueue
 
@@ -26,10 +26,44 @@ class Logic:
     _process = Lock()
     _solenoid = SOLENOID_STATE.UNLOCKED
     _ultrasonic = ULTRASONIC_STATE.ENABLED
+    _laserState = LaserPattern.LASER_OFF
+    _laserCounter = 0
+    _patternIndex = 0
 
     def __init__(self):
         self._bus = None
         self._timer = 0
+
+    @property
+    def patternIndex(self) -> int:
+        return self.patternIndex
+
+    @patternIndex.setter
+    def patternIndex(self, value: int):
+        self._patternIndex = value
+
+    @property
+    def laserCounter(self) -> int:
+        return self._laserCounter
+
+    @laserCounter.setter
+    def laserCounter(self, value: int):
+        self._laserCounter = value
+
+    def laserCounterIncrement(self):
+        if self.laserCounter < (len(PATTERN_LIST) + 1):
+            self.laserCounter = self.laserCounter + 1
+        else:
+            self.laserCounter = 0   # Go back to the beginning
+
+    @property
+    def laserState(self) -> LaserPattern:
+        return LaserPattern(self.shared.get("laserpattern", LaserPattern.LASER_OFF.value))
+
+    @laserState.setter
+    def laserState(self, value: LaserPattern):
+        self.shared["laserpattern"] = value.value
+
 
     @property
     def timer_text(self) -> str:
@@ -186,6 +220,61 @@ class Logic:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
+    def getNextLaserPatternList(self):
+        if self.laserState is LaserPattern.ONE_CYCLES:
+            return LaserPattern.TWO_CYCLES
+        elif self.laserState is LaserPattern.TWO_CYCLES:
+            return LaserPattern.UP_AND_DOWN
+        elif self.laserState is LaserPattern.UP_AND_DOWN:
+            return LaserPattern.INVERSION
+        elif self.laserState is LaserPattern.INVERSION:
+            return LaserPattern.LASER_OFF
+        else:
+            return self.laserState
+
+    def getLaserPattern(self):
+        if self.laserState is LaserPattern.ONE_CYCLES:
+            pattern = LaserPatternValues.ONE_CYCLE
+        elif self.laserState is LaserPattern.TWO_CYCLES:
+            pattern = LaserPatternValues.TWO_CYCLES
+        elif self.laserState is LaserPattern.UP_AND_DOWN:
+            pattern = LaserPatternValues.UP_AND_DOWN
+        elif self.laserState is LaserPattern.INVERSION:
+            pattern = LaserPatternValues.INVERSION
+        elif self.laserState is LaserPattern.LASER_OFF:
+            pattern = LaserPatternValues.LASER_OFF
+        elif self.laserState is LaserPattern.RANDOM:
+            pattern = LaserPatternValues.RANDOM
+        else:
+            pattern = None
+
+        # Increment the patternIndex
+        if pattern is not None:
+            retValue = pattern[patternIndex]
+            if self.patternIndex < len(pattern):
+                self.patternIndex += 1
+            else:
+                self.patternIndex = 0
+            if retValue == 0xFF:
+                return random.randint(0, 0x3F)
+            else:
+                return retValue
+        else:
+            # All lasers turn
+            return 0x3F
+
+
+    def updateLaserPattern(self):
+        if self.laserCounter < SECONDS_PER_PATTERN:
+            self.laserCounterIncrement()
+        else:
+            self.laserState = self.getNextLaserPatternList()
+            self.laserCounter = 0
+
+        # Time per element of pattern
+        pattern = self.getLaserPattern()
+        # Set laser pattern
+
 
     def _loop(self):
         command_id = None
@@ -195,9 +284,9 @@ class Logic:
 
         # State Actions
         if self.state is STATE.WAIT:
-            pass
+            self.laserState = LaserPattern.LASER_OFF
         elif self.state is STATE.RUNNING:
-            pass
+            self.updateLaserPattern()
         elif self.state is STATE.EXPLODE:
             pass
             # TODO randomize laser pattern so that they flash
