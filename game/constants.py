@@ -106,6 +106,7 @@ class LaserPatternValues(Enum):
 
 SECONDS_PER_PATTERN = 45        # Time each laser pattern runs
 SECONDS_PER_CHANGE = 1          # How often does the pattern change
+NUMBER_OF_LASERS = 6
 
 # What is the order for the patterns to change by
 PATTERN_LIST = [LaserPatternValues.ONE_CYCLES, LaserPatternValues.TWO_CYCLES, LaserPatternValues.UP_AND_DOWN, LaserPatternValues.INVERSION]

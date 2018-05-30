@@ -12,7 +12,7 @@ try:
 except ModuleNotFoundError:
     print("SMBus module not found, please run this script with --mock")
 from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, SECONDS_PER_PATTERN, SECONDS_PER_CHANGE, PATTERN_LIST
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, SECONDS_PER_PATTERN, NUMBER_OF_LASERS, PATTERN_LIST
 from game.database import Database, Row
 from globals import ComQueue
 
@@ -25,6 +25,7 @@ class Logic:
     shared = Manager().dict()
     mock = True
     scheduler = None
+    lasers = None
     _comQueue = Queue()
     _process = Lock()
     _solenoid = SOLENOID_STATE.UNLOCKED
@@ -32,9 +33,11 @@ class Logic:
     _laserState = LaserPattern.LASER_OFF
     _laserCounter = 0
     _patternIndex = 0
+    _laserValue = 0x00
 
     def __init__(self):
         self._bus = None
+        lasers = LaserControl(self._bus)
         self._timer = 0
 
     @property
@@ -67,6 +70,13 @@ class Logic:
     def laserState(self, value: LaserPattern):
         self.shared["laserpattern"] = value.value
 
+    @property
+    def laserValue(self) -> int:
+        return self.shared.get("laservalue", 0x00)
+
+    @laserValue.setter
+    def laserValue(self, value: int):
+        self.shared["laservalue"] = value
 
     @property
     def timer_text(self) -> str:
@@ -192,6 +202,7 @@ class Logic:
             self.solenoid = SOLENOID_STATE.LOCKED
             self.comQueue = queue
             self.ultrasonic = ULTRASONIC_STATE.ENABLED
+            self.laserPattern = LaserPattern.ONE_CYCLES
             self.scheduler = APScheduler(scheduler=BackgroundScheduler(), app=current_app)
             self.scheduler.add_job("loop", self._loop, trigger='interval', seconds=1, max_instances=1,
                                    replace_existing=False)
@@ -248,6 +259,8 @@ class Logic:
             pattern = LaserPatternValues.LASER_OFF
         elif self.laserState is LaserPattern.RANDOM:
             pattern = LaserPatternValues.RANDOM
+        elif self.laserState is LaserPattern.STATIC:
+            return self.laserValue
         else:
             pattern = None
 
@@ -275,8 +288,13 @@ class Logic:
             self.laserCounter = 0
 
         # Time per element of pattern
-        pattern = self.getLaserPattern()
+        self.laserValue = self.getLaserPattern()
+
         # Set laser pattern
+        setVar = 0
+        while (setVar < NUMBER_OF_LASERS):
+            lasers.state[setVar] = self.laserValue & (1 << setVar)
+        lasers.update()
 
 
     def _loop(self):

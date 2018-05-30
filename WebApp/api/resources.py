@@ -2,7 +2,7 @@ import logging
 
 from flask_restful import Resource
 
-from game.constants import STATE, INTERRUPT, SOLENOID_STATE, JSCom, ULTRASONIC_STATE, RGBColor
+from game.constants import STATE, INTERRUPT, SOLENOID_STATE, JSCom, ULTRASONIC_STATE, RGBColor, LaserPattern
 from game.database import Database
 from game.logic import Logic
 from globals import ComQueue
@@ -65,8 +65,9 @@ class Tripwire(Resource):
         log.debug("Tripwire {}".format(name))
         mask = 1 << int(int(name) - 1)
         if toggle:
-            logic.lasers ^= mask
-        return {"color": "#DC3545" if logic.lasers & mask else ""}
+            logic.laserValue ^= mask
+            logic.laserState = LaserPattern.STATIC
+        return {"color": "#DC3545" if logic.laserValue & mask else ""}
 
 
 class TripwireAll(Resource):
@@ -74,10 +75,11 @@ class TripwireAll(Resource):
         toggle = action == "toggle"
         # if at least one tripwire is on, turn them all off.  If all of them are off, then randomize or turn all on
         if toggle:
-            if logic.lasers:
-                logic.lasers = 0x00
+            if logic.laserValue:
+                logic.laserValue = 0x00
             else:
-                logic.lasers = 0x3f
+                logic.laserValue = 0x3f
+            logic.laserState = LaserPattern.STATIC
 
         status = dict()
         for i in range(1, 7):
