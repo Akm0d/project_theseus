@@ -17,7 +17,11 @@ class LaserControl(I2CModule):
     def update(self):
         buf = bitarray(self.lasers)
         buf.invert()
-        self.write_byte(buf.tobytes()[0])
+        try:
+            self.write_byte(buf.tobytes()[0])
+        except IndexError:
+            # Not actually connected to lasers
+            pass
 
     def reset(self):
         self.lasers[:] = False

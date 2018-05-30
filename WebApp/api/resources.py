@@ -56,7 +56,6 @@ class Timer(Resource):
     def get(self, action: str):
         if action == "toggle":
             ComQueue().getComQueue().put([INTERRUPT.TOGGLE_TIMER])
-            logic.laserState = LaserPattern.ONE_CYCLES
         return {"status": JSCom.START_BUTTON.value if logic.state is STATE.WAIT else JSCom.RESET_BUTTON.value}
 
 

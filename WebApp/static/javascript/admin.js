@@ -1,7 +1,6 @@
 // When the page is loaded, query the logic of all the sensors
 $(document).ready(function(){
     refresh_all();
-    timer_status(toggle = false);
 });
 
 document.getElementById("solenoid-toggle").onclick = function() {

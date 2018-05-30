@@ -224,7 +224,7 @@ class Logic:
 
     def getLaserPattern(self):
         if self.laserState is LaserPattern.ONE_CYCLES:
-            pattern = LaserPatternValues.ONE_CYCLE.value
+            pattern = LaserPatternValues.ONE_CYCLES.value
         elif self.laserState is LaserPattern.TWO_CYCLES:
             pattern = LaserPatternValues.TWO_CYCLES.value
         elif self.laserState is LaserPattern.UP_AND_DOWN:
@@ -347,6 +347,7 @@ class Logic:
         self.start_time = datetime.now()
         self.keypad_code = random.randint(0, 0xfff)
         self.rgb_color = random.choice([RGBColor.RED, RGBColor.BLUE])
+        self.laserState = LaserPattern.ONE_CYCLES
         row = Row(
             name=self.team, lasers=self.laserValue, code=self.keypad_code, success=False, time=MAX_TIME,
             color=self.rgb_color.value,
