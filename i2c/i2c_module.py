@@ -1,6 +1,6 @@
 from functools import wraps
 
-from smbus import SMBus
+from i2c import SMBus
 
 
 class I2CModule:

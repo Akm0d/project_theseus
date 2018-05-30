@@ -1,8 +1,8 @@
 from time import sleep
 
 from bitarray import bitarray
-from smbus import SMBus
 
+from i2c import SMBus
 from i2c.i2c_module import I2CModule
 
 

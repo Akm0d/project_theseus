@@ -3,7 +3,6 @@ import logging
 from argparse import ArgumentParser
 from logging.handlers import RotatingFileHandler
 from multiprocessing import Process, Queue
-# from threading import Thread as Process
 from os import path
 
 import globals

@@ -7,20 +7,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import current_app
 from flask_apscheduler import APScheduler
 
-try:
-    from smbus import SMBus
-    from os import path
-
-    if not path.exists("/dev/i2c-1"):
-        raise ModuleNotFoundError
-except ModuleNotFoundError or ImportError or FileNotFoundError:
-    print("Importing MockSMBus library")
-    from MockPi.MockSmbus import MockBus as SMBus
-
 from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
     SECONDS_PER_PATTERN, PATTERN_LIST, LaserPatternValues
 from game.database import Database, Row
 from globals import ComQueue
+from i2c import SMBus
 
 log = logging.getLogger(__name__)
 

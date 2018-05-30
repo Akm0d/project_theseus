@@ -27,10 +27,9 @@
 from __future__ import division
 from __future__ import print_function
 
-import sys
-
 import RPi.GPIO as GPIO
-from smbus import SMBus
+
+from i2c import SMBus
 
 I2C_BUS = 1
 I2C_SLAVE = 0x1d
@@ -47,6 +46,7 @@ def interpolate(value, a1: int, a2: int, b1: int, b2: int):
 
 
 if __name__ == '__main__':
+    import sys
     # Initialize the interrupt pin...
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(INTERRUPT_PIN, GPIO.IN)

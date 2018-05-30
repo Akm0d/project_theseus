@@ -1,5 +1,5 @@
-import struct
 from array import array
+from struct import unpack
 from time import sleep
 
 from smbus import SMBus
@@ -40,7 +40,7 @@ class ReceptorControl(I2CModule):
 
     def read_all(self):
         _, data = self.read_reg_bytes(self.READ_ALL, 2 * self.RECEPTOR_COUNT)
-        self.receptors = list(struct.unpack(self.UNPACK_ALL, array('B', data).tostring()))
+        self.receptors = list(unpack(self.UNPACK_ALL, array('B', data).tostring()))
         return self.receptors
 
     def read(self, n):
@@ -48,7 +48,7 @@ class ReceptorControl(I2CModule):
         if n >= self.RECEPTOR_COUNT:
             return None
         _, data = self.read_reg_bytes(self.CHANNEL[n], 2)
-        data2 = struct.unpack('>H', array('B', data).tostring())
+        data2 = unpack('>H', array('B', data).tostring())
         self.receptors[n] = data2[0]
         return self.receptors[n]
 
