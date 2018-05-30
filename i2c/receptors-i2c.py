@@ -3,7 +3,7 @@ from array import array
 from time import sleep
 
 import smbus
-from lib.i2c.i2c_module import I2CModule
+from i2c.i2c_module import I2CModule
 
 
 class ReceptorControl(I2CModule):

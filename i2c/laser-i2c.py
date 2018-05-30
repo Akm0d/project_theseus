@@ -2,7 +2,7 @@ from time import sleep
 
 import smbus
 from bitarray import bitarray
-from lib.i2c.i2c_module import I2CModule
+from i2c.i2c_module import I2CModule
 
 
 class LaserControl(I2CModule):
