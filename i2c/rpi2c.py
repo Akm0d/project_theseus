@@ -40,7 +40,7 @@ I2C_SLAVE = 0x1d
 INTERRUPT_PIN = 17
 
 
-def interpolate(value, a1, a2, b1, b2):
+def interpolate(value, a1: int, a2: int, b1: int, b2: int):
     # Normalize the value into a 0..1 interval...
     n = float(value - a1) / float(a2 - a1)
 
