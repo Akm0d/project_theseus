@@ -1,4 +1,5 @@
 from array import array
+from enum import IntEnum
 from struct import unpack
 from time import sleep
 
@@ -7,26 +8,27 @@ from smbus import SMBus
 from i2c.i2c_module import I2CModule
 
 
+class ReceptorRegisters(IntEnum):
+    Conversion = 0x00,
+    Alert = 0x01,
+    Config = 0x02,
+    CycleTime = 0x03,
+    Data1Low = 0x04,
+    Data1High = 0x05,
+    Hyst1 = 0x06,
+    Data2Low = 0x07,
+    Data2High = 0x08,
+    Hyst2 = 0x09,
+    Data3Low = 0x0A,
+    Data3High = 0x0B,
+    Hyst3 = 0x0C,
+    Data4Low = 0x0D,
+    Data4High = 0x0E,
+    Hyst4 = 0x0F
+
+
 class ReceptorControl(I2CModule):
     RECEPTOR_COUNT = 6
-    REG = {
-        'Conversion': 0x00,
-        'Alert': 0x01,
-        'Config': 0x02,
-        'CycleTime': 0x03,
-        'Data1Low': 0x04,
-        'Data1High': 0x05,
-        'Hyst1': 0x06,
-        'Data2Low': 0x07,
-        'Data2High': 0x08,
-        'Hyst2': 0x09,
-        'Data3Low': 0x0A,
-        'Data3High': 0x0B,
-        'Hyst3': 0x0C,
-        'Data4Low': 0x0D,
-        'Data4High': 0x0E,
-        'Hyst4': 0x0F
-    }
     CHANNEL = [0x80, 0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0]
     CONFIG = [0x03, 0xF8]
     READ_ALL = 0x70
