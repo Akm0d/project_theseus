@@ -8,7 +8,7 @@ from flask import current_app
 from flask_apscheduler import APScheduler
 
 from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
-    SECONDS_PER_PATTERN, PATTERN_LIST, LaserPatternValues
+    SECONDS_PER_PATTERN, PATTERN_LIST, LaserPatternValues, NUMBER_OF_LASERS
 from game.database import Database, Row
 from globals import ComQueue
 from i2c import SMBus
@@ -33,8 +33,9 @@ class Logic:
 
     def __init__(self):
         self._bus = SMBus(self.bus_num)
-        lasers = LaserControl(self._bus)
+        self.lasers = LaserControl(self._bus)
         self._timer = 0
+        self._patternIndex = 0
 
     @property
     def patternIndex(self) -> int:
@@ -139,17 +140,6 @@ class Logic:
         self.shared["logic"] = value.value
 
     @property
-    def lasers(self) -> bin:
-        return self.shared.get("lasers", 0x00)
-
-    @lasers.setter
-    def lasers(self, value: int):
-        assert 0 <= value <= 0x3f
-        log.debug("Setting new laser configuration: {}".format(bin(value)))
-        # TODO Send the command over i2c to activate the correct lasers
-        self.shared["lasers"] = value
-
-    @property
     def keypad_code(self) -> hex:
         return self.shared.get("code", 0x000)
 
@@ -216,7 +206,7 @@ class Logic:
                 if i is I2C.RESET:
                     ComQueue().getComQueue().put([INTERRUPT.TOGGLE_TIMER])
                 elif i is I2C.LASERS:
-                    if self.lasers != word:
+                    if self.laserValue != word:
                         ComQueue().getComQueue().put([INTERRUPT.KILL_PLAYER])
 
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
@@ -237,17 +227,17 @@ class Logic:
 
     def getLaserPattern(self):
         if self.laserState is LaserPattern.ONE_CYCLES:
-            pattern = LaserPatternValues.ONE_CYCLE
+            pattern = LaserPatternValues.ONE_CYCLE.value
         elif self.laserState is LaserPattern.TWO_CYCLES:
-            pattern = LaserPatternValues.TWO_CYCLES
+            pattern = LaserPatternValues.TWO_CYCLES.value
         elif self.laserState is LaserPattern.UP_AND_DOWN:
-            pattern = LaserPatternValues.UP_AND_DOWN
+            pattern = LaserPatternValues.UP_AND_DOWN.value
         elif self.laserState is LaserPattern.INVERSION:
-            pattern = LaserPatternValues.INVERSION
+            pattern = LaserPatternValues.INVERSION.value
         elif self.laserState is LaserPattern.LASER_OFF:
-            pattern = LaserPatternValues.LASER_OFF
+            pattern = LaserPatternValues.LASER_OFF.value
         elif self.laserState is LaserPattern.RANDOM:
-            pattern = LaserPatternValues.RANDOM
+            pattern = LaserPatternValues.RANDOM.value
         elif self.laserState is LaserPattern.STATIC:
             return self.laserValue
         else:
@@ -255,11 +245,14 @@ class Logic:
 
         # Increment the patternIndex
         if pattern is not None:
-            retValue = pattern[self.patternIndex]
+            print(self.patternIndex)
             if self.patternIndex < len(pattern):
+                retValue = pattern[self.patternIndex]
                 self.patternIndex += 1
             else:
                 self.patternIndex = 0
+                retValue = pattern[self.patternIndex]
+
             if retValue == 0xFF:
                 return random.randint(0, 0x3F)
             else:
@@ -283,8 +276,8 @@ class Logic:
         # Set laser pattern
         setVar = 0
         while (setVar < NUMBER_OF_LASERS):
-            lasers.state[setVar] = self.laserValue & (1 << setVar)
-        lasers.update()
+            self.lasers.state[setVar] = self.laserValue & (1 << setVar)
+        self.lasers.update()
 
 
     def _loop(self):
@@ -355,11 +348,10 @@ class Logic:
         """
         self.solenoid = SOLENOID_STATE.LOCKED
         self.start_time = datetime.now()
-        self.lasers = self.random_laser_pattern()
         self.keypad_code = random.randint(0, 0xfff)
         self.rgb_color = random.choice([RGBColor.RED, RGBColor.BLUE])
         row = Row(
-            name=self.team, lasers=self.lasers, code=self.keypad_code, success=False, time=MAX_TIME,
+            name=self.team, lasers=self.laserValue, code=self.keypad_code, success=False, time=MAX_TIME,
             color=self.rgb_color.value,
         )
         log.debug("Adding new row to the database:\n{}".format(row))
@@ -370,7 +362,7 @@ class Logic:
         self.db.last = Row(
             name=self.team,
             code=self.keypad_code,
-            lasers=self.lasers,
+            lasers=self.laserValue,
             success=success,
             time=(datetime.now() - self.start_time).seconds
         )
