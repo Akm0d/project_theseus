@@ -21,15 +21,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-#
 
 
 from __future__ import division
 from __future__ import print_function
 
-import RPi.GPIO as GPIO
+from sys import stdout, stderr
 
-from i2c import SMBus
+from i2c import GPIO, SMBus
 
 I2C_BUS = 1
 I2C_SLAVE = 0x1d
@@ -46,7 +45,6 @@ def interpolate(value, a1: int, a2: int, b1: int, b2: int):
 
 
 if __name__ == '__main__':
-    import sys
     # Initialize the interrupt pin...
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(INTERRUPT_PIN, GPIO.IN)
@@ -62,24 +60,23 @@ if __name__ == '__main__':
             try:
                 # Get the sensor value from the Arduino (signed 16bit little-endian)...
                 sensor_value = i2c.read_word_data(I2C_SLAVE, 0x00)
-                sys.stdout.write("sensor: %d" % sensor_value)
+                stdout.write("sensor: {}".format(sensor_value))
             except IOError:
-                sys.stderr.write("*** error: receiving sensor value ***\n")
+                stderr.write("*** error: receiving sensor value ***\n")
                 continue
 
-            sys.stdout.write(" / ")
+            stdout.write(" / ")
 
             try:
                 # Map the sensor value to a [0, 255] interval...
                 led_value = int(interpolate(sensor_value, 0, 1023, 0, 255))
-                sys.stdout.write("led: %d\n" % led_value)
+                stdout.write("led: %d\n" % led_value)
 
                 # Send the PWM value for the LED to the Arduino...
                 i2c.write_byte_data(I2C_SLAVE, 0x01, led_value)
             except IOError:
-                sys.stderr.write("*** error: sending led value ***\n")
+                stderr.write("*** error: sending led value ***\n")
 
         except KeyboardInterrupt:
             GPIO.cleanup()
-
-# vim: set expandtab ts=4 sw=4:
+            exit()

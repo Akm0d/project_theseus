@@ -9,5 +9,6 @@ try:
     if not path.exists("/dev/i2c-1"):
         raise ImportError
 except ImportError:
-    print("Importing MockSMBus library")
+    print("Importing Mock libraries")
     from MockPi.MockSmbus import MockBus as SMBus
+    from MockPi.MockGPIO import MockGPIO as GPIO
