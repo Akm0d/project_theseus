@@ -38,7 +38,7 @@ class Logic:
 
     @property
     def patternIndex(self) -> int:
-        return self.patternIndex
+        return self._patternIndex
 
     @patternIndex.setter
     def patternIndex(self, value: int):
@@ -274,6 +274,7 @@ class Logic:
             self.laserCounterIncrement()
         else:
             self.laserState = self.getNextLaserPatternList()
+            self.patternIndex = 0   # So that we start at the beginning
             self.laserCounter = 0
 
         # Time per element of pattern
