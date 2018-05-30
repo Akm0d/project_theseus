@@ -54,10 +54,7 @@ class Logic:
         self._laserCounter = value
 
     def laserCounterIncrement(self):
-        if self.laserCounter < (len(PATTERN_LIST) + 1):
-            self.laserCounter = self.laserCounter + 1
-        else:
-            self.laserCounter = 0   # Go back to the beginning
+        self.laserCounter = self.laserCounter + 1
 
     @property
     def laserState(self) -> LaserPattern:
@@ -245,7 +242,6 @@ class Logic:
 
         # Increment the patternIndex
         if pattern is not None:
-            print(self.patternIndex)
             if self.patternIndex < len(pattern):
                 retValue = pattern[self.patternIndex]
                 self.patternIndex += 1
@@ -277,6 +273,7 @@ class Logic:
         setVar = 0
         while (setVar < NUMBER_OF_LASERS):
             self.lasers.state[setVar] = self.laserValue & (1 << setVar)
+            setVar += 1
         self.lasers.update()
 
 
