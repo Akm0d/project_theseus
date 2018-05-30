@@ -6,9 +6,9 @@ from multiprocessing import Process, Queue
 from os import path
 
 import globals
+from MockPi.mock_box_ui import ApplicationWindow
 from WebApp import app
 from game.logic import Logic
-from qt.mock_box_ui import ApplicationWindow
 
 log = logging.getLogger()
 log_dir = path.dirname(__file__)

@@ -14,7 +14,7 @@ from game.constants import I2C
 from game.logic import Logic
 
 try:
-    from qt.qt_graphics import Ui_MainWindow
+    from MockPi.qt_graphics import Ui_MainWindow
 except ModuleNotFoundError:
     from qt_graphics import Ui_MainWindow
 
