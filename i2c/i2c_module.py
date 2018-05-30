@@ -14,23 +14,21 @@ class I2CModule:
         def wrapped(inst, *args, **kwargs):
             try:
                 f(inst, *args, **kwargs)
+                return True
             except OSError:
                 print('i2c write error')
                 return False
-            return True
 
         return wrapped
 
     def _read_except(f):
         @wraps(f)
         def wrapped(inst, *args, **kwargs):
-            result = None
             try:
-                result = f(inst, *args, **kwargs)
+                return True, f(inst, *args, **kwargs)
             except OSError:
                 print('i2c read error')
                 return False, None
-            return True, result
 
         return wrapped
 
@@ -38,10 +36,10 @@ class I2CModule:
     def write_byte(self, byte):
         try:
             self.bus.write_byte(self.address, byte)
+            return True
         except OSError:
             self.i2c_error()
             return False
-        return True
 
     @_write_except
     def write_reg_byte(self, reg, byte):

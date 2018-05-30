@@ -2,9 +2,9 @@ from array import array
 from enum import IntEnum
 from struct import unpack
 from time import sleep
+from typing import List
 
-from smbus import SMBus
-
+from i2c import SMBus
 from i2c.i2c_module import I2CModule
 
 
@@ -40,13 +40,14 @@ class ReceptorControl(I2CModule):
         self.receptors = [0] * self.RECEPTOR_COUNT
         self.write_reg_bytes(ReceptorRegisters.Config, self.CONFIG)
 
-    def read_all(self):
+    def read_all(self) -> List[bool]:
+        # TODO return a list with a boolean for each photoresistor's state
         _, data = self.read_reg_bytes(self.READ_ALL, 2 * self.RECEPTOR_COUNT)
         self.receptors = list(unpack(self.UNPACK_ALL, array('B', data).tostring()))
         return self.receptors
 
-    def read(self, n):
-        sleep(.5)
+    def read(self, n) -> bool:
+        # TODO return True if the laser is HIGH else False
         if n >= self.RECEPTOR_COUNT:
             return None
         _, data = self.read_reg_bytes(self.CHANNEL[n], 2)

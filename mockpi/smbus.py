@@ -68,5 +68,5 @@ if __name__ == "__main__":
     sleep(.1)
 
     bar = MockBus()
-    print(bar.read_word_data(0x1, 0x1))
+    print(bar.read_byte_data(0x1, 0x1))
     print(bar.messages)

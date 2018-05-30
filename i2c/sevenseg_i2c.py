@@ -1,6 +1,6 @@
 from time import sleep
 
-import smbus
+from i2c import SMBus
 
 
 class SevenSegDisplay:
@@ -69,8 +69,8 @@ class SevenSegDisplay:
         self.write_byte(self.BLINK_CMD | self.BLINK_DISPLAY_ON | (rate << 1))
 
 
-def main(argv):
-    bus = smbus.SMBus(1)
+if __name__ == '__main__':
+    bus = SMBus(1)
     sevenseg = SevenSegDisplay(bus)
     sevenseg.begin()
     # sevenseg.blink_rate(1)
@@ -85,9 +85,3 @@ def main(argv):
 
     sevenseg.set_digits('beef')
     sevenseg.update()
-
-
-if __name__ == '__main__':
-    import sys
-
-    main(sys.argv)
