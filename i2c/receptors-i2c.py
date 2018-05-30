@@ -1,8 +1,9 @@
-import struct
 from array import array
+from struct import unpack
 from time import sleep
 
-import smbus
+from smbus import SMBus
+
 from i2c.i2c_module import I2CModule
 
 
@@ -32,14 +33,14 @@ class ReceptorControl(I2CModule):
     # UNPACK_ALL = ''.join(['>'].extend(['H']*RECEPTOR_COUNT))
     UNPACK_ALL = '>HHHHHH'
 
-    def __init__(self, bus, addr=0x21):
-        super().__init__(bus, addr)
+    def __init__(self, bus: SMBus, address: hex = 0x21):
+        super().__init__(bus, address)
         self.receptors = [0] * self.RECEPTOR_COUNT
         self.write_reg_bytes(self.REG['Config'], self.CONFIG)
 
     def read_all(self):
         _, data = self.read_reg_bytes(self.READ_ALL, 2 * self.RECEPTOR_COUNT)
-        self.receptors = list(struct.unpack(self.UNPACK_ALL, array('B', data).tostring()))
+        self.receptors = list(unpack(self.UNPACK_ALL, array('B', data).tostring()))
         return self.receptors
 
     def read(self, n):
@@ -47,14 +48,14 @@ class ReceptorControl(I2CModule):
         if n >= self.RECEPTOR_COUNT:
             return None
         _, data = self.read_reg_bytes(self.CHANNEL[n], 2)
-        data2 = struct.unpack('>H', array('B', data).tostring())
+        data2 = unpack('>H', array('B', data).tostring())
         self.receptors[n] = data2[0]
         return self.receptors[n]
 
 
 if __name__ == '__main__':
-    bus = smbus.SMBus(1)
-    read = ReceptorControl(bus)
+    master = SMBus(1)
+    read = ReceptorControl(master)
     while True:
         # print('{}, {}, {}, {}, {}, {}'.format(*[read.read(n) for n in range(6)]))
         # print(read.read_all())

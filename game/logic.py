@@ -7,14 +7,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import current_app
 from flask_apscheduler import APScheduler
 
-try:
-    from smbus import SMBus
-except ModuleNotFoundError:
-    print("SMBus module not found, please run this script with --mock")
-from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, SECONDS_PER_PATTERN, NUMBER_OF_LASERS, PATTERN_LIST
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
+    SECONDS_PER_PATTERN, PATTERN_LIST, LaserPatternValues
 from game.database import Database, Row
 from globals import ComQueue
+from i2c import SMBus
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +20,6 @@ class Logic:
     bus_num = 1
     db = Database()
     shared = Manager().dict()
-    mock = True
     scheduler = None
     lasers = None
     _comQueue = Queue()
@@ -36,7 +32,7 @@ class Logic:
     _laserValue = 0x00
 
     def __init__(self):
-        self._bus = None
+        self._bus = SMBus(self.bus_num)
         lasers = LaserControl(self._bus)
         self._timer = 0
 
@@ -184,20 +180,13 @@ class Logic:
         # TODO send the command over i2c to change the rgb color
         self.shared["rgb"] = value.value
 
-    def run(self, queue: Queue, mock: bool = False):
+    def run(self, queue: Queue, mock: bool):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop
         """
         with self._process:
             # Initialize I2C server
-            if mock:
-                self._bus = MockBus(self.bus_num)
-                self.mock = True
-            else:
-                self._bus = SMBus(self.bus_num)
-                self.mock = False
-
             self.state = STATE.WAIT  # Change logic of game to WAIT
             self.solenoid = SOLENOID_STATE.LOCKED
             self.comQueue = queue
@@ -266,7 +255,7 @@ class Logic:
 
         # Increment the patternIndex
         if pattern is not None:
-            retValue = pattern[patternIndex]
+            retValue = pattern[self.patternIndex]
             if self.patternIndex < len(pattern):
                 self.patternIndex += 1
             else:

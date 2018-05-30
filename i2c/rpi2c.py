@@ -27,12 +27,9 @@
 from __future__ import division
 from __future__ import print_function
 
-try:
-    import RPi.GPIO as GPIO
-except ModuleNotFoundError or ImportError:
-    from Adafruit_GPIO import GPIO
-import smbus
-import sys
+import RPi.GPIO as GPIO
+
+from i2c import SMBus
 
 I2C_BUS = 1
 I2C_SLAVE = 0x1d
@@ -40,7 +37,7 @@ I2C_SLAVE = 0x1d
 INTERRUPT_PIN = 17
 
 
-def interpolate(value, a1, a2, b1, b2):
+def interpolate(value, a1: int, a2: int, b1: int, b2: int):
     # Normalize the value into a 0..1 interval...
     n = float(value - a1) / float(a2 - a1)
 
@@ -49,12 +46,13 @@ def interpolate(value, a1, a2, b1, b2):
 
 
 if __name__ == '__main__':
+    import sys
     # Initialize the interrupt pin...
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(INTERRUPT_PIN, GPIO.IN)
 
     # Initialize the RPi I2C bus...
-    i2c = smbus.SMBus(I2C_BUS)
+    i2c = SMBus(I2C_BUS)
 
     while 1:
         try:
