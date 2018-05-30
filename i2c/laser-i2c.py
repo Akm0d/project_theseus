@@ -1,7 +1,7 @@
 from time import sleep
 
-import smbus
 from bitarray import bitarray
+from smbus import SMBus
 
 from i2c.i2c_module import I2CModule
 
@@ -9,7 +9,7 @@ from i2c.i2c_module import I2CModule
 class LaserControl(I2CModule):
     LASER_COUNT = 6
 
-    def __init__(self, bus: smbus.SMBus, address: hex = 0x3a):
+    def __init__(self, bus: SMBus, address: hex = 0x3a):
         super().__init__(bus, address)
         self.lasers = None
         self.state = bitarray([False] * self.LASER_COUNT, endian='little')
@@ -27,7 +27,7 @@ class LaserControl(I2CModule):
 if __name__ == '__main__':
     from sys import argv
 
-    master = smbus.SMBus(1)
+    master = SMBus(1)
     lasers = LaserControl(master)
     lasers.state[:] = False
     lasers.update()

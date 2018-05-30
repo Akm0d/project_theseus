@@ -2,7 +2,7 @@ import struct
 from array import array
 from time import sleep
 
-import smbus
+from smbus import SMBus
 
 from i2c.i2c_module import I2CModule
 
@@ -33,7 +33,7 @@ class ReceptorControl(I2CModule):
     # UNPACK_ALL = ''.join(['>'].extend(['H']*RECEPTOR_COUNT))
     UNPACK_ALL = '>HHHHHH'
 
-    def __init__(self, bus: smbus.SMBus, address: hex = 0x21):
+    def __init__(self, bus: SMBus, address: hex = 0x21):
         super().__init__(bus, address)
         self.receptors = [0] * self.RECEPTOR_COUNT
         self.write_reg_bytes(self.REG['Config'], self.CONFIG)
@@ -54,7 +54,7 @@ class ReceptorControl(I2CModule):
 
 
 if __name__ == '__main__':
-    master = smbus.SMBus(1)
+    master = SMBus(1)
     read = ReceptorControl(master)
     while True:
         # print('{}, {}, {}, {}, {}, {}'.format(*[read.read(n) for n in range(6)]))

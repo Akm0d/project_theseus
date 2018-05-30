@@ -1,11 +1,11 @@
 from functools import wraps
 
-import smbus
+from smbus import SMBus
 
 
 class I2CModule:
 
-    def __init__(self, bus: smbus.SMBus, address):
+    def __init__(self, bus: SMBus, address):
         self.bus = bus
         self.address = address
 
