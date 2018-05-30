@@ -12,7 +12,7 @@ from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTR
 from game.database import Database, Row
 from globals import ComQueue
 from i2c import SMBus
-
+from i2c.laser_i2c import LaserControl
 log = logging.getLogger(__name__)
 
 
