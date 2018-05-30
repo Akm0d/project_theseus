@@ -63,6 +63,7 @@ if __name__ == "__main__":
             MockBus().write_byte_data(i2c_addr=0, register=0x1, value=i)
             print(MockBus().messages)
 
+
     Process(target=foo).start()
 
     sleep(.1)

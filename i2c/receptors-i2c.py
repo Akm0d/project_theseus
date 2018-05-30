@@ -38,7 +38,7 @@ class ReceptorControl(I2CModule):
     def __init__(self, bus: SMBus, address: hex = 0x21):
         super().__init__(bus, address)
         self.receptors = [0] * self.RECEPTOR_COUNT
-        self.write_reg_bytes(self.REG['Config'], self.CONFIG)
+        self.write_reg_bytes(ReceptorRegisters.Config, self.CONFIG)
 
     def read_all(self):
         _, data = self.read_reg_bytes(self.READ_ALL, 2 * self.RECEPTOR_COUNT)
