@@ -10,5 +10,5 @@ try:
         raise ImportError
 except ImportError:
     print("Importing Mock libraries")
-    from MockPi.MockSmbus import MockBus as SMBus
-    from MockPi.MockGPIO import MockGPIO as GPIO
+    from mockpi.smbus import MockBus as SMBus
+    from mockpi.gpio import MockGPIO as GPIO

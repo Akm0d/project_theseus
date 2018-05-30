@@ -9,14 +9,10 @@ from PyQt5.QtWidgets import QCheckBox, QPushButton, QSlider
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask_apscheduler import APScheduler
 
-from MockPi.MockSmbus import MockBus as Smbus
 from game.constants import I2C
 from game.logic import Logic
-
-try:
-    from MockPi.qt_graphics import Ui_MainWindow
-except ModuleNotFoundError:
-    from qt_graphics import Ui_MainWindow
+from i2c import SMBus
+from mockpi.qt_graphics import Ui_MainWindow
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +21,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(ApplicationWindow, self).__init__()
         self.bus_num = Logic.bus_num
-        self.bus = Smbus(self.bus_num)
+        self.bus = SMBus(self.bus_num)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
