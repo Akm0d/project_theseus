@@ -1,31 +1,27 @@
 #!/usr/bin/env python3
-import logging
-
 from multiprocessing import Manager, Process
 from struct import unpack
-from typing import List, Dict
+from typing import List
 
-log = logging.getLogger(__name__)
+manager = Manager()
+shared_dict = manager.dict()
 
 
 class MockBus(object):
     # The total number of registers
     REGISTERS = 0xff
-    multi_process_dictionary = Manager().dict()
 
     def __init__(self, bus: int = None):
-        log.debug("Initializing mock SMBus")
         self.bus = bus
-
-    @property
-    def messages(self) -> Dict[hex, bytearray]:
-        return self.multi_process_dictionary
+        self.messages = shared_dict
 
     def read_byte(self, address: hex) -> hex:
         return unpack('>BL', self.messages[address])
 
     def write_byte(self, address: hex, data: hex):
-        self.messages[address] = bytearray(str(data).encode())
+        self._create_reg_if_not_exists(address)
+        for reg, byte in enumerate(bytearray(str(data).encode())):
+            self.messages[address][reg] = byte
 
     def read_byte_data(self, address: hex, register: int) -> hex:
         """Read a single word from a designated register."""
@@ -37,10 +33,9 @@ class MockBus(object):
         self._create_reg_if_not_exists(address)
         self.messages[address][register] = value
 
-    def read_i2c_block_data(self, address: hex, start_register: hex, buffer: int) -> hex:
+    def read_i2c_block_data(self, address: hex, start_register: hex, buffer: int) -> bytearray:
         self._create_reg_if_not_exists(address)
-        return int.from_bytes(self.messages[address][start_register: start_register + buffer], byteorder='big',
-                              signed=False)
+        return bytearray(self.messages[address][start_register: start_register + buffer])
 
     def write_i2c_block_data(self, address: hex, start_register: hex, data: List[ord]):
         self._create_reg_if_not_exists(address)
@@ -49,24 +44,23 @@ class MockBus(object):
 
     def _create_reg_if_not_exists(self, address: hex):
         if self.messages.get(address, None) is None:
-            self.messages[address] = bytearray(self.REGISTERS)
+            self.messages[address] = manager.list(bytearray(self.REGISTERS))
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
     from time import sleep
+    master = 0
+    length = 5
 
 
-    def foo():
-        for i in range(1, 5):
-            MockBus().write_byte_data(address=0, register=0x1, value=i)
-            print(MockBus().messages)
+    def write_i2c_thread():
+        for i, x in enumerate(range(length)):
+            MockBus().write_byte_data(address=master, register=i, value=0xf)
+            print(MockBus().read_i2c_block_data(master, 0x0, length))
 
 
-    Process(target=foo).start()
+    Process(target=write_i2c_thread).start()
 
     sleep(.1)
 
-    bar = MockBus()
-    print(bar.read_byte_data(0x1, 0x1))
-    print(bar.messages)
+    print(MockBus().read_i2c_block_data(master, 0, length))

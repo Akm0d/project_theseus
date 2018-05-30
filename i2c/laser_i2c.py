@@ -43,8 +43,7 @@ if __name__ == '__main__':
     lasers = LaserControl(master)
     lasers.state[:] = False
     lasers.update()
-    option = int(argv[1])
-    if option == 0:
+    if argv[1:]:
         i = 0
         j = -1
         k = -2
@@ -58,8 +57,7 @@ if __name__ == '__main__':
             lasers.state[k] = False
             lasers.update()
             sleep(.1)
-    elif option == 1:
+    else:
         lasers.state[:] = True
         lasers.update()
-    else:
-        print('Huh?')
+

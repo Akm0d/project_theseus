@@ -72,7 +72,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def poll_sensors(self):
         for i in I2C:
-            word = self.bus.read_word_data(self.bus_num, i)
+            word = self.bus.read_byte_data(self.bus_num, i)
             if word is not None:
                 log.info("{}: {}".format(i.name, hex(word)))
                 if i is I2C.SEVEN_SEG:

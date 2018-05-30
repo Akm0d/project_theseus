@@ -12,3 +12,4 @@ except ImportError:
     print("Importing Mock libraries")
     from mockpi.smbus import MockBus as SMBus
     from mockpi.gpio import MockGPIO as GPIO
+    from mockpi.i2c import MockI2cModule, MockLaserControl, MockReceptorControl, MockSevenSegDisplay

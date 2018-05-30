@@ -13,6 +13,7 @@ from game.database import Database, Row
 from globals import ComQueue
 from i2c import SMBus
 from i2c.laser_i2c import LaserControl
+
 log = logging.getLogger(__name__)
 
 
@@ -32,6 +33,7 @@ class Logic:
     _laserValue = 0x00
 
     def __init__(self):
+        self.laserPattern = LaserPattern.ONE_CYCLES
         self._bus = SMBus(self.bus_num)
         self.lasers = LaserControl(self._bus)
         self._timer = 0
@@ -197,7 +199,7 @@ class Logic:
         If the right wire was clipped at the end of the puzzle, raise the win flag
         """
         for i in I2C:
-            word = self._bus.read_word_data(self.bus_num, i)
+            word = self._bus.read_byte_data(self.bus_num, i)
             if word is not None:
                 log.info("{}: {}".format(i.name, hex(word)))
                 if i is I2C.RESET:
@@ -210,6 +212,7 @@ class Logic:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
+
     def getNextLaserPatternList(self):
         if self.laserState is LaserPattern.ONE_CYCLES:
             return LaserPattern.TWO_CYCLES
@@ -257,13 +260,12 @@ class Logic:
             # All lasers turn
             return 0x3F
 
-
     def updateLaserPattern(self):
         if self.laserCounter < SECONDS_PER_PATTERN:
             self.laserCounterIncrement()
         else:
             self.laserState = self.getNextLaserPatternList()
-            self.patternIndex = 0   # So that we start at the beginning
+            self.patternIndex = 0  # So that we start at the beginning
             self.laserCounter = 0
 
         # Time per element of pattern
@@ -271,11 +273,10 @@ class Logic:
 
         # Set laser pattern
         setVar = 0
-        while (setVar < NUMBER_OF_LASERS):
+        while setVar < NUMBER_OF_LASERS:
             self.lasers.state[setVar] = self.laserValue & (1 << setVar)
             setVar += 1
         self.lasers.update()
-
 
     def _loop(self):
         command_id = None
