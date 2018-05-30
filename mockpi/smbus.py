@@ -2,55 +2,54 @@
 import logging
 
 from multiprocessing import Manager, Process
-from typing import List
+from struct import unpack
+from typing import List, Dict
 
 log = logging.getLogger(__name__)
 
 
 class MockBus(object):
-    messages = Manager().dict()
+    # The total number of registers
+    REGISTERS = 0xff
+    multi_process_dictionary = Manager().dict()
 
-    # Mock the smbus.SMBus class to record all data written to specific
-    # addresses and registers in the _written member.
     def __init__(self, bus: int = None):
         log.debug("Initializing mock SMBus")
-        # Unused value, there is only one bus
-        self.addr = bus
+        self.bus = bus
 
-    def _set_addr(self, addr):
-        if self.addr != addr:
-            self.addr = addr
+    @property
+    def messages(self) -> Dict[hex, bytearray]:
+        return self.multi_process_dictionary
 
-    def write_byte_data(self, i2c_addr, register: int, value):
-        """Write a single byte to a designated register."""
-        # print("Address: {}  Register: {}  Value: {}".format(i2c_addr, register, value))
-        self._create_queue_if_none(register)
-        log.debug("Register: {} value: {}".format(register, value))
-        new_list = [value]
-        new_list.extend(self.messages[register])
-        self.messages[register] = new_list
+    def read_byte(self, address: hex) -> hex:
+        return unpack('>BL', self.messages[address])
 
-    def read_word_data(self, i2c_addr, register: int):
+    def write_byte(self, address: hex, data: hex):
+        self.messages[address] = bytearray(str(data).encode())
+
+    def read_byte_data(self, address: hex, register: int) -> hex:
         """Read a single word from a designated register."""
-        self._create_queue_if_none(register)
-        result = 0
-        if len(self.messages[register]):
-            result = self.messages[register].pop()
-        self.messages[register] = self.messages[register][:-1]
-        return result
+        self._create_reg_if_not_exists(address)
+        return self.messages[address][register]
+
+    def write_byte_data(self, address: hex, register: hex, value: hex):
+        """Write a single byte to a designated register."""
+        self._create_reg_if_not_exists(address)
+        self.messages[address][register] = value
+
+    def read_i2c_block_data(self, address: hex, start_register: hex, buffer: int) -> hex:
+        self._create_reg_if_not_exists(address)
+        return int.from_bytes(self.messages[address][start_register: start_register + buffer], byteorder='big',
+                              signed=False)
 
     def write_i2c_block_data(self, address: hex, start_register: hex, data: List[ord]):
-        for i, d in enumerate(data):
-            register = start_register + i
-            self._create_queue_if_none(register)
-            new_list = [d]
-            new_list.extend(self.messages[register])
-            self.messages[register] = new_list
+        self._create_reg_if_not_exists(address)
+        for reg, value in enumerate(data):
+            self.messages[address][start_register + reg] = value
 
-    def _create_queue_if_none(self, register: int):
-        if self.messages.get(register, None) is None:
-            log.debug("Created register: {}".format(register))
-            self.messages[register] = list()
+    def _create_reg_if_not_exists(self, address: hex):
+        if self.messages.get(address, None) is None:
+            self.messages[address] = bytearray(self.REGISTERS)
 
 
 if __name__ == "__main__":
@@ -60,7 +59,7 @@ if __name__ == "__main__":
 
     def foo():
         for i in range(1, 5):
-            MockBus().write_byte_data(i2c_addr=0, register=0x1, value=i)
+            MockBus().write_byte_data(address=0, register=0x1, value=i)
             print(MockBus().messages)
 
 

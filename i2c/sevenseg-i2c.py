@@ -57,7 +57,7 @@ class SevenSegDisplay:
         self.blink_rate(0)
         self.set_brightness(15)
 
-    def write_byte(self, byte):
+    def write_byte(self, byte: hex):
         self.bus.write_byte(self.ADDR, byte)
 
     def set_brightness(self, level):

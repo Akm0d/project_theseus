@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
             try:
                 # Get the sensor value from the Arduino (signed 16bit little-endian)...
-                sensor_value = i2c.read_word_data(I2C_SLAVE, 0x00)
+                sensor_value = i2c.read_byte_data(I2C_SLAVE, 0x00)
                 stdout.write("sensor: {}".format(sensor_value))
             except IOError:
                 stderr.write("*** error: receiving sensor value ***\n")
