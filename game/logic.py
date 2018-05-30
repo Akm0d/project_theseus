@@ -12,7 +12,8 @@ try:
 except ModuleNotFoundError:
     print("SMBus module not found, please run this script with --mock")
 from MockPi.MockSmbus import MockBus
-from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, SECONDS_PER_PATTERN, SECONDS_PER_CHANGE, PATTERN_LIST
+from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
+    SECONDS_PER_PATTERN, SECONDS_PER_CHANGE, PATTERN_LIST, LaserPatternValues
 from game.database import Database, Row
 from globals import ComQueue
 
@@ -253,7 +254,7 @@ class Logic:
 
         # Increment the patternIndex
         if pattern is not None:
-            retValue = pattern[patternIndex]
+            retValue = pattern[self.patternIndex]
             if self.patternIndex < len(pattern):
                 self.patternIndex += 1
             else:
