@@ -1,0 +1,1 @@
+![schematic](http://cloud.carlos-rodrigues.com/gist/RPi2c.png)
