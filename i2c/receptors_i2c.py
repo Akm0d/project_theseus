@@ -4,6 +4,7 @@ from struct import unpack
 from time import sleep
 from typing import List
 
+from game.constants import I2C
 from i2c import SMBus
 from i2c.i2c_module import I2CModule
 
@@ -35,7 +36,7 @@ class ReceptorControl(I2CModule):
     # UNPACK_ALL = ''.join(['>'].extend(['H']*RECEPTOR_COUNT))
     UNPACK_ALL = '>HHHHHH'
 
-    def __init__(self, bus: SMBus, address: hex = 0x21):
+    def __init__(self, bus: SMBus, address: hex = I2C.PHOTO_RESISTORS.value):
         super().__init__(bus, address)
         self.receptors = [0] * self.RECEPTOR_COUNT
         self.write_reg_bytes(ReceptorRegisters.Config, self.CONFIG)

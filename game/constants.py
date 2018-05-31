@@ -58,8 +58,7 @@ class I2C(IntEnum):
     LEDS = 0x00
     WIRE = 0x00
     # TOP Lid
-    KEYPAD = 0x03
-    SEVEN_SEG = 0x03
+    ARDUINO = 0x70
     # Outer box
     RESET = 0x00
 
@@ -88,13 +87,14 @@ class JSCom(Enum):
 
 
 class LaserPattern(Enum):
-    ONE_CYCLES = "one_cycles"   # One laser cycles diwb
-    TWO_CYCLES = "two_cycles"   # Two (separated by one) move down slowly.
-    UP_AND_DOWN = "up_and_down" # Top and bottom turn on, move to the center than back out
-    INVERSION = "inversion"     # Every other is turned on and then every second, they invert
-    LASER_OFF = "laser_off"     # No laser is active
-    STATIC = "static"           # Lasers stay at what admin sets them
-    RANDOM = "random"           # Lasers turn on and off randomly
+    ONE_CYCLES = "one_cycles"  # One laser cycles diwb
+    TWO_CYCLES = "two_cycles"  # Two (separated by one) move down slowly.
+    UP_AND_DOWN = "up_and_down"  # Top and bottom turn on, move to the center than back out
+    INVERSION = "inversion"  # Every other is turned on and then every second, they invert
+    LASER_OFF = "laser_off"  # No laser is active
+    STATIC = "static"  # Lasers stay at what admin sets them
+    RANDOM = "random"  # Lasers turn on and off randomly
+
 
 class LaserPatternValues(Enum):
     ONE_CYCLES = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20]
@@ -104,9 +104,11 @@ class LaserPatternValues(Enum):
     LASER_OFF = [0x00]
     RANDOM = [0xFF]
 
-SECONDS_PER_PATTERN = 45        # Time each laser pattern runs
-SECONDS_PER_CHANGE = 1          # How often does the pattern change
+
+SECONDS_PER_PATTERN = 45  # Time each laser pattern runs
+SECONDS_PER_CHANGE = 1  # How often does the pattern change
 NUMBER_OF_LASERS = 6
 
 # What is the order for the patterns to change by
-PATTERN_LIST = [LaserPatternValues.ONE_CYCLES, LaserPatternValues.TWO_CYCLES, LaserPatternValues.UP_AND_DOWN, LaserPatternValues.INVERSION]
+PATTERN_LIST = [LaserPatternValues.ONE_CYCLES, LaserPatternValues.TWO_CYCLES, LaserPatternValues.UP_AND_DOWN,
+                LaserPatternValues.INVERSION]
