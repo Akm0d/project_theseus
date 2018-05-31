@@ -46,22 +46,22 @@ class I2C(IntEnum):
     """
     # Sensors
     ACCELEROMETER = 0x1d
-    FLEX = 0x03
-    IMU = 0x04
-    ULTRASONIC = 0x05
+    FLEX = 0x00
+    IMU = 0x00
+    ULTRASONIC = 0x00
     # Laser tripwires
-    LASERS = 0x06
-    PHOTO_RESISTORS = 0x07
+    LASERS = 0x3a
+    PHOTO_RESISTORS = 0x21
     # Inner box lid puzzle
-    ROTARY = 0x08
-    SWITCHES = 0x09
-    LEDS = 0x0a
-    WIRE = 0x0b
+    ROTARY = 0x00
+    SWITCHES = 0x00
+    LEDS = 0x00
+    WIRE = 0x00
     # TOP Lid
-    KEYPAD = 0x0c
-    SEVEN_SEG = 0x0d
+    KEYPAD = 0x03
+    SEVEN_SEG = 0x03
     # Outer box
-    RESET = 0x0e
+    RESET = 0x00
 
 
 class SOLENOID_STATE(IntEnum):
