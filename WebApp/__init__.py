@@ -10,7 +10,6 @@ app.config.from_object(config)
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 base = Blueprint('base', __name__)
-timer = Blueprint('timer', __name__)
 
 
 @admin.route('/', methods=['GET'])
@@ -30,9 +29,9 @@ def favicon():
     return url_for('static', filename='favicon.ico')
 
 
-@timer.route('/timer', methods=['GET'])
-def admin_view():
-    return "TODO timer"
+@base.route('/credits', methods=['GET'])
+def credits_view():
+    return render_template("credits.html")
 
 
 app.db = Database()
