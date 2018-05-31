@@ -90,7 +90,8 @@ class TripwireAll(Resource):
 class Randomize(Resource):
     def get(self):
         log.debug("Randomizing the lasers")
-        logic.lasers = logic.random_laser_pattern()
+        logic.laserState = LaserPattern.STATIC
+        logic.laserValue = logic.random_laser_pattern()
 
 
 class Ultrasonic(Resource):
