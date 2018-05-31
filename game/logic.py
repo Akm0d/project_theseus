@@ -13,6 +13,8 @@ from game.database import Database, Row
 from globals import ComQueue
 from i2c import SMBus
 from i2c.laser_i2c import LaserControl
+from i2c.receptors_i2c import ReceptorControl
+from i2c.sevenseg_i2c import SevenSegDisplay
 
 log = logging.getLogger(__name__)
 
@@ -34,10 +36,14 @@ class Logic:
 
     def __init__(self):
         self.laserPattern = LaserPattern.ONE_CYCLES
-        self._bus = SMBus(self.bus_num)
-        self.lasers = LaserControl(self._bus)
         self._timer = 0
         self._patternIndex = 0
+
+        # Initialize ICc Devices
+        self._bus = SMBus(self.bus_num)
+        self.lasers = LaserControl(self._bus)
+        self.arduino = SevenSegDisplay(self._bus)
+        self.photo_resistors = ReceptorControl(self._bus)
 
     @property
     def patternIndex(self) -> int:
@@ -188,10 +194,8 @@ class Logic:
 
             # TODO start thread polling sensors
             try:
-                """
                 while True:
                     self.poll_sensors()
-                """
             except KeyboardInterrupt:
                 return
 
