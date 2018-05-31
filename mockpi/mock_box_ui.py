@@ -68,7 +68,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.scheduler = APScheduler(scheduler=BackgroundScheduler())
         self.scheduler.add_job("poll", self.poll_sensors, max_instances=2,
                                replace_existing=False)
-        self.scheduler.start()
+        # self.scheduler.start()
 
     def poll_sensors(self):
         for i in I2C:

@@ -8,7 +8,7 @@ from flask import current_app
 from flask_apscheduler import APScheduler
 
 from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
-    SECONDS_PER_PATTERN, PATTERN_LIST, LaserPatternValues, NUMBER_OF_LASERS
+    SECONDS_PER_PATTERN, LaserPatternValues, NUMBER_OF_LASERS
 from game.database import Database, Row
 from globals import ComQueue
 from i2c import SMBus
@@ -188,8 +188,10 @@ class Logic:
 
             # TODO start thread polling sensors
             try:
+                """
                 while True:
                     self.poll_sensors()
+                """
             except KeyboardInterrupt:
                 return
 
@@ -198,15 +200,17 @@ class Logic:
         Poll all of the sensors and raise a flag if one of them has tripped.
         If the right wire was clipped at the end of the puzzle, raise the win flag
         """
+        """
         for i in I2C:
             word = self._bus.read_byte_data(self.bus_num, i)
             if word is not None:
-                log.info("{}: {}".format(i.name, hex(word)))
+                # log.info("{}: {}".format(i.name, hex(word)))
                 if i is I2C.RESET:
                     ComQueue().getComQueue().put([INTERRUPT.TOGGLE_TIMER])
                 elif i is I2C.LASERS:
                     if self.laserValue != word:
                         ComQueue().getComQueue().put([INTERRUPT.KILL_PLAYER])
+        """
 
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
         #     log.debug("Reading from I2C on {}".format(i2c.name))
