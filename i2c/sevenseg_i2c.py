@@ -1,10 +1,11 @@
 from time import sleep
 
+from game.constants import I2C
 from i2c import SMBus
 
 
 class SevenSegDisplay:
-    ADDR = 0x70
+    ADDR = I2C.ARDUINO.value
     BLINK_CMD = 0x80
     BLINK_DISPLAY_ON = 0x01
     CMD_BRIGHTNESS = 0xE0

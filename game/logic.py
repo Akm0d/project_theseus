@@ -298,7 +298,8 @@ class Logic:
         elif self.state is STATE.RUNNING:
             self.updateLaserPattern()
         elif self.state is STATE.EXPLODE:
-            self.updateLaserPattern()
+            pass
+            # TODO randomize laser pattern so that they flash
         elif self.state is STATE.WIN:
             pass
         else:
@@ -365,7 +366,6 @@ class Logic:
 
     def end_game(self, success: bool = False):
         log.debug("Game Over")
-        self.laserState = LaserPattern.RANDOM
         self.db.last = Row(
             name=self.team,
             code=self.keypad_code,
