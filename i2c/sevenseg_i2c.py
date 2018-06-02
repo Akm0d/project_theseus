@@ -76,13 +76,13 @@ if __name__ == '__main__':
     sevenseg.begin()
     # sevenseg.blink_rate(1)
     # sevenseg.dots = [True]*4
-    # sevenseg.colon = True
+    sevenseg.colon = True
     for n in range(1000):
         s = str(n).rjust(4, '0')
         # s = '2980'
         sevenseg.set_digits(s)
         sevenseg.update()
-        sleep(.01)
+        sleep(.02)
 
     sevenseg.set_digits('beef')
     sevenseg.update()
