@@ -13,8 +13,8 @@ from game.database import Database, Row
 from globals import ComQueue
 from i2c import SMBus
 from i2c.laser_i2c import LaserControl
+from i2c.lid_kit import LidKit
 from i2c.receptors_i2c import ReceptorControl
-from i2c.sevenseg_i2c import SevenSegDisplay
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class Logic:
         # Initialize ICc Devices
         self._bus = SMBus(self.bus_num)
         self.lasers = LaserControl(self._bus)
-        self.arduino = SevenSegDisplay(self._bus)
+        self.arduino = LidKit(self._bus)
         self.photo_resistors = ReceptorControl(self._bus)
 
     @property
