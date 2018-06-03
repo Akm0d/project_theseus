@@ -1,6 +1,5 @@
-// Arduino code for something something
+// Arduino code for project theseus
 // Kristian Sims
-// Insert whatever OSS license here idk
 
 #include <Keypad.h>
 #include <Wire.h>
@@ -17,12 +16,10 @@ char keys[NROWS][NCOLS] = {
   {'7', '8', '9'},
   {'*', '0', '#'}
 };
-
-byte rows_pins[NROWS] = {A2, A1, A0, 13};
-byte cols_pins[NCOLS] = {12, 7, 5};
-
-
+byte rows_pins[NROWS] = {5, 7, 12, 13};
+byte cols_pins[NCOLS] = {A0, A1, A2};
 Keypad keypad = Keypad(makeKeymap(keys), rows_pins, cols_pins, NROWS, NCOLS);
+
 // Keypress buffer
 #define BUFLEN 16
 char key_buffer[BUFLEN];
@@ -50,19 +47,23 @@ void setup() {
 }
 
 void loop() {
-  // Nothing to do here. Sadly, Arduino will just spin forever anyway.
+  keypad.getKey();
 }
 
 // On I2C read, return buffered characters, or a single "." for no keypress
 void i2c_request() {
+  Serial.write("KEY: ");
   if (buffer_count > 0) {
     Wire.write(key_buffer);
+    Serial.write(key_buffer);
     // Clear buffer so string termination is automatic
     while (buffer_count > 0)
       key_buffer[--buffer_count] = 0;
   } else {
+    Serial.write(key_buffer);
     Wire.write(".");
   }
+  Serial.write("\n\r");
 }
 
 // On I2C write, receive a value and light the LED
@@ -71,6 +72,9 @@ void i2c_receive(int byte_count) {
   if (byte_count == 1) {
     // If 1 byte sent, interpret as analog color
     byte b = Wire.read();
+    Serial.write("I2C: ");
+    Serial.write(b);
+    Serial.write("\n\r");
     analogWrite(LEDB, led2bit[b & 0x03]);
     b >>= 2;
     analogWrite(LEDG, led3bit[b & 0x07]);
@@ -90,8 +94,9 @@ void i2c_receive(int byte_count) {
 
 // When a debounced keypress is detected, add it to the buffer
 void keypad_event(KeypadEvent key) {
-  if (keypad.getState() == PRESSED)
-    if (buffer_count < BUFLEN)
+  if (keypad.getState() == PRESSED) {
+    if (buffer_count < BUFLEN) {
       key_buffer[buffer_count++] = key;
-     Serial.write(key);
+    }
+  }
 }
