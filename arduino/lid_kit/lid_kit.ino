@@ -5,7 +5,8 @@
 #include <Keypad.h>
 #include <Wire.h>
 
-#define I2C_ADDRESS 0x70
+#define I2C_ADDRESS 0x69
+#define KEYPAD_REGISTER = 0x23
 
 // Set up keypad
 #define NROWS 4
@@ -45,6 +46,7 @@ void setup() {
   // Set up keypad. If you get duplicate keypress, increase debounce time. >200 is too much.
   keypad.setDebounceTime(50);
   keypad.addEventListener(keypad_event);
+  Serial.begin(115200);
 }
 
 void loop() {
@@ -91,4 +93,5 @@ void keypad_event(KeypadEvent key) {
   if (keypad.getState() == PRESSED)
     if (buffer_count < BUFLEN)
       key_buffer[buffer_count++] = key;
+     Serial.write(key);
 }

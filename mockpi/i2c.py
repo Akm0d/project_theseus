@@ -2,8 +2,8 @@ from typing import List
 
 from i2c.i2c_module import I2CModule
 from i2c.laser_i2c import LaserControl
-from i2c.lid_kit import LidKit
 from i2c.receptors_i2c import ReceptorControl
+from i2c.sevenseg import SevenSeg
 
 
 class MockReceptorControl(ReceptorControl):
@@ -17,7 +17,7 @@ class MockReceptorControl(ReceptorControl):
         return True
 
 
-class MockSevenSegDisplay(LidKit):
+class MockSevenSegDisplay(SevenSeg):
     pass
 
 

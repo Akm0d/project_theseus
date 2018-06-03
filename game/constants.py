@@ -58,7 +58,8 @@ class I2C(IntEnum):
     LEDS = 0x00
     WIRE = 0x00
     # TOP Lid
-    ARDUINO = 0x70
+    ARDUINO = 0x69
+    SEVENSEG = 0x70
     # Outer box
     RESET = 0x00
 
