@@ -1,32 +1,48 @@
+from enum import IntEnum
+
 from i2c import SMBus
+
+
+class COLOR(IntEnum):
+    BLANK = 0b0000000
+    RED = 0b11100000
+    GREEN = 0b00011100
+    BLUE = 0b0000011
 
 
 class ArduinoI2C:
     ADDRESS = 0x69
+    NO_DATA = "."
 
     def __init__(self, bus: SMBus):
         self.bus = bus
 
-    def RGB(self):
-        for i in range(0xffff):
-            data = self.bus.read_byte_data(self.ADDRESS, i)
-            if data > 0:
-                print(data)
-                print(chr(data))
+    def RGB(self, color: COLOR):
+        self.bus.write_byte(self.ADDRESS, color)
 
     @property
-    def keypad(self) -> hex:
-        val = self.bus.read_i2c_block_data(0x70, 0, 32)
-        print("".join(chr(x) for x in val))
-        print(str(val))
-
-        byte = self.bus.read_byte(0x70)
-        print(byte)
-        print(chr(byte))
-
-        # "." [63, 63, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        return 0
+    def keypad(self) -> chr:
+        # TODO device won't read data unless listening on serial too
+        byte = self.bus.read_byte(self.ADDRESS)
+        if byte > 0:
+            key = chr(byte)
+            if key is not self.NO_DATA:
+                return key
 
 
 if __name__ == "__main__":
-    pass
+    from time import sleep
+
+    device = ArduinoI2C(SMBus(1))
+
+    # Test RGB
+    for c in COLOR:
+        device.RGB(c)
+        sleep(1)
+    device.RGB(COLOR.BLANK)
+
+    # Test Keypad
+    while True:
+        rcv = device.keypad
+        if rcv:
+            print(rcv)
