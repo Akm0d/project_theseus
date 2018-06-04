@@ -1,0 +1,57 @@
+from threading import Thread
+from time import sleep
+
+from i2c import SMBus
+from i2c.laser_i2c import LaserControl
+from i2c.lid_kit import ArduinoI2C, COLOR
+from i2c.sevenseg import SevenSeg
+
+bus = SMBus(1)
+
+arduino = ArduinoI2C(bus)
+lasers = LaserControl(bus)
+seven = SevenSeg(bus)
+
+
+def run_sevenseg():
+    while True:
+        for n in range(0xffff):
+            seven.sevenseg(value=n)
+            sleep(.1)
+
+
+def run_rgb():
+    while True:
+        for c in COLOR:
+            arduino.RGB(c)
+            sleep(1)
+        arduino.RGB(COLOR.BLANK)
+
+
+def run_keypad():
+    # Test Keypad
+    while True:
+        rcv = arduino.keypad
+        if rcv:
+            print(rcv)
+
+
+def run_lasers():
+    while True:
+        lasers.state = [True] * 6
+        lasers.update()
+        sleep(1)
+        lasers.state = [False] * 6
+        lasers.update()
+        sleep(1)
+
+
+if __name__ == "__main__":
+    print("starting sevenseg")
+    Thread(target=run_sevenseg).start()
+    print("starting rgb")
+    Thread(target=run_rgb).start()
+    print("starting keypad")
+    Thread(target=run_keypad).start()
+    print("starting lasers")
+    Thread(target=run_lasers).start()
