@@ -5,6 +5,7 @@ from i2c import SMBus
 from i2c.laser_i2c import LaserControl
 from i2c.lid_kit import ArduinoI2C, COLOR
 from i2c.sevenseg import SevenSeg
+from mockpi.mock_box_ui import ApplicationWindow
 
 bus = SMBus(1)
 
@@ -47,11 +48,24 @@ def run_lasers():
 
 
 if __name__ == "__main__":
+    from argparse import ArgumentParser
+
+    args = ArgumentParser()
+    args.add_argument("--mock", action="store_true")
+
+    opts = args.parse_args()
     print("starting sevenseg")
     Thread(target=run_sevenseg).start()
     print("starting rgb")
     Thread(target=run_rgb).start()
     print("starting keypad")
     Thread(target=run_keypad).start()
-    print("starting lasers")
-    Thread(target=run_lasers).start()
+    # print("starting lasers")
+    # Thread(target=run_lasers).start()
+
+    if opts.mock:
+        # Start the gui the simulates the box
+        print("starting app window")
+        qt_app = Thread(target=ApplicationWindow.run)
+        qt_app.start()
+        qt_app.join()

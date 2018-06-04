@@ -37,7 +37,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         for h, button in self.keypad.items():
             button.clicked.connect(partial(
-                lambda x: self.bus.write_byte_data(self.bus_num, I2C.KEYPAD, x), h
+                lambda: self.bus.write_byte(self.bus_num, I2C.ARDUINO), h
             ))
 
         for _, checkbox in self.photo_resistor.items():
@@ -72,10 +72,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def poll_sensors(self):
         for i in I2C:
-            word = self.bus.read_byte_data(self.bus_num, i)
+            word = self.bus.read_byte_data(i, 0)
             if word is not None:
                 log.info("{}: {}".format(i.name, hex(word)))
-                if i is I2C.SEVEN_SEG:
+                if i is I2C.SEVENSEG:
                     pass
         self.scheduler.add_job("poll", self.poll_sensors, max_instances=2,
                                replace_existing=False)
