@@ -21,16 +21,16 @@ class ArduinoI2C(I2CModule):
 
     def RGB(self, color: COLOR):
         self.current_color = color
-        self.write_reg_byte(self.ADDRESS, color)
+        self.write_byte(color)
 
     @property
     def keypad(self) -> chr:
         # TODO device won't read data unless listening on serial too
-        success, byte = self.read_reg_bytes(self.current_color)
-        if success:
-            key = chr(byte)
-            if key is not self.NO_DATA:
-                return key
+        success, data = self.read_bytes(16)
+        if success and data[0] != self.NO_DATA:
+            return [chr(x) for x in data]
+        else:
+            return []
 
 
 if __name__ == "__main__":
@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
     # Test Keypad
     while True:
+        sleep(1)
         rcv = device.keypad
         if rcv:
             print(rcv)

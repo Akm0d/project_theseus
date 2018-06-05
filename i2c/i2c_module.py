@@ -1,7 +1,7 @@
 import logging
 from functools import wraps
 
-from smbus import SMBus
+from smbus2 import SMBus, i2c_msg
 
 logger = logging.getLogger(__name__)
 
@@ -63,3 +63,9 @@ class I2CModule:
     @_read_except
     def read_reg_bytes(self, reg, n=32):
         return self.bus.read_i2c_block_data(self.address, reg, n)
+
+    @_read_except
+    def read_bytes(self, n=32):
+        read = i2c_msg.read(self.address, n)
+        self.bus.i2c_rdwr(read)
+        return list(read)
