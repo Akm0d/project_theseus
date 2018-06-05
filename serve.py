@@ -58,7 +58,7 @@ if __name__ == '__main__':
         qt_app.start()
 
     # Run the Flask server here in the parent
-    app.run(debug=False, host="0.0.0.0", port=5000)
+    app.run(debug=False, host="::", port=5000)
 
     # Wait for the gameLogic process to finish. Prevents Zombie processes
     gameLogic.join()

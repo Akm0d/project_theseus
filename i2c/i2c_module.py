@@ -1,6 +1,9 @@
+import logging
 from functools import wraps
 
 from smbus import SMBus
+
+logger = logging.getLogger(__name__)
 
 
 class I2CModule:
@@ -16,7 +19,7 @@ class I2CModule:
                 f(inst, *args, **kwargs)
                 return True
             except OSError:
-                print('i2c write error')
+                logger.error('i2c write error')
                 return False
 
         return wrapped
@@ -27,7 +30,7 @@ class I2CModule:
             try:
                 return True, f(inst, *args, **kwargs)
             except OSError:
-                print('i2c read error')
+                logger.error('i2c read error')
                 return False, None
 
         return wrapped

@@ -1,6 +1,7 @@
 from enum import IntEnum
 
 from i2c import SMBus
+from i2c.i2c_module import I2CModule
 
 
 class COLOR(IntEnum):
@@ -10,21 +11,23 @@ class COLOR(IntEnum):
     BLUE = 0b0000011
 
 
-class ArduinoI2C:
+class ArduinoI2C(I2CModule):
     ADDRESS = 0x69
     NO_DATA = "."
 
     def __init__(self, bus: SMBus):
-        self.bus = bus
+        I2CModule.__init__(self, bus, self.ADDRESS)
+        self.current_color = COLOR.BLANK
 
     def RGB(self, color: COLOR):
-        self.bus.write_byte(self.ADDRESS, color)
+        self.current_color = color
+        self.write_reg_byte(self.ADDRESS, color)
 
     @property
     def keypad(self) -> chr:
         # TODO device won't read data unless listening on serial too
-        byte = self.bus.read_byte(self.ADDRESS)
-        if byte > 0:
+        success, byte = self.read_reg_bytes(self.current_color)
+        if success:
             key = chr(byte)
             if key is not self.NO_DATA:
                 return key
