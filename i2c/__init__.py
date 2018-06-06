@@ -1,4 +1,5 @@
 # try:
+from smbus2 import SMBusWrapper as SMBus
 from sys import argv
 
 if "--mock" in argv:
