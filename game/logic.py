@@ -43,10 +43,10 @@ class Logic:
 
         # Initialize ICc Devices
         self._bus = SMBus(self.bus_num)
-        self.lasers = LaserControl(self._bus)
-        self.sevenseg = SevenSeg(self._bus).sevenseg
-        self.arduino = ArduinoI2C(self._bus)
-        self.photo_resistors = ReceptorControl(self._bus)
+        self.lasers = LaserControl(self._bus, I2C.LASERS)
+        self.sevenseg = SevenSeg(self._bus, I2C.SEVENSEG).sevenseg
+        self.arduino = ArduinoI2C(self._bus, I2C.ARDUINO)
+        self.photo_resistors = ReceptorControl(self._bus, I2C.PHOTO_RESISTORS)
 
     @property
     def patternIndex(self) -> int:

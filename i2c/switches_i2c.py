@@ -1,3 +1,4 @@
+from bitarray import bitarray
 from smbus2 import SMBus
 
 from i2c.i2c_module import I2CModule
@@ -13,7 +14,13 @@ class SwitchesI2C(I2CModule):
         _, byte = self.read_byte()
         return byte
 
+    def read_switches(self):
+        byte = bytes([self.switches])
+        array = bitarray(endian='little')
+        array.frombytes(byte)
+        return [x for x in array]
+
 
 if __name__ == "__main__":
-    banana = SwitchesI2C(SMBus(1))
-    print(banana.switches)
+    switches = SwitchesI2C(SMBus(1))
+    print(switches.switches)

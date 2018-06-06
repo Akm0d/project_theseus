@@ -13,11 +13,10 @@ class COLOR(IntEnum):
 
 
 class ArduinoI2C(I2CModule):
-    ADDRESS = 0x69
     NO_DATA = "."
 
-    def __init__(self, bus: SMBus):
-        I2CModule.__init__(self, bus, self.ADDRESS)
+    def __init__(self, bus: SMBus, address: hex = 0x69):
+        I2CModule.__init__(self, bus, address)
         self.current_color = COLOR.BLANK
 
     def RGB(self, color: COLOR):

@@ -2,11 +2,10 @@ from array import array
 from enum import IntEnum
 from struct import unpack
 from time import sleep
-from typing import List
+from typing import List, Union
 
 from smbus2 import SMBus
 
-from game.constants import I2C
 from i2c.i2c_module import I2CModule
 
 
@@ -37,7 +36,7 @@ class ReceptorControl(I2CModule):
     # UNPACK_ALL = ''.join(['>'].extend(['H']*RECEPTOR_COUNT))
     UNPACK_ALL = '>HHHHHH'
 
-    def __init__(self, bus: SMBus, address: hex = I2C.PHOTO_RESISTORS.value):
+    def __init__(self, bus: SMBus, address: hex = 0x21):
         super().__init__(bus, address)
         self.receptors = [0] * self.RECEPTOR_COUNT
         self.write_reg_bytes(ReceptorRegisters.Config, self.CONFIG)
@@ -48,7 +47,7 @@ class ReceptorControl(I2CModule):
         self.receptors = list(unpack(self.UNPACK_ALL, array('B', data).tostring()))
         return self.receptors
 
-    def read(self, n) -> bool:
+    def read(self, n) -> Union[int, List[int]]:
         # TODO return True if the laser is HIGH else False
         if n >= self.RECEPTOR_COUNT:
             return None

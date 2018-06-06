@@ -49,11 +49,11 @@ def run_lasers():
 def run_switches():
     old_value = 0
     while True:
-        new_value = switches.switches
+        new_value = switches.read_switches()
         if old_value != new_value:
             print(new_value)
             old_value = new_value
-        sleep(.1)
+        sleep(.01)
 
 
 bus = SMBus(1)
@@ -94,7 +94,7 @@ except OSError:
 
 try:
     switches = SwitchesI2C(bus)
+    Thread(target=run_switches).start()
     logger.info("Switches Ready")
 except OSError:
-    Thread(target=run_switches).start()
     logger.warning("Switches setup failed")
