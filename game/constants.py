@@ -54,12 +54,13 @@ class I2C(IntEnum):
     PHOTO_RESISTORS = 0x21
     # Inner box lid puzzle
     ROTARY = 0x00
-    SWITCHES = 0x00
+    SWITCHES = 0x3b
     LEDS = 0x00
     WIRE = 0x00
     # TOP Lid
     ARDUINO = 0x69
     SEVENSEG = 0x70
+    SOLENOID = 0x39
     # Outer box
     RESET = 0x00
 
