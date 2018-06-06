@@ -2,6 +2,7 @@ import logging
 import random
 from datetime import datetime
 from multiprocessing import Lock, Manager, Queue
+from typing import Tuple
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import current_app
@@ -9,10 +10,11 @@ from flask_apscheduler import APScheduler
 from smbus2 import SMBus
 
 from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
-    SECONDS_PER_PATTERN, LaserPatternValues, NUMBER_OF_LASERS
+    SECONDS_PER_PATTERN, LaserPatternValues
 from game.database import Database, Row
 from globals import ComQueue
 from i2c.laser_i2c import LaserControl
+from i2c.lid_kit import ArduinoI2C
 from i2c.receptors_i2c import ReceptorControl
 from i2c.sevenseg import SevenSeg
 
@@ -42,7 +44,8 @@ class Logic:
         # Initialize ICc Devices
         self._bus = SMBus(self.bus_num)
         self.lasers = LaserControl(self._bus)
-        self.arduino = SevenSeg(self._bus)
+        self.sevenseg = SevenSeg(self._bus).sevenseg
+        self.arduino = ArduinoI2C(self._bus)
         self.photo_resistors = ReceptorControl(self._bus)
 
     @property
@@ -80,12 +83,16 @@ class Logic:
     def laserValue(self, value: int):
         self.shared["laservalue"] = value
 
-    @property
-    def timer_text(self) -> str:
+    def timer_values(self) -> Tuple[int, int, int]:
         newDatetime = datetime.now() - self.start_time
         seconds = MAX_TIME - newDatetime.seconds
         minutes = seconds // 60
         secondsToPrint = seconds - minutes * 60
+        return minutes, secondsToPrint, seconds
+
+    @property
+    def timer_text(self) -> str:
+        minutes, secondsToPrint, seconds = self.timer_values()
         if self.state is STATE.WAIT:
             return "RESET"
         if self.state is STATE.RUNNING:
@@ -280,11 +287,7 @@ class Logic:
         self.laserValue = self.getLaserPattern()
 
         # Set laser pattern
-        setVar = 0
-        while setVar < NUMBER_OF_LASERS:
-            self.lasers.state[setVar] = self.laserValue & (1 << setVar)
-            setVar += 1
-        self.lasers.update()
+        self.lasers.state = self.laserValue
 
     def _loop(self):
         command_id = None
@@ -294,14 +297,17 @@ class Logic:
 
         # State Actions
         if self.state is STATE.WAIT:
+            self.sevenseg(0x0)
             self.laserState = LaserPattern.LASER_OFF
         elif self.state is STATE.RUNNING:
+            minutes, seconds, total_seconds = self.timer_values()
+            self.sevenseg(int("0x{:02}{:02}".format(minutes, seconds), 16))
             self.updateLaserPattern()
         elif self.state is STATE.EXPLODE:
-            pass
+            self.sevenseg(0xdead)
             # TODO randomize laser pattern so that they flash
         elif self.state is STATE.WIN:
-            pass
+            self.sevenseg(0xbeef)
         else:
             log.error("Reached an unknown state: {}".format(self.state))
 
@@ -346,7 +352,7 @@ class Logic:
     @staticmethod
     def random_laser_pattern() -> int:
         # TODO make sure the laser pattern conforms to certain rules
-        return random.randint(0, 0x3f)
+        return random.randint(0, 0x40)
 
     def start_game(self):
         """
