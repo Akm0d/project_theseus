@@ -1,6 +1,7 @@
 from enum import IntEnum
 
-from i2c import SMBus
+from smbus2 import SMBus
+
 from i2c.i2c_module import I2CModule
 
 

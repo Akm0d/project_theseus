@@ -1,9 +1,10 @@
-import smbus
+from smbus2 import SMBus
+
 from i2c.i2c_module import I2CModule
 
+
 class LaserControl(I2CModule):
-    LASER_COUNT=6
-    _state = 0
+    LASER_COUNT = 6
 
     @property
     def state(self) -> chr:
@@ -12,10 +13,12 @@ class LaserControl(I2CModule):
     @state.setter
     def state(self, value: chr):
         self._state = value
+        self.update()
 
-    def __init__(self, bus, addr=0x3a):
+    def __init__(self, bus: SMBus, addr=0x3a):
         super().__init__(bus, addr)
-        self.state = 0
+        self._state = 0
+        self.update()
 
     def update(self):
         # The following seems strange, and it is, but due to the incorrect construction of OUR
@@ -24,18 +27,19 @@ class LaserControl(I2CModule):
         posOne = (self.state & 0x20) >> 1
 
         # Reset first two bits of state
-        self.state = self.state & 0x0F
-        self.state = self.state | posZero | posOne
+        state = self.state & 0x0F
+        state = state | posZero | posOne
         # Invert the 2's complement way because ~ isn't possible
-        self.write_byte(-self.state - 1)
+        self.write_byte(-state - 1)
 
     def reset(self):
         self.state = 0x0
         self.update()
 
-from time import sleep
+
 def main(argv):
-    bus = smbus.SMBus(1)
+    from time import sleep
+    bus = SMBus(1)
     lasers = LaserControl(bus)
     lasers.state = 0x0
     lasers.update()
@@ -55,6 +59,8 @@ def main(argv):
     else:
         print('Huh?')
 
+
 if __name__ == '__main__':
     import sys
+
     main(sys.argv)

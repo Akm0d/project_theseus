@@ -4,8 +4,9 @@ from struct import unpack
 from time import sleep
 from typing import List
 
+from smbus2 import SMBus
+
 from game.constants import I2C
-from i2c import SMBus
 from i2c.i2c_module import I2CModule
 
 

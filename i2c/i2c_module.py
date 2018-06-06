@@ -41,7 +41,7 @@ class I2CModule:
             self.bus.write_byte(self.address, byte)
             return True
         except OSError:
-            self.i2c_error()
+            logger.error('i2c write error')
             return False
 
     @_write_except

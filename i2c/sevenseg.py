@@ -2,8 +2,9 @@ import logging
 from multiprocessing import Lock
 from typing import List
 
+from smbus2 import SMBus
+
 from game.constants import I2C
-from i2c import SMBus
 
 logger = logging.getLogger(__name__)
 

@@ -6,12 +6,12 @@ from multiprocessing import Lock, Manager, Queue
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import current_app
 from flask_apscheduler import APScheduler
+from smbus2 import SMBus
 
 from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
     SECONDS_PER_PATTERN, LaserPatternValues, NUMBER_OF_LASERS
 from game.database import Database, Row
 from globals import ComQueue
-from i2c import SMBus
 from i2c.laser_i2c import LaserControl
 from i2c.receptors_i2c import ReceptorControl
 from i2c.sevenseg import SevenSeg
