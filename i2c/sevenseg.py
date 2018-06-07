@@ -1,8 +1,7 @@
 import logging
 from multiprocessing import Lock
-from typing import List
-
 from smbus2 import SMBus
+from typing import List
 
 from i2c.i2c_module import I2CModule
 
@@ -12,7 +11,6 @@ logger = logging.getLogger(__name__)
 class SevenSeg(I2CModule):
     _lock = Lock()
     NUM_DOTS = 4
-    ADDRESS = I2C.SEVENSEG.value
     BLINK_CMD = 0x80
     BLINK_DISPLAY_ON = 0x01
     CMD_BRIGHTNESS = 0xE0
@@ -54,7 +52,7 @@ class SevenSeg(I2CModule):
 
     def write(self, byte: hex):
         with self._lock:
-            self.bus.write_byte(self.ADDRESS, byte)
+            self.write_byte(byte)
 
     def sevenseg(self, value: hex, dots: List[bool] = None, colon: bool = True):
         """
@@ -85,7 +83,7 @@ class SevenSeg(I2CModule):
 
         try:
             with self._lock:
-                self.bus.write_i2c_block_data(self.ADDRESS, 0, buffer)
+                self.write_reg_bytes(0, buffer)
         except OSError as c:
             logger.error("{}:{}".format(c, hex(value)))
 
