@@ -27,6 +27,7 @@ class LaserControl(I2CModule):
     def reset(self):
         self[:] = False
 
+
 from time import sleep
 if __name__ == '__main__':
     from sys import argv

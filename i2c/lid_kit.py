@@ -21,7 +21,12 @@ class ArduinoI2C(I2CModule):
         I2CModule.__init__(self, bus, address)
         self.current_color = COLOR.BLANK
 
-    def RGB(self, color: COLOR):
+    @property
+    def color(self):
+        return self.current_color
+
+    @color.setter
+    def color(self, color: COLOR):
         self.current_color = color
         self.write_byte(color)
 
@@ -41,9 +46,9 @@ if __name__ == "__main__":
 
     # Test RGB
     for c in COLOR:
-        device.RGB(c)
+        device.color = c
         sleep(.25)
-    device.RGB(COLOR.BLANK)
+    device.color = COLOR.BLANK
 
     # Test Keypad
     while True:
