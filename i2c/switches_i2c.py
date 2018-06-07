@@ -18,9 +18,25 @@ class SwitchesI2C(I2CModule):
         byte = bytes([self.switches])
         array = bitarray(endian='little')
         array.frombytes(byte)
-        return [x for x in array]
+        array = array[2:]
+        array = array[5:6] + array[:-1]
+        return [not x for x in array]
+
+
+from time import sleep
 
 
 if __name__ == "__main__":
     switches = SwitchesI2C(SMBus(1))
-    print(switches.switches)
+    old_val = 0
+    while True:
+        sleep(.01)
+        val = ''.join(['1' if x else '0' for x in switches.read_switches()])
+        if val != old_val:
+            print(val)
+            old_val = val
+
+'''
+432105
+501234
+'''

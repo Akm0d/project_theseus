@@ -3,10 +3,14 @@ from enum import IntEnum
 from struct import unpack
 from time import sleep
 from typing import List, Union
+import logging
 
 from smbus2 import SMBus
 
 from i2c.i2c_module import I2CModule
+
+
+logger = logging.Logger(__name__)
 
 
 class ReceptorRegisters(IntEnum):
@@ -33,6 +37,7 @@ class ReceptorControl(I2CModule):
     CHANNEL = [0x80, 0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0]
     CONFIG = [0x03, 0xF8]
     READ_ALL = 0x70
+    THRESHOLD = 800
     # UNPACK_ALL = ''.join(['>'].extend(['H']*RECEPTOR_COUNT))
     UNPACK_ALL = '>HHHHHH'
 
@@ -41,27 +46,38 @@ class ReceptorControl(I2CModule):
         self.receptors = [0] * self.RECEPTOR_COUNT
         self.write_reg_bytes(ReceptorRegisters.Config, self.CONFIG)
 
-    def read_all(self) -> List[bool]:
+    def read_raw(self, n=None) -> List[int]:
         # TODO return a list with a boolean for each photoresistor's state
-        _, data = self.read_reg_bytes(self.READ_ALL, 2 * self.RECEPTOR_COUNT)
-        self.receptors = list(unpack(self.UNPACK_ALL, array('B', data).tostring()))
-        return self.receptors
+        if n:
+            if n >= self.RECEPTOR_COUNT:
+                return []
+            _, data = self.read_reg_bytes(self.CHANNEL[n], 2)
+            data = unpack('>H', array('B', data).tostring())
+        else:
+            _, data = self.read_reg_bytes(self.READ_ALL, 2 * self.RECEPTOR_COUNT)
+            data = list(unpack(self.UNPACK_ALL, array('B', data).tostring()))
+        data = [4096 - (0x0FFF & x) for x in data]
+        self.receptors = data
+        return data
 
-    def read(self, n) -> Union[int, List[int]]:
-        # TODO return True if the laser is HIGH else False
-        if n >= self.RECEPTOR_COUNT:
-            return None
-        _, data = self.read_reg_bytes(self.CHANNEL[n], 2)
-        data2 = unpack('>H', array('B', data).tostring())
-        self.receptors[n] = data2[0]
-        return self.receptors[n]
+    def read(self, n=None) -> List[bool]:
+        return [x > self.THRESHOLD for x in self.read_raw(n)]
+
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            self.read()
+            return self.receptors.__getitem__(item)
+        elif isinstance(item, int):
+            return self.read(item)
+        else:
+            logger.error('Bad type (not int or slice) passed to receptors.__getitem__()')
+            return []
 
 
 if __name__ == '__main__':
     master = SMBus(1)
     read = ReceptorControl(master)
     while True:
-        # print('{}, {}, {}, {}, {}, {}'.format(*[read.read(n) for n in range(6)]))
-        # print(read.read_all())
-        print(read.read(1))
+        print(read.read_raw())
+        print(''.join(['1' if x else '0' for x in read[:]]))
         sleep(1)
