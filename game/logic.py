@@ -282,9 +282,8 @@ class Logic:
         # Set laser pattern
         setVar = 0
         while setVar < NUMBER_OF_LASERS:
-            self.lasers.state[setVar] = self.laserValue & (1 << setVar)
+            self.lasers[setVar] = self.laserValue & (1 << setVar)
             setVar += 1
-        self.lasers.update()
 
     def _loop(self):
         command_id = None
