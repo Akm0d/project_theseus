@@ -47,7 +47,6 @@ class ReceptorControl(I2CModule):
         self.write_reg_bytes(ReceptorRegisters.Config, self.CONFIG)
 
     def read_raw(self, n=None) -> List[int]:
-        # TODO return a list with a boolean for each photoresistor's state
         if n:
             if n >= self.RECEPTOR_COUNT:
                 return []
