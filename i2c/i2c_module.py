@@ -19,7 +19,7 @@ class I2CModule:
                 f(inst, *args, **kwargs)
                 return True
             except OSError:
-                logger.error('i2c write error')
+                logger.debug('i2c write error')
                 return False
 
         return wrapped
@@ -30,7 +30,7 @@ class I2CModule:
             try:
                 return True, f(inst, *args, **kwargs)
             except OSError:
-                logger.error('i2c read error')
+                logger.debug('i2c read error')
                 return False, None
 
         return wrapped
@@ -41,7 +41,7 @@ class I2CModule:
             self.bus.write_byte(self.address, byte)
             return True
         except OSError:
-            logger.error('i2c write error')
+            logger.debug('i2c write error')
             return False
 
     @_write_except

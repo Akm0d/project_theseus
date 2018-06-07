@@ -4,12 +4,12 @@ from typing import List
 
 from smbus2 import SMBus
 
-from game.constants import I2C
+from i2c.i2c_module import I2CModule
 
 logger = logging.getLogger(__name__)
 
 
-class SevenSeg:
+class SevenSeg(I2CModule):
     _lock = Lock()
     NUM_DOTS = 4
     ADDRESS = I2C.SEVENSEG.value
@@ -36,16 +36,15 @@ class SevenSeg:
         'f': 0x71
     }
 
-    def __init__(self, bus: SMBus, blink_rate: int = 0, brightness: hex = 0):
+    def __init__(self, bus: SMBus, address: hex = 0x70, blink_rate: int = 0, brightness: hex = 0):
         """
         :param bus:
         :param blink_rate:
         :param brightness:
         """
+        super().__init__(bus, address)
         assert blink_rate >= 0, "Blink rate must be positive: {}".format(blink_rate)
         assert 0 <= brightness <= 0xf, "Brightness level is out of range: {}".format(brightness)
-
-        self.bus = bus
         # start oscillator
         self.write(0x21)
 

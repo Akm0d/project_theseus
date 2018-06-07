@@ -17,8 +17,8 @@ class ArduinoI2C(I2CModule):
     NO_DATA = '.'.encode()
     EMPTY = b'\xff'
 
-    def __init__(self, bus: SMBus):
-        I2CModule.__init__(self, bus, self.ADDRESS)
+    def __init__(self, bus: SMBus, address: hex = 0x69):
+        I2CModule.__init__(self, bus, address)
         self.current_color = COLOR.BLANK
 
     def RGB(self, color: COLOR):
