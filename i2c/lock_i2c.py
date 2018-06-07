@@ -9,6 +9,7 @@ logger = logging.Logger(__name__)
 
 
 class BoxLock(I2CModule):
+    OPEN_TIME = 6
 
     def __init__(self, bus, addr=0x39):
         super().__init__(bus, addr)
@@ -30,7 +31,7 @@ class BoxLock(I2CModule):
             s = self.write_byte(0x7F)
             if s:
                 self._open = True
-                self.timer = Timer(2, self.close)
+                self.timer = Timer(self.OPEN_TIME, self.close)
                 self.timer.start()
 
     def close(self):
