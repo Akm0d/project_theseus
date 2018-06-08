@@ -1,7 +1,8 @@
 import logging
 from multiprocessing import Lock
-from smbus2 import SMBus
 from typing import List
+
+from smbus2 import SMBus
 
 from i2c.i2c_module import I2CModule
 
@@ -54,14 +55,15 @@ class SevenSeg(I2CModule):
         with self._lock:
             self.write_byte(byte)
 
-    def sevenseg(self, value: hex, dots: List[bool] = None, colon: bool = True):
+    def sevenseg(self, value: hex = None, dots: List[bool] = None, colon: bool = True):
         """
         :param colon: True if a colon should be written, else false
         :param dots: A list of 4 booleans representing the 4 dots that should be written
-        :param value: A 4 digit hex value to write to the seven segment display
+        :param value: A 4 digit hex value to write to the i2c_seven segment display
         """
         # Type checking and input sensitization
-        assert 0 <= value <= 0xffff, "'{}' is out of the range of the seven segment display".format(value)
+        if value is not None:
+            assert 0 <= value <= 0xffff, "'{}' is out of the range of the i2c_seven segment display".format(value)
         if dots is None:
             dots = list()
         assert len(dots) <= 4, "There are only 4 dots on the display"
@@ -70,7 +72,10 @@ class SevenSeg(I2CModule):
         while len(dots) < 4:
             dots.append(False)
 
-        chars = [self.CHARMAP[c] for c in str(hex(value))[2:].zfill(4)]
+        if value is not None:
+            chars = [self.CHARMAP[c] for c in str(hex(value))[2:].zfill(4)]
+        else:
+            chars = [0] * 4
 
         # Build the buffer that sends characters to the device
         buffer = []
