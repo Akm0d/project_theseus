@@ -18,6 +18,16 @@ class LaserControl(I2CModule):
         self._state.__setitem__(pos, value)
         self._update()
 
+    @property
+    def state(self):
+        return self._state.tobytes()[0]
+
+    @state.setter
+    def state(self, byte):
+        self._state = bitarray(endian='little')
+        self._state.frombytes(byte.to_bytes(1, byteorder='little'))
+        self._update()
+
     def _update(self):
         buf = bitarray(self._state)
         buf.invert()

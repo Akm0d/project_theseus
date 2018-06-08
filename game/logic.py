@@ -17,6 +17,7 @@ from i2c.laser_i2c import LaserControl
 from i2c.lid_kit import ArduinoI2C
 from i2c.receptors_i2c import ReceptorControl
 from i2c.sevenseg import SevenSeg
+from i2c.lock_i2c import BoxLock
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +48,8 @@ class Logic:
         self.sevenseg = SevenSeg(self._bus, I2C.SEVENSEG).sevenseg
         self.arduino = ArduinoI2C(self._bus, I2C.ARDUINO)
         self.photo_resistors = ReceptorControl(self._bus, I2C.PHOTO_RESISTORS)
+        self.lock = BoxLock(self._bus, I2C.SOLENOID)
+
 
     @property
     def patternIndex(self) -> int:
@@ -138,7 +141,11 @@ class Logic:
 
     @solenoid.setter
     def solenoid(self, value: SOLENOID_STATE):
-        # TODO send the new solenoid logic over I2C
+        # send the new solenoid logic over I2C
+        if value is SOLENOID_STATE.UNLOCKED:
+            self.lock.open()
+        else:
+            self.lock.close()
         log.debug("Solenoid logic changed from {} to {}".format(self.solenoid.value, value.value))
         self.shared["solenoid"] = value.value
 
@@ -179,7 +186,8 @@ class Logic:
     @rgb_color.setter
     def rgb_color(self, value: RGBColor):
         log.debug("Setting new rgb color: {}".format(value))
-        # TODO send the command over i2c to change the rgb color
+        # send the command over i2c to change the rgb color
+        self.arduino.color = value
         self.shared["rgb"] = value.value
 
     def run(self, queue: Queue, mock: bool):
