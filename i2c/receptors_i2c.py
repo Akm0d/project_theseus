@@ -37,7 +37,7 @@ class ReceptorControl(I2CModule):
     CHANNEL = [0x80, 0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0]
     CONFIG = [0x03, 0xF8]
     READ_ALL = 0x70
-    THRESHOLD = 1200
+    THRESHOLD = 1300
     # UNPACK_ALL = ''.join(['>'].extend(['H']*RECEPTOR_COUNT))
     UNPACK_ALL = '>HHHHHH'
 
@@ -59,6 +59,15 @@ class ReceptorControl(I2CModule):
         self.receptors = data
         return data
 
+    def read_int(self) -> int:
+        array = self.read()
+        retVal = 0
+        for i in range(6):
+            if array[i]:
+                retVal |= 0x1 << (5-i)
+        # get list and convert to boolean
+        return retVal
+
     def read(self, n=None) -> List[bool]:
         return [x > self.THRESHOLD for x in self.read_raw(n)]
 
@@ -78,5 +87,6 @@ if __name__ == '__main__':
     read = ReceptorControl(master)
     while True:
         print(read.read_raw())
+        print(read.read_int())
         print(''.join(['1' if x else '0' for x in read[:]]))
         sleep(1)
