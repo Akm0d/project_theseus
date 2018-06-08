@@ -2,9 +2,7 @@ import logging
 from argparse import ArgumentParser
 from threading import Thread
 from time import sleep
-
 from smbus2 import SMBus
-
 from i2c.laser_i2c import LaserControl
 from i2c.lid_kit import ArduinoI2C, COLOR
 from i2c.sevenseg import SevenSeg
@@ -24,9 +22,9 @@ def run_sevenseg():
 def run_rgb():
     while True:
         for c in COLOR:
-            arduino.RGB(c)
+            arduino.color = c
             sleep(1)
-        arduino.RGB(COLOR.BLANK)
+        arduino.color = COLOR.BLANK
 
 
 def run_keypad():
@@ -42,8 +40,6 @@ def run_lasers():
     while True:
         for i in range(0, 0x40):
             lasers.state = i
-            lasers.update()
-            sleep(.1)
 
 
 def run_switches():
@@ -77,7 +73,6 @@ try:
     logger.info("Arduino Ready")
 except OSError:
     logger.warning("Arduino setup failed")
-
 try:
     lasers = LaserControl(bus)
     Thread(target=run_lasers).start()

@@ -37,7 +37,7 @@ class ReceptorControl(I2CModule):
     CHANNEL = [0x80, 0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0]
     CONFIG = [0x03, 0xF8]
     READ_ALL = 0x70
-    THRESHOLD = 800
+    THRESHOLD = 1200
     # UNPACK_ALL = ''.join(['>'].extend(['H']*RECEPTOR_COUNT))
     UNPACK_ALL = '>HHHHHH'
 
@@ -64,8 +64,8 @@ class ReceptorControl(I2CModule):
 
     def __getitem__(self, item):
         if isinstance(item, slice):
-            self.read()
-            return self.receptors.__getitem__(item)
+            data = self.read()
+            return data.__getitem__(item)
         elif isinstance(item, int):
             return self.read(item)
         else:

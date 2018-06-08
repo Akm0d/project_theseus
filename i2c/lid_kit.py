@@ -13,7 +13,6 @@ class COLOR(IntEnum):
 
 
 class ArduinoI2C(I2CModule):
-    ADDRESS = 0x0d
     NO_DATA = '.'.encode()
     EMPTY = b'\xff'
 
