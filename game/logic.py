@@ -337,6 +337,15 @@ class Logic:
             elif command_id is INTERRUPT.DEFUSED:
                 self.state = STATE.WIN
                 self.end_game(success=True)
+
+                # Kill the player if time has run out
+                minutes, seconds, total_seconds = self.timer_values()
+                if total_seconds <= 0:
+                    self.end_game(success=False)
+
+                if self.laserValue != self.photo_resistors.read_int():
+                    self.end_game(success=False)
+
         elif self.state is STATE.EXPLODE:
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
