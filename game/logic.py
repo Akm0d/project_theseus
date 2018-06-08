@@ -187,8 +187,8 @@ class Logic:
     def rgb_color(self, value: RGBColor):
         log.debug("Setting new rgb color: {}".format(value))
         # send the command over i2c to change the rgb color
-        color_map = {'green': 0x1c, 'red': 0xe0, 'blue': }
-        self.arduino.color =
+        color_map = {'green': 0x1c, 'red': 0xe0, 'blue': 0x03, 'black': 0x00}
+        self.arduino.color = color_map[value.value]
         self.shared["rgb"] = value.value
 
     def run(self, queue: Queue, mock: bool):
