@@ -13,11 +13,11 @@ from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTR
     SECONDS_PER_PATTERN, LaserPatternValues
 from game.database import Database, Row
 from globals import ComQueue
-from i2c.laser_i2c import LaserControl
-from i2c.lid_kit import ArduinoI2C
-from i2c.receptors_i2c import ReceptorControl
-from i2c.sevenseg import SevenSeg
-from i2c.lock_i2c import BoxLock
+from Project_Theseus_API.i2c.laser_i2c import LaserControl
+from Project_Theseus_API.i2c.lid_kit import ArduinoI2C
+from Project_Theseus_API.i2c.receptors_i2c import ReceptorControl
+from Project_Theseus_API.i2c.sevenseg import SevenSeg
+from Project_Theseus_API.i2c.lock_i2c import BoxLock
 
 log = logging.getLogger(__name__)
 
@@ -233,7 +233,7 @@ class Logic:
         """
 
         # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
-        #     log.debug("Reading from I2C on {}".format(i2c.name))
+        #     log.debug("Reading from Project_Theseus_API.i2c on {}".format(i2c.name))
         #     foo = self._bus.read_word_data(i2c.value, 0)
         #     self._send(I2C.SEVEN_SEG, "Hello!")
 

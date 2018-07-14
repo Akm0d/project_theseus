@@ -9,7 +9,7 @@ import globals
 from WebApp import app
 from game.logic import Logic
 
-# from mockpi.mock_box_ui import ApplicationWindow
+# from Project_Theseus_API.mockpi.mock_box_ui import ApplicationWindow
 
 log = logging.getLogger()
 log_dir = path.dirname(__file__)
