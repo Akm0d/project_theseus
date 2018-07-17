@@ -15,7 +15,8 @@ This project is forked from the private repo of the OpenWest Defusal Station pro
 $ sudo apt-get update
 $ sudo apt-get install python3 git python3-pip
 $ git clone https://github.com/jtylers/project_theseus.git
-$ cd project_theseus/python
+$ cd project_theseus
+$ git submodule update --init
 $ pip3 install -r requirements.txt
 $ ./serve.py
 $ firefox 127.0.0.1:5000
