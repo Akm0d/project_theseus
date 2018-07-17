@@ -28,6 +28,16 @@ $ sudo apt-get install snapd
 $ snap install pycharm-community
 ```
 
+# Setting up a Pi to have the same ipv6 address on any network
+```bash
+$ cd project_theseus
+$ pacman -S radvd
+$ sudo cp radvd.conf /etc/radvd.conf
+$ sudo cp ipv6 /usr/local/bin/ipv6
+$ sudo /usr/local/bin/ipv6
+$ sudo systemctl restart radvd
+```
+
 ## Where are variables stored?
 ### Stored in the database
 ID
