@@ -33,7 +33,7 @@ $ echo "export PYTHONPATH=$PYTHONPATH:$HOME/project_theseus" >> ~/.profile
 $ source ~/.profile
 ```
 
-# Raspberry pi -ARCH Linux Setup
+## Raspberry pi - ARCH Linux Setup
 ```bash
 $ ## login with user: root password: root
 $ # Delete default user
@@ -44,7 +44,7 @@ $ # Set password for admin
 $ passwd admin
 $ # Make a home folder for admin
 $ mkdir -p /home/admin
-$ # Change ownership of the admin's homefolder to that admin
+$ # Change ownership of the admin's home folder
 $ chown -R admin:admin /home/admin
 $ pacman -S sudo
 $ # Grant admin sudo privileges
@@ -52,14 +52,14 @@ $ visudo
 $ ## Press SHIFT + G then SHIFT + A
 $ ## type "admin ALL=(ALL) ALL" without the quotes
 $ ## save and quit by pressing ESCAPE, typing ":x" and pressing ENTER
-$ # Remove root's password entry so that you can only log in as "admin" and use sudo to do root stuff
+$ # Remove root's password entry so that you can only log in as "admin" and use sudo and to do root stuff
 $ vim /etc/shadow
 $ ## replace root's password hash with !
 $ # Install dependencies
 $ pacman -S fakeroot gcc git i2c-tools make packer python python-dateutil python-flask python-flask-restful python-pip tmux vim 
 $ packer -S raspi-config
 $ # Enable I2C 
-$ echo "dtparam=i2c_arm=on" sudo tee -a /boot/config.txt
+$ echo "dtparam=i2c_arm=on"| sudo tee -a /boot/config.txt
 $ sudo reboot
 $ ## Log in as admin
 $ ## Allow admin to access i2c
@@ -78,11 +78,13 @@ $ sudo systemctl restart radvd
 ```
 
 ## Where are variables stored?
-### Stored in the database
+Stored in the database
+```
 ID
 Name
-Laser
+Laser   -- Deprecated
 Code
 Color
 Time    -- Stored as a datetime object but written at end of game
 Success
+```
