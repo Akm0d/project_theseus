@@ -56,7 +56,7 @@ $ # Remove root's password entry so that you can only log in as "admin" and use 
 $ vim /etc/shadow
 $ ## replace root's password hash with !
 $ # Install dependencies
-$ pacman -S fakeroot gcc git i2c-tools make packer python python-dateutil python-flask python-flask-restful python-pip tmux vim 
+$ pacman -S fakeroot gcc git i2c-tools make nginx packer python python-dateutil python-flask python-flask-restful python-pip tmux vim 
 $ packer -S raspi-config
 $ # Enable I2C 
 $ echo "dtparam=i2c_arm=on" sudo tee -a /boot/config.txt
@@ -65,16 +65,7 @@ $ ## Log in as admin
 $ ## Allow admin to access i2c
 $ sudo chown admin:admin /dev/i2c*
 $ ## Proceed with the instructions from the "Getting Started" section
-```
-
-## Setting up a Pi to have the same ipv6 address on any network
-```bash
-$ cd project_theseus
-$ pacman -S radvd
-$ sudo cp radvd.conf /etc/radvd.conf
-$ sudo cp ipv6 /usr/local/bin/ipv6
-$ sudo /usr/local/bin/ipv6
-$ sudo systemctl restart radvd
+$ ## Run project_theseus/pi_setup.sh
 ```
 
 ## Where are variables stored?
