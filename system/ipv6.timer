@@ -1,0 +1,11 @@
+[Unit]
+Description=Configure ipv6 address every minute
+
+[Timer]
+OnCalendar=*:0/1
+OnBootSec=0min
+Unit=ipv6.service
+
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,6 @@
+[Unit]
+Description=Discard unused blocks
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ipv6.sh
