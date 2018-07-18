@@ -7,9 +7,9 @@ After=network.target network-online.target nss-lookup.target multi-user.target
 [Service]
 Type=forking
 User=admin
-WorkingDirectory=/home/admin/project_theseus
+WorkingDirectory=/home/admin
 Environment=PYTHONPATH=/home/admin/project_theseus
-#ExecStartPre=/usr/bin/chmod 660 -- /dev/i2c-1 ; /usr/bin/chgrp i2c /dev/i2c-1
+#ExecStartPre=/usr/bin/chmod 660 -- /dev/i2c-1 ; /usr/bin/chgrp admin /dev/i2c-1
 #ExecStart=/usr/bin/tmux new-session -d -s flask /home/admin/project_theseus/python/serve.py
 ExecStart=/usr/bin/tmux new-session -d -s test /home/admin/project_theseus/Project_Theseus_API/i2c/test_suite.py
 ExecStop=/usr/bin/tmux -c test -X quit
