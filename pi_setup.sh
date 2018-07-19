@@ -32,13 +32,17 @@ fi
 ln -s $PWD/system/radvd.conf /etc/radvd.conf 2> /dev/null
 systemctl restart radvd
 
+echo "Creating UDEV rules for i2c"
+echo "KERNEL==\"i2c-[0-7]\",MODE=\"0666\"" > /etc/udev/rules.d/90-i2c.rules
+
+
 echo "Setting up theseus service"
 mkdir -p /etc/systemd/system/multi-user.target.wants
 ln -s $PWD/system/theseus.service /etc/systemd/system/multi-user.target.wants 2> /dev/null
 ln -s $PWD/system/theseus.service /usr/lib/systemd/system/theseus.service 2> /dev/null
 
 echo "Setting up nginx"
-if [ ! -f /etc/nginx/nginx.conf.bak ]
+if [ ! -f /etc/nginx/nginx.conf.bak ]; then
     mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 fi
 ln -s $PWD/system/nginx.conf /etc/nginx/nginx.conf 2> /dev/null
