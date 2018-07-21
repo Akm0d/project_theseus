@@ -7,8 +7,7 @@ from typing import Tuple
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import current_app
 from flask_apscheduler import APScheduler
-from smbus2 import SMBus
-
+from os import path
 from game.constants import I2C, STATE, RGBColor, INTERRUPT, SOLENOID_STATE, ULTRASONIC_STATE, MAX_TIME, LaserPattern, \
     SECONDS_PER_PATTERN, LaserPatternValues
 from game.database import Database, Row
@@ -18,8 +17,13 @@ from Project_Theseus_API.i2c.lid_kit import ArduinoI2C
 from Project_Theseus_API.i2c.receptors_i2c import ReceptorControl
 from Project_Theseus_API.i2c.sevenseg import SevenSeg
 from Project_Theseus_API.i2c.lock_i2c import BoxLock
+if path.exists("/dev/i2c-1"):
+    from smbus2 import SMBus
+else:
+    from Project_Theseus_API.mockpi.smbus import MockBus as SMBus
 
 log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Logic:
@@ -49,7 +53,6 @@ class Logic:
         self.arduino = ArduinoI2C(self._bus, I2C.ARDUINO)
         self.photo_resistors = ReceptorControl(self._bus, I2C.PHOTO_RESISTORS)
         self.lock = BoxLock(self._bus, I2C.SOLENOID)
-
 
     @property
     def patternIndex(self) -> int:
@@ -191,7 +194,7 @@ class Logic:
         self.arduino.color = color_map[value.value]
         self.shared["rgb"] = value.value
 
-    def run(self, queue: Queue, mock: bool):
+    def run(self, queue: Queue):
         """
         Start the game and make sure there is only a single instance of this process
         This is the setup function, when it is done, it will start the game loop

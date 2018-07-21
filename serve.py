@@ -6,6 +6,7 @@ from multiprocessing import Process, Queue
 from os import path
 
 import globals
+from Project_Theseus_API.mockpi.mock_box_ui import ApplicationWindow
 from WebApp import app
 from game.logic import Logic
 
@@ -20,14 +21,13 @@ if not log_dir:
 if __name__ == '__main__':
     # Parse command line arguments
     args = ArgumentParser()
-    args.add_argument("--mock", action="store_true")
     args.add_argument("--debug", action="store_true")
     args.add_argument("--log-level", type=int, default=logging.INFO)
 
     opts = args.parse_args()
 
     # Configure logging
-    logging.basicConfig(level=logging.INFO,  handlers=[
+    logging.basicConfig(level=logging.INFO, handlers=[
         RotatingFileHandler("{}/{}.log".format(log_dir, __file__.split('/')[-1][:-3]), maxBytes=1280000, backupCount=1),
     ], format="[%(asctime)s] {%(name)s:%(lineno)d} %(levelname)s - %(message)s")
 
@@ -46,22 +46,20 @@ if __name__ == '__main__':
     q.setComQueue(procComQueue)
 
     # Create the gameLogic Process
-    gameLogic = Process(target=Logic().run, args=(procComQueue, opts.mock))
-
-    # Start the Logic Process by forking (default start() behavior for unix)
+    gameLogic = Process(target=Logic().run, args=[procComQueue])
     gameLogic.start()
 
-    # qt_app = None
-    # if opts.mock:
-    #    # Start the gui the simulates the box
-    #    print("starting app window")
-    #    qt_app = Process(target=ApplicationWindow.run)
-    #    qt_app.start()
+    qt_app = None
+    if not path.exists("/dev/i2c-1"):
+        # Start the gui the simulates the box
+        print("starting app window")
+        qt_app = Process(target=ApplicationWindow.run)
+        qt_app.start()
 
     # Run the Flask server here in the parent
     app.run(debug=False, host="::", port=5000)
 
     # Wait for the gameLogic process to finish. Prevents Zombie processes
     gameLogic.join()
-    # if qt_app is not None:
-    #    qt_app.join()
+    if qt_app is not None:
+        qt_app.join()
