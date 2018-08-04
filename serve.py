@@ -6,8 +6,11 @@ from multiprocessing import Process, Queue
 from os import path
 
 import globals
+from Project_Theseus_API.mockpi.mock_box_ui import ApplicationWindow
 from WebApp import app
 from game.logic import Logic
+
+# from Project_Theseus_API.mockpi.mock_box_ui import ApplicationWindow
 
 log = logging.getLogger()
 log_dir = path.dirname(__file__)
@@ -46,9 +49,17 @@ if __name__ == '__main__':
     gameLogic = Process(target=Logic().run, args=[procComQueue])
     gameLogic.start()
 
+    qt_app = None
+    if not path.exists("/dev/i2c-1"):
+        # Start the gui the simulates the box
+        print("starting app window")
+        qt_app = Process(target=ApplicationWindow.run)
+        qt_app.start()
+
     # Run the Flask server here in the parent
     app.run(debug=False, host="::", port=5000)
 
     # Wait for the gameLogic process to finish. Prevents Zombie processes
     gameLogic.join()
-
+    if qt_app is not None:
+        qt_app.join()
