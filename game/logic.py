@@ -330,6 +330,8 @@ class Logic:
                 self.state = STATE.RUNNING
                 self.start_game()
         elif self.state is STATE.RUNNING:
+            minutes, seconds, total_seconds = self.timer_values()
+
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
                 self.state = STATE.WAIT
                 # FIXME? Delete last row on reset
@@ -341,13 +343,12 @@ class Logic:
                 self.state = STATE.WIN
                 self.end_game(success=True)
 
-                # Kill the player if time has run out
-                minutes, seconds, total_seconds = self.timer_values()
-                if total_seconds <= 0:
-                    self.end_game(success=False)
+            # Kill the player if time has run out
+            elif total_seconds <= 0:
+                self.end_game(success=False)
 
-                if self.laserValue != self.photo_resistors.read_int():
-                    self.end_game(success=False)
+            elif self.laserValue != self.photo_resistors.read_int():
+                self.end_game(success=False)
 
         elif self.state is STATE.EXPLODE:
             if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
