@@ -18,3 +18,4 @@ cmake-build-debug
 *.sqlite
 *.sqlite3
 .state
+*_venv
