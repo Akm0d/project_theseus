@@ -41,6 +41,7 @@ class Logic:
     _laserCounter = 0
     _patternIndex = 0
     _laserValue = 0x00
+    _command = None
 
     def __init__(self):
         self.laserPattern = LaserPattern.ONE_CYCLES
@@ -90,6 +91,14 @@ class Logic:
     @laserValue.setter
     def laserValue(self, value: int):
         self.shared["laservalue"] = value
+
+    @property
+    def command(self):
+        return self.shared.get("command", None)
+
+    @command.setter
+    def command(self, value: str):
+        self.shared["command"] = value
 
     def timer_values(self) -> Tuple[int, int, int]:
         newDatetime = datetime.now() - self.start_time
@@ -165,7 +174,7 @@ class Logic:
 
     @property
     def entered_code(self) -> hex:
-        return self.shared.get("enteredcode", 0xFFF
+        return self.shared.get("enteredcode", 0xFFF)
 
     @entered_code.setter
     def entered_code(self, value: hex):
@@ -231,16 +240,17 @@ class Logic:
                 return
 
     # Commented out because we are doing it in other functions
-    # def poll_sensors(self):
-    #     """
-    #     Poll all of the sensors and raise a flag if one of them has tripped.
-    #     If the right wire was clipped at the end of the puzzle, raise the win flag
-    #     """
-    #
-    #     # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
-    #     #     log.debug("Reading from Project_Theseus_API.i2c on {}".format(i2c.name))
-    #     #     foo = self._bus.read_word_data(i2c.value, 0)
-    #     #     self._send(I2C.SEVEN_SEG, "Hello!")
+    def poll_sensors(self):
+        """
+        Poll all of the sensors and raise a flag if one of them has tripped.
+        If the right wire was clipped at the end of the puzzle, raise the win flag
+        """
+        pass
+
+        # self._bus.write_byte_data(I2C.LASERS.value, 0, 9) # for i2c in I2C:
+        #     log.debug("Reading from Project_Theseus_API.i2c on {}".format(i2c.name))
+        #     foo = self._bus.read_word_data(i2c.value, 0)
+        #     self._send(I2C.SEVEN_SEG, "Hello!")
 
     def getNextLaserPatternList(self):
         if self.laserState is LaserPattern.ONE_CYCLES:
@@ -397,6 +407,7 @@ class Logic:
         if not self.comQueue.empty():
             command = self.comQueue.get()
             command_id = command[0]
+            print("\n\n\n{}\n\n\n".format(command_id))
 
         # State Actions
         if self.state is STATE.WAIT:
@@ -404,8 +415,7 @@ class Logic:
             self.laserState = LaserPattern.LASER_OFF
         elif self.state is STATE.RUNNING:
             # Update the seven segment display to show the correct time
-            minutes, seconds, total_seconds = self.timer_values(
-            self.sevenseg(int("0x{:02}{:02}".format(minutes, seconds), 16))
+            minutes, seconds, total_seconds = self.timer_values(self.sevenseg(int("0x{:02}{:02}".format(minutes, seconds), 16)))
             # Update what the current laser pattern should be
             self.updateLaserPattern()
             # Update LED by checking switches
@@ -421,14 +431,17 @@ class Logic:
 
         # State Transitions
         if self.state is STATE.WAIT:
-            if command_id is INTERRUPT.TOGGLE_TIMER:
+            if self.command == "toggle-game":
+                self.command = None
                 # TODO? Verify that the box is reset before starting the game
                 self.state = STATE.RUNNING
                 self.start_game()
         elif self.state is STATE.RUNNING:
             minutes, seconds, total_seconds = self.timer_values()
 
-            if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
+            if self.command == "toggle-game" or self.command == "toggle-game":
+                if self.command is not None:
+                    self.command = None
                 self.state = STATE.WAIT
                 # FIXME? Delete last row on reset
                 self.end_game(success=False)

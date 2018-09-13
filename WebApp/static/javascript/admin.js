@@ -4,12 +4,12 @@ $(document).ready(function(){
 });
 
 document.getElementById("solenoid-toggle").onclick = function() {
-    solenoid_status(toggle=true)
+    solenoid_status(toggle=true);
 };
 
 Array.prototype.forEach.call(document.getElementsByClassName("tripwire"), function(tripwire) {
     tripwire.onclick = function() {
-        tripwire_status(number = tripwire.name, toggle = true)
+        tripwire_status(number = tripwire.name, toggle = true);
     }
 });
 
@@ -22,17 +22,17 @@ document.getElementById("keypad-code").addEventListener("keypress", function(e) 
 
 document.getElementById("keypad-code").onchange = function(e){
     keycode_status(e['target'].value);
-    e['target'].blur()
+    e['target'].blur();
 };
 
 document.getElementById("addTeam").onchange = function(e){
     team_status(e.srcElement.value);
-    e.srcElement.blur()
+    e.srcElement.blur();
 };
 
 document.getElementById("rgb-select").onchange = function(e) {
     rgb_status(e.srcElement.value);
-    e.srcElement.blur()
+    e.srcElement.blur();
 };
 
 document.getElementById("tripwire-all").onclick = function() {
@@ -48,7 +48,7 @@ document.getElementById("timer-start-reset").onclick = function() {
 };
 
 document.getElementById("ultrasonic-enable").onclick = function() {
-    ultrasonic_status(toggle=true)
+    ultrasonic_status(toggle=true);
 };
 
 function keycode_status(code){

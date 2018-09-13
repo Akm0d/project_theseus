@@ -54,8 +54,9 @@ class Timer(Resource):
         self.enabled = True
 
     def get(self, action: str):
+        # print("\n\n\n{}\n\n\n".format(action))
         if action == "toggle":
-            ComQueue().getComQueue().put([INTERRUPT.TOGGLE_TIMER])
+            logic.command = "toggle-game"
         return {"status": JSCom.START_BUTTON.value if logic.state is STATE.WAIT else JSCom.RESET_BUTTON.value}
 
 
