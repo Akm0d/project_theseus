@@ -114,7 +114,7 @@ class Logic:
             return "RESET"
         if self.state is STATE.RUNNING:
             if minutes < 0 or seconds < 0:
-                ComQueue().getComQueue().put([INTERRUPT.KILL_PLAYER])
+                self.shared[INTERRUPT.KILL_PLAYER] = True
                 return "DEAD"
         elif self.state is STATE.EXPLODE:
             return "DEAD"
@@ -445,10 +445,10 @@ class Logic:
                 self.state = STATE.WAIT
                 # FIXME? Delete last row on reset
                 self.end_game(success=False)
-            elif command_id is INTERRUPT.KILL_PLAYER:
+            elif self.shared[INTERRUPT.KILL_PLAYER]:
                 self.state = STATE.EXPLODE
                 self.end_game(success=False)
-            elif command_id is INTERRUPT.DEFUSED:
+            elif self.shared[INTERRUPT.DEFUSED]:
                 self.state = STATE.WIN
                 self.end_game(success=True)
 
@@ -467,10 +467,10 @@ class Logic:
                 self.end_game(success=False)
 
         elif self.state is STATE.EXPLODE:
-            if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
+            if self.shared[INTERRUPT.RESET_GAME] or self.shared[INTERRUPT.TOGGLE_TIMER]:
                 self.state = STATE.WAIT
         elif self.state is STATE.WIN:
-            if command_id is INTERRUPT.RESET_GAME or command_id is INTERRUPT.TOGGLE_TIMER:
+            if self.shared[INTERRUPT.RESET_GAME] or self.shared[INTERRUPT.TOGGLE_TIMER]:
                 self.state = STATE.WAIT
 
     def _send(self, device: I2C, message: str):

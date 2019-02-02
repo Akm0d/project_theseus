@@ -8,7 +8,6 @@
 # Alex Martelli's 'Borg'
 from multiprocessing import Queue
 
-
 class Borg:
     _shared_state = {}
 
